@@ -7,4 +7,6 @@ Small ANN attempt - to be worked more on. No technique to deal with imbalanced d
 
 RF + logit - code is working, but refinement needed
 
-gradient boosting machine example/gbm on 10000obs from bankSim data, ROC graphs, diff sampling techniques applied
+gradient boosting machine on 10000obs from bankSim data, ROC and precision/recall comparison graphs, diff sampling techniques applied
+
+neural network one hiiden layer on 10000obs from bankSim data, confusion matrices,ROC and precision recall comparison graphs, diff sampling techniques applied
