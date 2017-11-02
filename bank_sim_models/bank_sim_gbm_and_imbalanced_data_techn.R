@@ -42,7 +42,7 @@ bankSim_train$merchant <- as.factor(bankSim_train$merchant)
 bankSim_train$category <- as.factor(bankSim_train$category)
 bankSim_train$fraud <- ifelse(bankSim_train$fraud == 1, "fraud", "clean")
 
-bankSim_test$fraud <- as.factor(bankSim_train$fraud)
+bankSim_test$fraud <- as.factor(bankSim_test$fraud)
 #bankSim_train$customer <- as.factor(bankSim_train$customer)
 bankSim_test$age <- as.factor(bankSim_test$age)
 bankSim_test$gender <- as.factor(bankSim_test$gender)
