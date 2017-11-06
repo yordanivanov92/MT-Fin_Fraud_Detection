@@ -6,7 +6,7 @@ library(pROC)
 library(gbm)
 library(PRROC)
 library(caTools)
-library(neuralnet)
+library(nnet)
 
 set.seed(3)
 ###########################################################################
@@ -252,3 +252,8 @@ confusionMatrix(test_results_weight, bankSim_test$fraud)
 test_results_down <- predict(bankSim_down_fit, newdata = bankSim_test)
 confusionMatrix(test_results_down, bankSim_test$fraud)
 
+test_results_up <- predict(bankSim_up_fit, newdata = bankSim_test)
+confusionMatrix(test_results_up, bankSim_test$fraud)
+
+test_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
+confusionMatrix(test_results_up, bankSim_test$fraud)
