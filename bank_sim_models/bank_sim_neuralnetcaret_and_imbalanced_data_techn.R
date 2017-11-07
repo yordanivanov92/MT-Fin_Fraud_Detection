@@ -7,6 +7,7 @@ library(gbm)
 library(PRROC)
 library(caTools)
 library(nnet)
+library(mlr)
 
 set.seed(3)
 ###########################################################################
@@ -50,6 +51,12 @@ bankSim_test$merchant <- as.factor(bankSim_test$merchant)
 bankSim_test$category <- as.factor(bankSim_test$category)
 bankSim_test$fraud <- ifelse(bankSim_test$fraud == 1, "fraud", "clean")
 
+### Creating a cost matrix that would penalize the missclassification
+#   severely if the alg classifies an observation that is fraudulent as clean
+costs = matrix(c(0, 1, 5, 0), 2)
+colnames(costs) = rownames(costs) = c("clean", "fraud")
+costs
+
 bankSim_orig_fit <- train(fraud ~ .,
                           data = bankSim_train,
                           method = "nnet",
@@ -57,8 +64,22 @@ bankSim_orig_fit <- train(fraud ~ .,
                           verbose = FALSE,
                           metric = "ROC",
                           trControl = ctrl_bankSim)
-test_results <- predict(bankSim_orig_fit, newdata = bankSim_test)
+
+test_results <- predict(bankSim_orig_fit, newdata = bankSim_test, type = "prob")
 confusionMatrix(test_results, bankSim_test$fraud)
+
+## Calculate the theoretical threshold for the positive class
+th = costs[2,1]/(costs[2,1] + costs[1,2])
+
+test_results$med.cutoff <- ifelse(test_results$fraud >= 0.5,
+                                  "fraud",
+                                  "clean")
+
+test_results$new.thresh <- ifelse(test_results$fraud >= (1-th),
+                                  "fraud",
+                                  "clean")
+
+
 
 bankSim_test_roc <- function(model, data) {
   roc(data$fraud,
