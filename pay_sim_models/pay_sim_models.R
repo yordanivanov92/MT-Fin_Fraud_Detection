@@ -113,7 +113,7 @@ paySim[which((paySim$isFraud == 0) & (paySim$nameOrig %in% joinned$code)), ]
 # Analysis data
 analysis_data_big <- paySim[which(paySim$type == "TRANSFER" | paySim$type == "CASH_OUT"), ]
 analysis_data_small <- paySim_small[which(paySim_small$type == "TRANSFER" | paySim_small$type == "CASH_OUT"), ]
-
+rm(paySim)
 #drop irrelevant columns
 analysis_data_big <- analysis_data_big[, -c("nameOrig", "nameDest", "isFlaggedFraud")]
 analysis_data_small <- analysis_data_small[, -c("nameOrig", "nameDest", "isFlaggedFraud")]
@@ -149,11 +149,35 @@ analysis_data_big[which(((analysis_data_big$oldbalanceOrg == 0 & analysis_data_b
 analysis_data_small[which(((analysis_data_small$oldbalanceOrg == 0 & analysis_data_small$newbalanceOrg == 0) & analysis_data_small$amount != 0)), ]$newbalanceOrg <- (-1)
 analysis_data_small[which(((analysis_data_small$oldbalanceOrg == 0 & analysis_data_small$newbalanceOrg == 0) & analysis_data_small$amount != 0)), ]$oldbalanceOrg <- (-1)
 
-
+rm(paySim_small)
+rm(fraud_transfer_dest)
+rm(nofraud_cashout_orig)
+rm(joinned)
+rm(frauds)
+rm(nofraud_transfer)
+rm(nofraud_cashout)
+rm(fraud_transfer)
+rm(nofrauds)
+rm(fraud_cashout)
 # Motivated by the possibility of zero-balances serving to differentiate between fraudulent and genuine transactions, 
 # we take the data-imputation a step further and create 2 new features (columns) recording errors in 
-# the originating and destination accounts for each transaction. These new features turn out to be important in obtaining 
-# the best performance from the ML algorithm that we will finally use.
+# the originating and destination accounts for each transaction. 
 
 analysis_data_big$errorBalanceOrig <- analysis_data_big$newbalanceOrg + analysis_data_big$amount - analysis_data_big$oldbalanceOrg
 analysis_data_big$errorBalanceDest <- analysis_data_big$oldbalanceDest + analysis_data_big$amount - analysis_data_big$newbalanceDest
+
+analysis_data_small$errorBalanceOrig <- analysis_data_small$newbalanceOrg + analysis_data_small$amount - analysis_data_small$oldbalanceOrg
+analysis_data_small$errorBalanceDest <- analysis_data_small$oldbalanceDest + analysis_data_small$amount - analysis_data_small$newbalanceDest
+
+
+# ggplot(analysis_data_big, aes(x = isFraud, y = step, color = type)) +
+#   geom_jitter()
+
+ggplot(analysis_data_small, aes(x = isFraud, y = step, color = type)) +
+  geom_jitter()
+
+ggplot(analysis_data_small, aes(x = isFraud, y = amount, color = type)) +
+  geom_jitter()
+
+ggplot(analysis_data_small, aes(x = isFraud, y = (-errorBalanceDest), color = type)) +
+  geom_jitter()
