@@ -7,6 +7,8 @@ library(pROC)
 library(gbm)
 library(PRROC)
 library(caTools)
+library(doParallel)
+library(parallel)
 
 set.seed(1)
 ###########################################################################
@@ -15,7 +17,7 @@ set.seed(1)
 bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
                     header = TRUE,
                     sep = ",")
-bankSim_small <- bankSim[sample(nrow(bankSim), 10000), ]
+bankSim_small <- bankSim[sample(nrow(bankSim),20000), ]
 
 # Keep only relevant columns
 bankSim_model <- bankSim_small[, 2:10]
@@ -26,6 +28,7 @@ bankSim_train = subset(bankSim_model, split == TRUE)
 bankSim_test = subset(bankSim_model, split == FALSE)
 
 prop.table(table(bankSim_train$fraud))
+prop.table(table(bankSim_test$fraud))
 
 ctrl_bankSim <- trainControl(method = "repeatedcv",
                      number = 10,
@@ -34,29 +37,36 @@ ctrl_bankSim <- trainControl(method = "repeatedcv",
                      classProbs = TRUE,
                      verboseIter = TRUE)
 
-bankSim_train$fraud <- as.factor(bankSim_train$fraud)
+
 #bankSim_train$customer <- as.factor(bankSim_train$customer)
 bankSim_train$age <- as.factor(bankSim_train$age)
 bankSim_train$gender <- as.factor(bankSim_train$gender)
 bankSim_train$merchant <- as.factor(bankSim_train$merchant)
 bankSim_train$category <- as.factor(bankSim_train$category)
 bankSim_train$fraud <- ifelse(bankSim_train$fraud == 1, "fraud", "clean")
+bankSim_train$fraud <- as.factor(bankSim_train$fraud)
 
-bankSim_test$fraud <- as.factor(bankSim_test$fraud)
+
 #bankSim_train$customer <- as.factor(bankSim_train$customer)
 bankSim_test$age <- as.factor(bankSim_test$age)
 bankSim_test$gender <- as.factor(bankSim_test$gender)
 bankSim_test$merchant <- as.factor(bankSim_test$merchant)
 bankSim_test$category <- as.factor(bankSim_test$category)
 bankSim_test$fraud <- ifelse(bankSim_test$fraud == 1, "fraud", "clean")
+bankSim_test$fraud <- as.factor(bankSim_test$fraud)
 
-
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_orig_fit <- train(fraud ~ .,
-                  data = bankSim_train,
-                  method = "gbm",
-                  verbose = FALSE,
-                  metric = "ROC",
-                  trControl = ctrl_bankSim)
+                          data = bankSim_train,
+                          method = "gbm",
+                          verbose = FALSE,
+                          metric = "ROC",
+                          trControl = ctrl_bankSim)
+
+stopCluster(cluster)
+registerDoSEQ()
+
 
 bankSim_test_roc <- function(model, data) {
   roc(data$fraud,
@@ -75,6 +85,8 @@ bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
 
 ctrl_bankSim$seeds <- bankSim_orig_fit$control$seeds
 #weighted model
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_weighted_fit <- train(fraud ~ .,
                       data = bankSim_train,
                       method = "gbm",
@@ -82,9 +94,12 @@ bankSim_weighted_fit <- train(fraud ~ .,
                       weights = bankSim_model_weights,
                       metric = "ROC",
                       trControl = ctrl_bankSim)
-
+stopCluster(cluster)
+registerDoSEQ()
 #sampled-down model
 ctrl_bankSim$sampling <- "down"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_down_fit <- train(fraud ~ .,
                   data = bankSim_train,
                   method = "gbm",
@@ -94,21 +109,29 @@ bankSim_down_fit <- train(fraud ~ .,
 
 #sampled-up
 ctrl_bankSim$sampling <- "up"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_up_fit <- train(fraud ~ .,
                 data = bankSim_train,
                 method = "gbm",
                 verbose = FALSE,
                 metric = "ROC",
                 trControl = ctrl_bankSim)
-
+stopCluster(cluster)
+registerDoSEQ()
 #SMOTE
 ctrl_bankSim$sampling <- "smote"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_smote_fit <- train(fraud ~ .,
                    data = bankSim_train,
                    method = "gbm",
                    verbose = FALSE,
                    metric = "ROC",
                    trControl = ctrl_bankSim)
+stopCluster(cluster)
+registerDoSEQ()
+
 
 bankSim_model_list <- list(original = bankSim_orig_fit,
                    weighted = bankSim_weighted_fit,
@@ -143,7 +166,7 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = bankSim_results_df_roc) +
   theme_bw(base_size = 18)
 
 
-#### second part - more detailed metrics
+####  Construction the precision/recall graphic
 bankSim_calc_auprc <- function(model, data) {
   index_class2 <- data$fraud == "fraud"
   index_class1 <- data$fraud == "clean"
@@ -236,5 +259,19 @@ identical(orig_fit$bestTune,
 
 
 
+test_results_orig <- predict(bankSim_orig_fit, newdata = bankSim_test)
+confusionMatrix(test_results_orig, bankSim_test$fraud, positive = "fraud")
+
+test_results_weight <- predict(bankSim_weighted_fit, newdata = bankSim_test)
+confusionMatrix(test_results_weight, bankSim_test$fraud, positive = "fraud")
+
+test_results_down <- predict(bankSim_down_fit, newdata = bankSim_test)
+confusionMatrix(test_results_down, bankSim_test$fraud, positive = "fraud")
+
+test_results_up <- predict(bankSim_up_fit, newdata = bankSim_test)
+confusionMatrix(test_results_up, bankSim_test$fraud, positive = "fraud")
+
+test_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
+conf_smote <- confusionMatrix(test_results_smote, bankSim_test$fraud, positive = "fraud")
 
 

@@ -41,12 +41,16 @@ cc_data_train$Class <- as.factor(cc_data_train$Class)
 cc_data_test$Class <- ifelse(cc_data_test$Class == 1, "fraud", "clean")
 cc_data_test$Class <- as.factor(cc_data_test$Class)
 
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 cc_orig <- train(Class ~ .,
                           data = cc_data_train,
                           method = "gbm",
                           verbose = FALSE,
                           metric = "ROC",
                           trControl = ctrl_ccard)
+stopCluster(cluster)
+registerDoSEQ()
 
 test_results <- predict(cc_orig, newdata = cc_data_test)
 confusionMatrix(test_results, cc_data_test$Class)
