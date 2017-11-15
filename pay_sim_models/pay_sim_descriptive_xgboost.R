@@ -12,6 +12,9 @@ library(doParallel)
 library(parallel)
 library(plyr)
 library(GGally)
+library(plotly)
+library(reshape2)
+library(xgboost)
 options(scipen=999)
 
 set.seed(45)
@@ -163,10 +166,10 @@ rm(fraud_cashout)
 # we take the data-imputation a step further and create 2 new features (columns) recording errors in 
 # the originating and destination accounts for each transaction. 
 
-analysis_data_big$errorBalanceOrig <- analysis_data_big$newbalanceOrg + analysis_data_big$amount - analysis_data_big$oldbalanceOrg
+analysis_data_big$errorBalanceOrig <- analysis_data_big$newbalanceOrig + analysis_data_big$amount - analysis_data_big$oldbalanceOrg
 analysis_data_big$errorBalanceDest <- analysis_data_big$oldbalanceDest + analysis_data_big$amount - analysis_data_big$newbalanceDest
 
-analysis_data_small$errorBalanceOrig <- analysis_data_small$newbalanceOrg + analysis_data_small$amount - analysis_data_small$oldbalanceOrg
+analysis_data_small$errorBalanceOrig <- analysis_data_small$newbalanceOrig + analysis_data_small$amount - analysis_data_small$oldbalanceOrg
 analysis_data_small$errorBalanceDest <- analysis_data_small$oldbalanceDest + analysis_data_small$amount - analysis_data_small$newbalanceDest
 
 
@@ -181,3 +184,96 @@ ggplot(analysis_data_small, aes(x = isFraud, y = amount, color = type)) +
 
 ggplot(analysis_data_small, aes(x = isFraud, y = (-errorBalanceDest), color = type)) +
   geom_jitter()
+
+plot_ly(analysis_data_small, 
+        x = ~errorBalanceDest,
+        y = ~(-log10(errorBalanceOrig)),
+        z = ~step,
+        color = ~isFraud,
+        colors = c('#BF382A', '#0C4B8E'))
+
+# converting to binary operators
+analysis_data_small$type <- ifelse(analysis_data_small$type == "TRANSFER", 0, 1)
+
+small_heatmap_nonfraud <- melt(cor(analysis_data_small[which(analysis_data_small$isFraud == 0), -c("step", "isFraud")]))
+small_heatmap_fraud <- melt(cor(analysis_data_small[which(analysis_data_small$isFraud == 1), -c("step", "isFraud")]))
+
+ggplot(small_heatmap_nonfraud, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile()
+
+ggplot(small_heatmap_fraud, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile()
+
+set.seed(434)
+split = sample.split(analysis_data_small$isFraud, SplitRatio = 0.6)
+
+paySim_train <- subset(analysis_data_small, split == TRUE)
+paySim_train$isFraud <- as.factor(paySim_train$isFraud)
+paySim_train$type<-as.factor(paySim_train$type)
+paySim_train <- paySim_train[, -c("step")]
+
+paySim_test <- subset(analysis_data_small, split == FALSE)
+paySim_test$isFraud <- as.factor(paySim_test$isFraud)
+paySim_test$type<-as.factor(paySim_test$type)
+paySim_test <- paySim_test[, -c("step")]
+
+paySim_train_matrix <- as.matrix(sapply(paySim_train[, -c("step")], as.numeric))
+
+parametersGrid <-  expand.grid(eta = 0.1, 
+                               colsample_bytree=c(0.5,0.7),
+                               max_depth=c(3,6),
+                               nrounds=100,
+                               gamma=1,
+                               min_child_weight=2)
+
+ctrl_paySim <- trainControl(method = "repeatedcv",
+                           number = 10,
+                           repeats = 5,
+                           summaryFunction = twoClassSummary,
+                           classProbs = TRUE,
+                           verboseIter = TRUE)
+
+feature.names=names(paySim_train)
+for (f in feature.names) {
+  if (class(paySim_train[[f]])=="factor") {
+    levels <- unique(c(paySim_train[[f]]))
+    paySim_train[[f]] <- factor(paySim_train[[f]],
+                         labels=make.names(levels))
+  }
+}
+feature.names2=names(paySim_test)
+for (f in feature.names2) {
+  if (class(paySim_test[[f]])=="factor") {
+    levels <- unique(c(paySim_test[[f]]))
+    paySim_test[[f]] <- factor(paySim_test[[f]],
+                                labels=make.names(levels))
+  }
+}
+
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
+paySim_xgboost <- train(isFraud ~ .,
+                        data = paySim_train,
+                        method = "xgbTree",
+                        verbose = FALSE,
+                        metric = "ROC",
+                        trControl = ctrl_paySim)
+
+stopCluster(cluster)
+registerDoSEQ()
+
+xgboost_results <- predict(paySim_xgboost, newdata = paySim_test)
+confusionMatrix(xgboost_results, paySim_test$isFraud)
+
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "isFraud"])
+}
+
+paySim_xgboost %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+
+
+
+
