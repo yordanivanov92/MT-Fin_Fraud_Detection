@@ -15,6 +15,9 @@ library(GGally)
 library(plotly)
 library(reshape2)
 library(xgboost)
+library(gbm)
+library(nnet)
+library(e1071)
 options(scipen=999)
 
 set.seed(45)
@@ -217,14 +220,14 @@ paySim_test$isFraud <- as.factor(paySim_test$isFraud)
 paySim_test$type<-as.factor(paySim_test$type)
 paySim_test <- paySim_test[, -c("step")]
 
-paySim_train_matrix <- as.matrix(sapply(paySim_train[, -c("step")], as.numeric))
-
-parametersGrid <-  expand.grid(eta = 0.1, 
-                               colsample_bytree=c(0.5,0.7),
-                               max_depth=c(3,6),
-                               nrounds=100,
-                               gamma=1,
-                               min_child_weight=2)
+# paySim_train_matrix <- as.matrix(sapply(paySim_train[, -c("step")], as.numeric))
+# 
+# parametersGrid <-  expand.grid(eta = 0.1, 
+#                                colsample_bytree=c(0.5,0.7),
+#                                max_depth=c(3,6),
+#                                nrounds=100,
+#                                gamma=1,
+#                                min_child_weight=2)
 
 ctrl_paySim <- trainControl(method = "repeatedcv",
                            number = 10,
@@ -249,31 +252,130 @@ for (f in feature.names2) {
                                 labels=make.names(levels))
   }
 }
+ 
 
+################## XGBOOST
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 paySim_xgboost <- train(isFraud ~ .,
                         data = paySim_train,
                         method = "xgbTree",
                         verbose = FALSE,
-                        metric = "ROC",
+                        metric = "Spec", 
                         trControl = ctrl_paySim)
 
 stopCluster(cluster)
 registerDoSEQ()
 
+trellis.par.set(caretTheme())
+plot(paySim_xgboost, metric = "Spec")  
+
+
 xgboost_results <- predict(paySim_xgboost, newdata = paySim_test)
 confusionMatrix(xgboost_results, paySim_test$isFraud)
+## Achieved a lot better result when optimizing the "Specificity" rather than "ROC"
+# Reference
+# Prediction    X1    X2
+#         X1 17343     2
+#         X2     0    54
+# However, that could be a random result
+# With the ROC optimized model, a better result
+# was obtained one time (1 misclassification only)
+
 
 paySim_test_roc <- function(model, data) {
   roc(data$isFraud,
-      predict(model, data, type = "prob")[, "isFraud"])
+      predict(model, data, type = "prob")[, "X2"])
 }
 
 paySim_xgboost %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
 
+xgboost_imp <- varImp(paySim_xgboost, scale = FALSE)
+#xgboost_imp - variable importance is observed
+plot(xgboost_imp)
 
+###########################
+
+
+###################### GBM
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
+paySim_gbm <- train(isFraud ~ .,
+                    data = paySim_train,
+                    method = "gbm",
+                    verbose = FALSE,
+                    metric = "ROC",
+                    trControl = ctrl_paySim)
+stopCluster(cluster)
+registerDoSEQ()
+
+gbm_results <- predict(paySim_gbm, newdata = paySim_test)
+confusionMatrix(gbm_results, paySim_test$isFraud)
+
+
+paySim_gbm %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+
+gbm_imp <- varImp(paySim_gbm, scale = FALSE)
+#xgboost_imp
+plot(gbm_imp)
+
+##########################
+
+####################### NNET
+
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
+paySim_nnet <- train(isFraud ~ .,
+                    data = paySim_train,
+                    method = "nnet",
+                    linout = FALSE,
+                    verbose = FALSE,
+                    metric = "ROC",
+                    trControl = ctrl_paySim)
+stopCluster(cluster)
+registerDoSEQ()
+
+nnet_results <- predict(paySim_nnet, newdata = paySim_test)
+confusionMatrix(nnet_results, paySim_test$isFraud)
+
+
+paySim_nnet %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+
+nnet_imp <- varImp(paySim_nnet, scale = FALSE)
+
+plot(nnet_imp)
+
+#################################
+
+################### Normal Support Vector Machine
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
+paySim_svm <- train(isFraud ~ .,
+                    data = paySim_train,
+                    method = ,
+                    verbose = FALSE,
+                    metric = "ROC",
+                    trControl = ctrl_paySim)
+stopCluster(cluster)
+registerDoSEQ()
+
+svm_results <- predict(paySim_svm, newdata = paySim_test)
+confusionMatrix(svm_results, paySim_test$isFraud)
+
+
+paySim_svm %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+
+svm_imp <- varImp(paySim_svm, scale = FALSE)
+
+plot(svm_imp)
+#################################################
 
 
