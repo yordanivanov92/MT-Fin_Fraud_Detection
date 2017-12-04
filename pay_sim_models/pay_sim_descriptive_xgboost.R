@@ -20,12 +20,12 @@ library(nnet)
 library(e1071)
 options(scipen=999)
 
-set.seed(45)
+set.seed(48)
 paySim <- fread("C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/pay_sim_synthetic/PS_20174392719_1491204439457_log.csv",
                     header = TRUE,
                     sep = ",")
 paySim_small <- paySim[sample(nrow(paySim), 100000), ] 
-#rm(paySim)
+#paySim_small <- paySim[sample(nrow(paySim), 50000), ] 
 
 # Fraud Rate
 prop.table(table(paySim_small$isFraud))
@@ -300,20 +300,23 @@ plot(xgboost_imp)
 
 
 ###################### GBM
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+#cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+#registerDoParallel(cluster)
 paySim_gbm <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "gbm",
                     verbose = FALSE,
                     metric = "ROC",
                     trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+#stopCluster(cluster)
+#registerDoSEQ()
+# problems with parallel computing? 
 
 gbm_results <- predict(paySim_gbm, newdata = paySim_test)
 confusionMatrix(gbm_results, paySim_test$isFraud)
 
+trellis.par.set(caretTheme())
+plot(paySim_gbm)  
 
 paySim_gbm %>%
   paySim_test_roc(data = paySim_test) %>%
@@ -324,6 +327,59 @@ gbm_imp <- varImp(paySim_gbm, scale = FALSE)
 plot(gbm_imp)
 
 ##########################
+
+########### weighted gbm attempt
+data_weights <- ifelse(paySim_train$isFraud == "X1",
+                          (1/table(paySim_train$isFraud)[1]) * 0.5,
+                          (1/table(paySim_train$isFraud)[2]) * 0.5)
+data_weights_direct <- ifelse(paySim_train$isFraud == "X1",
+                              1,
+                              5)
+
+ctrl_paySim$seeds <- paySim_gbm$control$seeds
+
+paySim_gbm_weight <- train(isFraud ~ .,
+                           data = paySim_train,
+                           method = "gbm",
+                           weights = data_weights,
+                           verbose = FALSE,
+                           metric = "ROC",
+                           trControl = ctrl_paySim)
+gbm_results_weight <- predict(paySim_gbm_weight, newdata = paySim_test)
+confusionMatrix(gbm_results_weight, paySim_test$isFraud)
+#Pretty good results after weighting!
+# Reference
+# Prediction    X1    X2
+#         X1 17291     0
+#         X2     1    50
+trellis.par.set(caretTheme())
+plot(paySim_gbm_weight)  
+
+#More aggressive weighting
+paySim_gbm_weight_direct <- train(isFraud ~ .,
+                           data = paySim_train,
+                           method = "gbm",
+                           weights = data_weights_direct,
+                           verbose = FALSE,
+                           metric = "ROC",
+                           trControl = ctrl_paySim)
+gbm_results_weight_direct <- predict(paySim_gbm_weight_direct, newdata = paySim_test)
+confusionMatrix(gbm_results_weight_direct, paySim_test$isFraud)
+# Expected better performance in terms of identifying X2, costs = 1;3
+# Reference
+# Prediction    X1    X2
+#         X1 17290     5
+#         X2     2    45
+# results after costs = 1;5
+#Reference
+#Prediction    X1    X2
+#         X1 17291     0
+#         X2     1    50
+
+trellis.par.set(caretTheme())
+plot(paySim_gbm_weight_direct) 
+
+###############################
 
 ####################### NNET
 
@@ -341,8 +397,47 @@ registerDoSEQ()
 
 nnet_results <- predict(paySim_nnet, newdata = paySim_test)
 confusionMatrix(nnet_results, paySim_test$isFraud)
+# Reference
+# Prediction    X1    X2
+#         X1 17282    23
+#         X2    10    27
+trellis.par.set(caretTheme())
+plot(paySim_nnet) 
+
+ctrl_paySim$seeds <- paySim_nnet$control$seeds
+paySim_nnet_weights <- train(isFraud ~ .,
+                             data = paySim_train,
+                             method = "nnet",
+                             weights = data_weights,
+                             linout = FALSE,
+                             verbose = FALSE,
+                             metric = "ROC",
+                             trControl = ctrl_paySim)
+nnet_results_weights <- predict(paySim_nnet_weights, newdata = paySim_test)
+confusionMatrix(nnet_results_weights, paySim_test$isFraud)
+# Reference
+# Prediction    X1    X2
+#         X1 17229    14
+#         X2    63    36
+trellis.par.set(caretTheme())
+plot(paySim_nnet_weights)
 
 
+paySim_nnet_weights_direct <- train(isFraud ~ .,
+                                    data = paySim_train,
+                                    method = "nnet",
+                                    weights = data_weights_direct,
+                                    linout = FALSE,
+                                    verbose = FALSE,
+                                    metric = "ROC",
+                                    trControl = ctrl_paySim)
+nnet_results_weights_direct <- predict(paySim_nnet_weights_direct, newdata = paySim_test)
+confusionMatrix(nnet_results_weights_direct, paySim_test$isFraud)
+#
+# Reference
+# Prediction    X1    X2
+#         X1 17290    25
+#         X2     2    25
 paySim_nnet %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
@@ -354,11 +449,13 @@ plot(nnet_imp)
 #################################
 
 ################### Normal Support Vector Machine
+
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 paySim_svm <- train(isFraud ~ .,
                     data = paySim_train,
-                    method = ,
+                    method = "svmLinear",
+                    preProc = c("center", "scale"),
                     verbose = FALSE,
                     metric = "ROC",
                     trControl = ctrl_paySim)
@@ -367,7 +464,23 @@ registerDoSEQ()
 
 svm_results <- predict(paySim_svm, newdata = paySim_test)
 confusionMatrix(svm_results, paySim_test$isFraud)
+# Reference
+# Prediction    X1    X2
+#         X1 17291    27
+#         X2     1    23
 
+
+# results from a radial kernel - to try with linear
+# Reference
+# Prediction   X1   X2
+# X1 8630   25
+# X2   15    0
+
+# results with a linear kernel - better - to try with more data
+# Reference
+# Prediction   X1   X2
+# X1 8644   15
+# X2    1   10
 
 paySim_svm %>%
   paySim_test_roc(data = paySim_test) %>%
@@ -378,4 +491,49 @@ svm_imp <- varImp(paySim_svm, scale = FALSE)
 plot(svm_imp)
 #################################################
 
+################################ Weighted linear SVM
+paySim_svm_weights <- train(isFraud ~ .,
+                            data = paySim_train,
+                            method = "svmLinearWeights",
+                            weights = data_weights,
+                            preProc = c("center", "scale"),
+                            verbose = FALSE,
+                            metric = "ROC",
+                            trControl = ctrl_paySim)
 
+svm_results_weights <- predict(paySim_svm_weights, newdata = paySim_test)
+confusionMatrix(svm_results_weights, paySim_test$isFraud)
+
+# Reference
+# Prediction    X1    X2
+#         X1 17291    24
+#         X2     1    26
+####################################################
+
+######################################## Random Forest
+paySim_randfor <- train(isFraud ~ .,
+                        data = paySim_train,
+                        method = "rf",
+                        verbose = FALSE,
+                        metric = "ROC",
+                        trControl = ctrl_paySim)
+randfor_results <- predict(paySim_randfor, newdata = paySim_test)
+confusionMatrix(randfor_results, paySim_test$isFraud)
+# Reference
+# Prediction    X1    X2
+#         X1 17468     0
+#         X2     0    57
+
+#####################################################
+
+############################## Logistic regression
+
+
+paySim_log <- train(isFraud ~ .,
+                    data = paySim_train,
+                    method = "glm",
+                    family = binomial,
+                    maxit = 250,
+                    trControl = ctrl_paySim)
+log_results <- predict(paySim_log, newdata = paySim_test)
+confusionMatrix(log_results, paySim_test$isFraud)
