@@ -32,94 +32,103 @@ plyr::count(bankSim, c("merchant", "fraud"))
 plyr::count(bankSim, c("age", "fraud"))
 # each age category as commited fraud
 
+##### NEEDS BIGGER COMPUTING POWER IF THE CUSTOMER CATEGORY IS TO BE INCLUDED
+# bankSim <- bankSim %>%
+#   select(customer, age, gender, merchant, category, amount, fraud)
+
 bankSim <- bankSim %>%
-  select(customer, age, gender, merchant, category, amount, fraud)
-##############
-# filtered_customers <- plyr::count(bankSim, c("customer", "fraud"))
-# dupl_data_customers <- filtered[duplicated(filtered[, "customer"]), ]
-# 
-# #getting those customers that have exhibited fraud
-# bankSim_filter_customers <- bankSim %>%
-#   filter(customer %in% dupl_data[, "customer"])  %>%
-#   select(customer) %>%
-#   distinct(customer) %>%
-#   arrange(customer)
-# 
-# bankSim <- bankSim_filter_customers %>%
-#   filter(customer %in% bankSim_filter_customers[, "customer"])
-# ###################
-# filtered_merchant <- plyr::count(bankSim, c("merchant", "fraud"))
-# dupl_data_customers <- filtered[duplicated(filtered[, "customer"]), ]
-# 
-# #getting those customers that have exhibited fraud
-# bankSim_filter_customers <- bankSim %>%
-#   filter(customer %in% dupl_data[, "customer"])  %>%
-#   select(customer) %>%
-#   distinct(customer) %>%
-#   arrange(customer)
-# 
-# bankSim_customers_total <- bankSim %>%
-#   filter(customer %in% bankSim_filter_customers[, "customer"])
+  select(age, gender, merchant, category, amount, fraud)
 
-
-# Removing
-bankSim_filter <- bankSim %>%
+bankSim <- bankSim %>%
   filter(category != "'es_transportation'") %>%
   filter(category != "'es_food'") %>%
   filter(category != "'es_contents'") %>%
-  filter(gender != "'U'") %>%
-  filter(merchant != "'M1053599405'") %>%
-  filter(merchant != "'M117188757'") %>%
-  filter(merchant != "'M1313686961'") %>%
-  filter(merchant != "'M1352454843'") %>%
-  filter(merchant != "'M1400236507'") %>%
-  filter(merchant != "'M1416436880'") %>%
-  filter(merchant != "'M1600850729'") %>%
-  filter(merchant != "'M1726401631'") %>%
-  filter(merchant != "'M1788569036'") %>%
-  filter(merchant != "'M1823072687'") %>%
-  filter(merchant != "'M1842530320'") %>%
-  filter(merchant != "'M1872033263'") %>%
-  filter(merchant != "'M1913465890'") %>%
-  filter(merchant != "'M1946091778'") %>%
-  filter(merchant != "'M348934600'") %>%
-  filter(merchant != "'M349281107'") %>%
-  filter(merchant != "'M45060432'") %>%
-  filter(merchant != "'M677738360'") %>%
-  filter(merchant != "'M85975013'") %>%
-  filter(merchant != "'M97925176'")
+  filter(gender != "'U'")
 
-################## This would be working towards increasing prediction power
-# only in the current dataset. When new observation are being added in a 
-# system, this could lead to problems, as some useful observation could be erased.
-# In the end, it is genuinely, selective undersampling.
-customer_fraud_freq <- plyr::count(bankSim_filter, c("customer", "fraud"))
-dupl_data <- customer_fraud_freq[duplicated(customer_fraud_freq$customer), ]
-#colnames(dupl_data) <- "customer"
+
+###################################################################
+filtered_customers <- plyr::count(bankSim, c("customer", "fraud"))
+dupl_data_customers <- filtered_customers[duplicated(filtered_customers[, "customer"]), ]
 
 #getting those customers that have exhibited fraud
-bankSim_filter_cust <- bankSim_filter %>%
-  filter(customer %in% dupl_data$customer) %>%
+bankSim_filter_customers <- bankSim %>%
+  filter(customer %in% dupl_data_customers[, "customer"])  %>%
   select(customer) %>%
   distinct(customer) %>%
   arrange(customer)
 
-bankSim_filter_total <- bankSim_filter %>%
-  filter(customer %in% bankSim_filter_cust$customer)
+bankSim <- bankSim %>%
+  filter(customer %in% bankSim_filter_customers[, "customer"])
+rm(filtered_customers)
+rm(dupl_data_customers)
+rm(bankSim_filter_customers)
+###################
+filtered_merchant <- plyr::count(bankSim, c("merchant", "fraud"))
+dupl_data_merchant <- filtered_merchant[duplicated(filtered_merchant[, "merchant"]), ]
 
-bankSim <- bankSim_filter_total
-plyr::count(bankSim, c("category", "fraud"))
-# es_contents - no fraud
-# es_food - no fraud
-# es_transportation - no fraud
+#getting those merchants that have exhibited fraud
+bankSim_filter_merchant <- bankSim %>%
+  filter(merchant %in% dupl_data_merchant[, "merchant"])  %>%
+  select(merchant) %>%
+  distinct(merchant) %>%
+  arrange(merchant)
 
+bankSim <- bankSim %>%
+  filter(merchant %in% bankSim_filter_merchant[, "merchant"])
 
-plyr::count(bankSim, c("gender", "fraud"))
-# the U gender - no frauds commited
-plyr::count(bankSim, c("merchant", "fraud"))
-# some merchants - no fraud
-plyr::count(bankSim, c("age", "fraud"))
+rm(filtered_merchant)
+rm(dupl_data_merchant)
+rm(bankSim_filter_merchant)
+###################################################################
 
+# Removing manually - just for validating that automated removal works
+# bankSim_filter <- bankSim %>%
+#   filter(category != "'es_transportation'") %>%
+#   filter(category != "'es_food'") %>%
+#   filter(category != "'es_contents'") %>%
+#   filter(gender != "'U'") %>%
+#   filter(merchant != "'M1053599405'") %>%
+#   filter(merchant != "'M117188757'") %>%
+#   filter(merchant != "'M1313686961'") %>%
+#   filter(merchant != "'M1352454843'") %>%
+#   filter(merchant != "'M1400236507'") %>%
+#   filter(merchant != "'M1416436880'") %>%
+#   filter(merchant != "'M1600850729'") %>%
+#   filter(merchant != "'M1726401631'") %>%
+#   filter(merchant != "'M1788569036'") %>%
+#   filter(merchant != "'M1823072687'") %>%
+#   filter(merchant != "'M1842530320'") %>%
+#   filter(merchant != "'M1872033263'") %>%
+#   filter(merchant != "'M1913465890'") %>%
+#   filter(merchant != "'M1946091778'") %>%
+#   filter(merchant != "'M348934600'") %>%
+#   filter(merchant != "'M349281107'") %>%
+#   filter(merchant != "'M45060432'") %>%
+#   filter(merchant != "'M677738360'") %>%
+#   filter(merchant != "'M85975013'") %>%
+#   filter(merchant != "'M97925176'")
+
+# ################## This would be working towards increasing prediction power
+# # only in the current dataset. When new observation are being added in a 
+# # system, this could lead to problems, as some useful observation could be erased.
+# # In the end, it is genuinely, selective undersampling.
+# customer_fraud_freq <- plyr::count(bankSim_filter, c("customer", "fraud"))
+# dupl_data <- customer_fraud_freq[duplicated(customer_fraud_freq$customer), ]
+# #colnames(dupl_data) <- "customer"
+# 
+# #getting those customers that have exhibited fraud
+# bankSim_filter_cust <- bankSim_filter %>%
+#   filter(customer %in% dupl_data$customer) %>%
+#   select(customer) %>%
+#   distinct(customer) %>%
+#   arrange(customer)
+# 
+# bankSim_filter_total <- bankSim_filter %>%
+#   filter(customer %in% bankSim_filter_cust$customer)
+
+###############################################################################
+
+###### Attempt to create automatisation for removing unnecessary observations
 # for (category in colnames(bankSim)){
 #   filtered <- plyr::count(bankSim, c(category, "fraud"))
 #   dupl_data <- filtered[duplicated(filtered[, category]), ]
@@ -137,8 +146,7 @@ plyr::count(bankSim, c("age", "fraud"))
 # }
 
 
-
-
+### Splitting the data into train and test sets
 split = sample.split(bankSim$fraud, SplitRatio = 0.6)
 
 bankSim_train = subset(bankSim, split == TRUE)
@@ -147,6 +155,7 @@ bankSim_test = subset(bankSim, split == FALSE)
 prop.table(table(bankSim_train$fraud))
 prop.table(table(bankSim_test$fraud))
 
+# Specifying a 5 times repeated 10 fold cross-validation method
 ctrl_bankSim <- trainControl(method = "repeatedcv",
                      number = 10,
                      repeats = 5,
@@ -172,6 +181,8 @@ bankSim_test$category <- as.factor(bankSim_test$category)
 bankSim_test$fraud <- ifelse(bankSim_test$fraud == 1, "fraud", "clean")
 bankSim_test$fraud <- as.factor(bankSim_test$fraud)
 
+##################################################################################
+############################# GRADIENT BOOSTING MACHINES #########################
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 bankSim_orig_fit <- train(fraud ~ .,
@@ -185,7 +196,6 @@ stopCluster(cluster)
 registerDoSEQ()
 
 
-
 bankSim_test_roc <- function(model, data) {
   roc(data$fraud,
       predict(model, data, type = "prob")[, "fraud"])
@@ -197,12 +207,14 @@ bankSim_orig_fit %>%
 
 
 # Handling class imbalance with weighted or sampling methods
+
+################## COST SENSITIVE GBM MODEL
 bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
                         (1/table(bankSim_train$fraud)[1]) * 0.5,
                         (1/table(bankSim_train$fraud)[2]) * 0.5)
 
 ctrl_bankSim$seeds <- bankSim_orig_fit$control$seeds
-#weighted model
+
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 bankSim_weighted_fit <- train(fraud ~ .,
@@ -214,7 +226,8 @@ bankSim_weighted_fit <- train(fraud ~ .,
                       trControl = ctrl_bankSim)
 stopCluster(cluster)
 registerDoSEQ()
-#sampled-down model
+
+############### sampled-down model
 ctrl_bankSim$sampling <- "down"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
@@ -224,8 +237,9 @@ bankSim_down_fit <- train(fraud ~ .,
                   verbose = FALSE,
                   metric = "ROC",
                   trControl = ctrl_bankSim)
-
-#sampled-up
+stopCluster(cluster)
+registerDoSEQ()
+############# sampled-up
 ctrl_bankSim$sampling <- "up"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
@@ -237,7 +251,7 @@ bankSim_up_fit <- train(fraud ~ .,
                 trControl = ctrl_bankSim)
 stopCluster(cluster)
 registerDoSEQ()
-#SMOTE
+############# SMOTE
 ctrl_bankSim$sampling <- "smote"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
@@ -376,7 +390,7 @@ identical(orig_fit$bestTune,
           orig_pr$bestTune)
 
 
-
+################# Confusion matrices
 test_results_orig <- predict(bankSim_orig_fit, newdata = bankSim_test)
 confusionMatrix(test_results_orig, bankSim_test$fraud, positive = "fraud")
 
@@ -391,5 +405,5 @@ confusionMatrix(test_results_up, bankSim_test$fraud, positive = "fraud")
 
 test_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
 conf_smote <- confusionMatrix(test_results_smote, bankSim_test$fraud, positive = "fraud")
-
-
+##############END GRADIENT BOOSTING MACHINES #####################################
+##################################################################################
