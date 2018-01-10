@@ -8,7 +8,7 @@ library(caTools)
 library(doParallel)
 library(parallel)
 library(plyr)
-library(nnet)
+library(xgboost)
 
 
 set.seed(1)
@@ -94,34 +94,17 @@ bankSim_test$merchant <- as.factor(bankSim_test$merchant)
 bankSim_test$category <- as.factor(bankSim_test$category)
 bankSim_test$fraud <- ifelse(bankSim_test$fraud == 1, "fraud", "clean")
 
-### Creating a cost matrix that would penalize the missclassification
-#   severely if the alg classifies an observation that is fraudulent as clean
-costs = matrix(c(0, 1, 5, 0), 2)
-colnames(costs) = rownames(costs) = c("clean", "fraud")
-costs
-
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_orig_fit <- train(fraud ~ .,
                           data = bankSim_train,
-                          method = "nnet",
-                          linout = FALSE,
+                          method = "xgbTree",
                           verbose = FALSE,
                           metric = "ROC",
                           trControl = ctrl_bankSim)
 
-test_results <- predict(bankSim_orig_fit, newdata = bankSim_test, type = "prob")
-confusionMatrix(test_results, bankSim_test$fraud)
-
-## Calculate the theoretical threshold for the positive class
-th = costs[2,1]/(costs[2,1] + costs[1,2])
-
-test_results$med.cutoff <- ifelse(test_results$fraud >= 0.5,
-                                  "fraud",
-                                  "clean")
-
-test_results$new.thresh <- ifelse(test_results$fraud >= (1-th),
-                                  "fraud",
-                                  "clean")
-
+stopCluster(cluster)
+registerDoSEQ()
 
 
 bankSim_test_roc <- function(model, data) {
@@ -135,50 +118,63 @@ bankSim_orig_fit %>%
 
 
 # Handling class imbalance with weighted or sampling methods
+
+################## COST SENSITIVE XGBOOST MODEL
 bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
                                 (1/table(bankSim_train$fraud)[1]) * 0.5,
                                 (1/table(bankSim_train$fraud)[2]) * 0.5)
 
 ctrl_bankSim$seeds <- bankSim_orig_fit$control$seeds
-#weighted model
+
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_weighted_fit <- train(fraud ~ .,
                               data = bankSim_train,
-                              method = "nnet",
-                              linout = FALSE,
+                              method = "xgbTree",
                               verbose = FALSE,
                               weights = bankSim_model_weights,
                               metric = "ROC",
                               trControl = ctrl_bankSim)
+stopCluster(cluster)
+registerDoSEQ()
 
-#sampled-down model
+############### sampled-down model
 ctrl_bankSim$sampling <- "down"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_down_fit <- train(fraud ~ .,
                           data = bankSim_train,
-                          method = "nnet",
-                          linout = FALSE,
+                          method = "xgbTree",
                           verbose = FALSE,
                           metric = "ROC",
                           trControl = ctrl_bankSim)
-
-#sampled-up
+stopCluster(cluster)
+registerDoSEQ()
+############# sampled-up
 ctrl_bankSim$sampling <- "up"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_up_fit <- train(fraud ~ .,
                         data = bankSim_train,
-                        method = "nnet",
-                        linout = FALSE,
+                        method = "xgbTree",
                         verbose = FALSE,
                         metric = "ROC",
                         trControl = ctrl_bankSim)
-
-#SMOTE
+stopCluster(cluster)
+registerDoSEQ()
+############# SMOTE
 ctrl_bankSim$sampling <- "smote"
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
 bankSim_smote_fit <- train(fraud ~ .,
                            data = bankSim_train,
-                           method = "nnet",
-                           linout = FALSE,
+                           method = "xgbTree",
                            verbose = FALSE,
                            metric = "ROC",
                            trControl = ctrl_bankSim)
+stopCluster(cluster)
+registerDoSEQ()
+
 
 bankSim_model_list <- list(original = bankSim_orig_fit,
                            weighted = bankSim_weighted_fit,
@@ -213,7 +209,7 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = bankSim_results_df_roc) +
   theme_bw(base_size = 18)
 
 
-#### second part - more detailed metrics
+####  Construction the precision/recall graphic
 bankSim_calc_auprc <- function(model, data) {
   index_class2 <- data$fraud == "fraud"
   index_class1 <- data$fraud == "clean"
@@ -278,7 +274,7 @@ ctrl <- trainControl(method = "repeatedcv",
 
 orig_pr <- train(Class ~ .,
                  data = imbal_train,
-                 method = "gbm",
+                 method = "xgbTree",
                  verbose = FALSE,
                  metric = "AUPRC",
                  trControl = ctrl)
@@ -305,19 +301,21 @@ identical(orig_fit$bestTune,
           orig_pr$bestTune)
 
 
-
-
+################# Confusion matrices
 test_results_orig <- predict(bankSim_orig_fit, newdata = bankSim_test)
-confusionMatrix(test_results_orig, bankSim_test$fraud)
+confusionMatrix(test_results_orig, bankSim_test$fraud, positive = "fraud")
 
 test_results_weight <- predict(bankSim_weighted_fit, newdata = bankSim_test)
-confusionMatrix(test_results_weight, bankSim_test$fraud)
+confusionMatrix(test_results_weight, bankSim_test$fraud, positive = "fraud")
 
 test_results_down <- predict(bankSim_down_fit, newdata = bankSim_test)
-confusionMatrix(test_results_down, bankSim_test$fraud)
+confusionMatrix(test_results_down, bankSim_test$fraud, positive = "fraud")
 
 test_results_up <- predict(bankSim_up_fit, newdata = bankSim_test)
-confusionMatrix(test_results_up, bankSim_test$fraud)
+confusionMatrix(test_results_up, bankSim_test$fraud, positive = "fraud")
 
 test_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
-confusionMatrix(test_results_up, bankSim_test$fraud)
+confusionMatrix(test_results_smote, bankSim_test$fraud, positive = "fraud")
+##############END #####################################
+##################################################################################
+

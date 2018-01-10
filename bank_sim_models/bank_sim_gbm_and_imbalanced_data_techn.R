@@ -89,7 +89,10 @@ bankSim_filter <- bankSim %>%
   filter(merchant != "'M85975013'") %>%
   filter(merchant != "'M97925176'")
 
-
+################## This would be working towards increasing prediction power
+# only in the current dataset. When new observation are being added in a 
+# system, this could lead to problems, as some useful observation could be erased.
+# In the end, it is genuinely, selective undersampling.
 customer_fraud_freq <- plyr::count(bankSim_filter, c("customer", "fraud"))
 dupl_data <- customer_fraud_freq[duplicated(customer_fraud_freq$customer), ]
 #colnames(dupl_data) <- "customer"
