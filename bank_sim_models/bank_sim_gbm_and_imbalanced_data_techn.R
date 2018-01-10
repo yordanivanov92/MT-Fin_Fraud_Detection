@@ -9,6 +9,7 @@ library(PRROC)
 library(caTools)
 library(doParallel)
 library(parallel)
+library(plyr)
 
 set.seed(1)
 ###########################################################################
@@ -17,15 +18,128 @@ set.seed(1)
 bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
                     header = TRUE,
                     sep = ",")
-bankSim_small <- bankSim[sample(nrow(bankSim),20000), ]
 
-# Keep only relevant columns
-bankSim_model <- bankSim_small[, 2:10]
-bankSim_model <- bankSim_model[, c("age", "gender", "merchant", "category", "amount", "fraud")]
-split = sample.split(bankSim_model$fraud, SplitRatio = 0.6)
+plyr::count(bankSim, c("category", "fraud"))
+# es_contents - no fraud
+# es_food - no fraud
+# es_transportation - no fraud
 
-bankSim_train = subset(bankSim_model, split == TRUE)
-bankSim_test = subset(bankSim_model, split == FALSE)
+
+plyr::count(bankSim, c("gender", "fraud"))
+# the U gender - no frauds commited
+plyr::count(bankSim, c("merchant", "fraud"))
+# some merchants - no fraud
+plyr::count(bankSim, c("age", "fraud"))
+# each age category as commited fraud
+
+bankSim <- bankSim %>%
+  select(customer, age, gender, merchant, category, amount, fraud)
+##############
+# filtered_customers <- plyr::count(bankSim, c("customer", "fraud"))
+# dupl_data_customers <- filtered[duplicated(filtered[, "customer"]), ]
+# 
+# #getting those customers that have exhibited fraud
+# bankSim_filter_customers <- bankSim %>%
+#   filter(customer %in% dupl_data[, "customer"])  %>%
+#   select(customer) %>%
+#   distinct(customer) %>%
+#   arrange(customer)
+# 
+# bankSim <- bankSim_filter_customers %>%
+#   filter(customer %in% bankSim_filter_customers[, "customer"])
+# ###################
+# filtered_merchant <- plyr::count(bankSim, c("merchant", "fraud"))
+# dupl_data_customers <- filtered[duplicated(filtered[, "customer"]), ]
+# 
+# #getting those customers that have exhibited fraud
+# bankSim_filter_customers <- bankSim %>%
+#   filter(customer %in% dupl_data[, "customer"])  %>%
+#   select(customer) %>%
+#   distinct(customer) %>%
+#   arrange(customer)
+# 
+# bankSim_customers_total <- bankSim %>%
+#   filter(customer %in% bankSim_filter_customers[, "customer"])
+
+
+# Removing
+bankSim_filter <- bankSim %>%
+  filter(category != "'es_transportation'") %>%
+  filter(category != "'es_food'") %>%
+  filter(category != "'es_contents'") %>%
+  filter(gender != "'U'") %>%
+  filter(merchant != "'M1053599405'") %>%
+  filter(merchant != "'M117188757'") %>%
+  filter(merchant != "'M1313686961'") %>%
+  filter(merchant != "'M1352454843'") %>%
+  filter(merchant != "'M1400236507'") %>%
+  filter(merchant != "'M1416436880'") %>%
+  filter(merchant != "'M1600850729'") %>%
+  filter(merchant != "'M1726401631'") %>%
+  filter(merchant != "'M1788569036'") %>%
+  filter(merchant != "'M1823072687'") %>%
+  filter(merchant != "'M1842530320'") %>%
+  filter(merchant != "'M1872033263'") %>%
+  filter(merchant != "'M1913465890'") %>%
+  filter(merchant != "'M1946091778'") %>%
+  filter(merchant != "'M348934600'") %>%
+  filter(merchant != "'M349281107'") %>%
+  filter(merchant != "'M45060432'") %>%
+  filter(merchant != "'M677738360'") %>%
+  filter(merchant != "'M85975013'") %>%
+  filter(merchant != "'M97925176'")
+
+
+customer_fraud_freq <- plyr::count(bankSim_filter, c("customer", "fraud"))
+dupl_data <- customer_fraud_freq[duplicated(customer_fraud_freq$customer), ]
+#colnames(dupl_data) <- "customer"
+
+#getting those customers that have exhibited fraud
+bankSim_filter_cust <- bankSim_filter %>%
+  filter(customer %in% dupl_data$customer) %>%
+  select(customer) %>%
+  distinct(customer) %>%
+  arrange(customer)
+
+bankSim_filter_total <- bankSim_filter %>%
+  filter(customer %in% bankSim_filter_cust$customer)
+
+bankSim <- bankSim_filter_total
+plyr::count(bankSim, c("category", "fraud"))
+# es_contents - no fraud
+# es_food - no fraud
+# es_transportation - no fraud
+
+
+plyr::count(bankSim, c("gender", "fraud"))
+# the U gender - no frauds commited
+plyr::count(bankSim, c("merchant", "fraud"))
+# some merchants - no fraud
+plyr::count(bankSim, c("age", "fraud"))
+
+# for (category in colnames(bankSim)){
+#   filtered <- plyr::count(bankSim, c(category, "fraud"))
+#   dupl_data <- filtered[duplicated(filtered[, category]), ]
+#   #colnames(dupl_data) <- "customer"
+# 
+#   #getting those customers that have exhibited fraud
+#   bankSim_filter_category <- bankSim %>%
+#     filter(category %in% dupl_data[, category])  %>%
+#     select(category) %>%
+#     distinct(category) %>%
+#     arrange(category)
+# 
+#   bankSim_filter_total <- bankSim %>%
+#     filter(category %in% bankSim_filter_category[, category])
+# }
+
+
+
+
+split = sample.split(bankSim$fraud, SplitRatio = 0.6)
+
+bankSim_train = subset(bankSim, split == TRUE)
+bankSim_test = subset(bankSim, split == FALSE)
 
 prop.table(table(bankSim_train$fraud))
 prop.table(table(bankSim_test$fraud))
@@ -66,6 +180,7 @@ bankSim_orig_fit <- train(fraud ~ .,
 
 stopCluster(cluster)
 registerDoSEQ()
+
 
 
 bankSim_test_roc <- function(model, data) {
