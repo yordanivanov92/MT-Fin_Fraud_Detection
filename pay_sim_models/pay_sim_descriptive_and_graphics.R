@@ -16,7 +16,7 @@ set.seed(48)
 paySim <- fread("C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/pay_sim_synthetic/PS_20174392719_1491204439457_log.csv",
                 header = TRUE,
                 sep = ",")
-paySim_small <- paySim[sample(nrow(paySim), 100000), ] 
+paySim_small <- paySim[sample(nrow(paySim), 50000), ] 
 
 # Fraud Rate
 prop.table(table(paySim_small$isFraud))
@@ -27,17 +27,29 @@ plyr::count(paySim_small, c("type", "isFraud"))
 # Checking fraud by amount
 ggplot(paySim_small, aes(x = isFraud, y = amount, group = isFraud)) +
   geom_boxplot()
+# Fraud looks like it has a higher average amount
 
 ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = isFraud, y = amount, group = isFraud, fill = isFraud)) +
   geom_boxplot()
+# The previous observation is confirmed when we remove the amounts over 2 million
 
 ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = as.factor(isFraud), y = amount, group = isFraud)) +
   geom_boxplot(aes(group = interaction(type, isFraud), fill = type))
+# Observing the amounts by type and fraud. As it can be seen again, frauds occur only 
+# on CASH_OUT and TRANSFERS
 
 # Filtering only those payments which have amounts less than 2 000 000
 paySim_small1 <- paySim_small[paySim_small$amount < 2000000, ]
 paySim_small1$isFraud <- as.factor(paySim_small1$isFraud)
 ggpairs(paySim_small1, columns = c("amount", "oldbalanceOrg", "oldbalanceDest", "isFraud"), mapping = aes(color = isFraud))
+# [1,1] - distribution is more right skewed for non-fraud (i.e. non-fraud is more dense at the small amounts)
+# [1,2] - positive correlation between both oldBalanceOrg$isFraud = 0 & = 1 and amount
+# [1,3] - positive correlation between oldBalanceDest$isFraud = 0 and amount; negative one when it's 1
+#         i.e. when the oldBalanceDest is high, the amount of fraud is lower
+# [1,4] - Amount when fraud is higher
+# [2,1] and [2,2] - in oldBalanceOrg again we see that the distribuiton is more righ-skewed for non fraud
+
+ggpairs(paySim_small1, columns = c("amount", "type", "isFraud"), mapping = aes(color = isFraud))
 
 fraud_transfer <- paySim_small[which((paySim_small$type == "TRANSFER") & (paySim_small$isFraud == 1)), ]
 fraud_cashout <- paySim_small[which((paySim_small$type == "CASH_OUT") & (paySim_small$isFraud == 1)), ]
@@ -164,12 +176,21 @@ analysis_data_small$errorBalanceDest <- analysis_data_small$oldbalanceDest + ana
 
 ggplot(analysis_data_small, aes(x = isFraud, y = step, color = type)) +
   geom_jitter()
+# No pattern seen
 
 ggplot(analysis_data_small, aes(x = isFraud, y = amount, color = type)) +
   geom_jitter()
+# No pattern seen
 
-ggplot(analysis_data_small, aes(x = isFraud, y = (-errorBalanceDest), color = type)) +
+ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceDest), color = type)) +
   geom_jitter()
+# errorBalanceDest associated with fraud in TRANSFER? CASH_OUT error dominantly zero when fraud
+# positive errorBalanceDest when the fraud is in TRANSFER
+# zero errorBalanceDest when the fraud is in CASH_OUT
+
+ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceOrig), color = type)) +
+  geom_jitter()
+# error stays at zero even at fraud
 
 plot_ly(analysis_data_small, 
         x = ~errorBalanceDest,
