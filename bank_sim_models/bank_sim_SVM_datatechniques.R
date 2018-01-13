@@ -120,7 +120,8 @@ bankSim_orig_fit %>%
 
 # Handling class imbalance with weighted or sampling methods
 
-################## COST SENSITIVE XGBOOST MODEL
+################## COST SENSITIVE SVM MODEL
+############################################### SVM LINEAR WEIGHTS BETTER?
 bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
                                 (1/table(bankSim_train$fraud)[1]) * 0.5,
                                 (1/table(bankSim_train$fraud)[2]) * 0.5)
@@ -131,7 +132,7 @@ cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 bankSim_weighted_fit <- train(fraud ~ .,
                               data = bankSim_train,
-                              method = "svmLinear",                     
+                              method = "svmLinearWeights",                     
                               preProc = c("center", "scale"),
                               verbose = FALSE,
                               weights = bankSim_model_weights,
@@ -139,7 +140,7 @@ bankSim_weighted_fit <- train(fraud ~ .,
                               trControl = ctrl_bankSim)
 stopCluster(cluster)
 registerDoSEQ()
-
+#################################################
 ############### sampled-down model
 ctrl_bankSim$sampling <- "down"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
