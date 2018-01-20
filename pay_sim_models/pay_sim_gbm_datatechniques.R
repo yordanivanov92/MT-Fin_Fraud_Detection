@@ -216,7 +216,7 @@ paySim_gbm_model_list <- list(original = paySim_gbm,
                                   up = paySim_gbm_up_fit,
                                   SMOTE = paySim_gbm_smote_fit)
 paySim_gbm_model_list_roc <- paySim_gbm_model_list %>%
-  map(paySim_test_roc, data = paySim_train)
+  map(paySim_test_roc, data = paySim_test)
 
 paySim_gbm_model_list_roc %>%
   map(auc)

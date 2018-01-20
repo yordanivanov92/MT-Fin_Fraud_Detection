@@ -216,7 +216,7 @@ paySim_xgboost_model_list <- list(original = paySim_xgboost,
                                   up = paySim_xgboost_up_fit,
                                   SMOTE = paySim_xgboost_smote_fit)
 paySim_xgboost_model_list_roc <- paySim_xgboost_model_list %>%
-  map(paySim_test_roc, data = paySim_train)
+  map(paySim_test_roc, data = paySim_test)
 
 paySim_xgboost_model_list_roc %>%
   map(auc)

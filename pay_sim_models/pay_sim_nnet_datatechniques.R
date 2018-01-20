@@ -217,7 +217,7 @@ paySim_nnet_model_list <- list(original = paySim_nnet,
                                   up = paySim_nnet_up_fit,
                                   SMOTE = paySim_nnet_smote_fit)
 paySim_nnet_model_list_roc <- paySim_nnet_model_list %>%
-  map(paySim_test_roc, data = paySim_train)
+  map(paySim_test_roc, data = paySim_test)
 
 paySim_nnet_model_list_roc %>%
   map(auc)

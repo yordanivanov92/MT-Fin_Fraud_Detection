@@ -216,7 +216,7 @@ paySim_randfor_model_list <- list(original = paySim_randfor,
                               up = paySim_randfor_up_fit,
                               SMOTE = paySim_randfor_smote_fit)
 paySim_randfor_model_list_roc <- paySim_randfor_model_list %>%
-  map(paySim_test_roc, data = paySim_train)
+  map(paySim_test_roc, data = paySim_test)
 
 paySim_randfor_model_list_roc %>%
   map(auc)

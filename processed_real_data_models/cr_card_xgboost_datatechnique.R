@@ -213,12 +213,12 @@ auc_xgboost_up <- cr_card_xgboost_up_fit %>%
 
 ##############################################################
 cr_card_xgboost_model_list <- list(original = cr_card_xgboost,
-                                  weighted = cr_card_xgboost_weighted_fit,
-                                  down = cr_card_xgboost_down_fit,
-                                  up = cr_card_xgboost_up_fit,
-                                  SMOTE = cr_card_xgboost_smote_fit)
+                                   weighted = cr_card_xgboost_weighted_fit,
+                                   down = cr_card_xgboost_down_fit,
+                                   up = cr_card_xgboost_up_fit,
+                                   SMOTE = cr_card_xgboost_smote_fit)
 cr_card_xgboost_model_list_roc <- cr_card_xgboost_model_list %>%
-  map(cr_card_test_roc, data = cr_card_train)
+  map(cr_card_test_roc, data = cr_card_test)
 
 cr_card_xgboost_model_list_roc %>%
   map(auc)

@@ -223,7 +223,7 @@ paySim_svm_model_list <- list(original = paySim_svm,
                               up = paySim_svm_up_fit,
                               SMOTE = paySim_svm_smote_fit)
 paySim_svm_model_list_roc <- paySim_svm_model_list %>%
-  map(paySim_test_roc, data = paySim_train)
+  map(paySim_test_roc, data = paySim_test)
 
 paySim_svm_model_list_roc %>%
   map(auc)

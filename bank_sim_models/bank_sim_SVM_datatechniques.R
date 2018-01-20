@@ -188,7 +188,7 @@ bankSim_model_list <- list(original = bankSim_orig_fit,
                            up = bankSim_up_fit,
                            SMOTE = bankSim_smote_fit)
 bankSim_model_list_roc <- bankSim_model_list %>%
-  map(bankSim_test_roc, data = bankSim_train)
+  map(bankSim_test_roc, data = bankSim_test)
 
 bankSim_model_list_roc %>%
   map(auc)
