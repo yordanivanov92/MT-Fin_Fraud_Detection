@@ -105,7 +105,7 @@ paySim_test <- paySim_test[, -c("step")]
 
 ctrl_paySim <- trainControl(method = "repeatedcv",
                             number = 10,
-                            repeats = 5,
+                            repeats = 3,
                             summaryFunction = twoClassSummary,
                             classProbs = TRUE,
                             verboseIter = TRUE)
@@ -129,6 +129,7 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
+###################### Original model
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 paySim_xgboost <- train(isFraud ~ .,
@@ -149,6 +150,27 @@ paySim_test_roc <- function(model, data) {
 paySim_xgboost %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
+
+### Original Fit Results
+xgboost_results <- predict(paySim_xgboost, newdata = paySim_test)
+xgboost_results_conf <- confusionMatrix(xgboost_results, paySim_test$isFraud)
+
+## Optimal ROC Threshold
+xgboost_results_prob <- predict(paySim_xgboost, newdata = paySim_test, type = "prob")
+xgboost_roc <- paySim_test_roc(paySim_xgboost,data = paySim_test)
+
+ER <- sqrt((1 - xgboost_roc$sensitivities)^2 + (1 - xgboost_roc$specificities)^2)
+lowest_dist_corner_pos <- match(min(ER), ER)
+opt_thresh <- xgboost_roc$thresholds[lowest_dist_corner_pos]
+pred_opt <- ifelse(xgboost_results_prob$X1 >= opt_thresh, "X1", "X2")
+xgboost_results_conf_opt <- confusionMatrix(pred_opt, paySim_test$isFraud)
+# Gives a lot worse results at first glance - maybe could better with full dataset?
+
+trellis.par.set(caretTheme())
+plot(paySim_xgboost, metric = "ROC")
+
+xgboost_imp <- varImp(paySim_xgboost, scale = FALSE)
+plot(xgboost_imp)
 
 ################## COST SENSITIVE XGBOOST MODEL
 # The penalization costs can be tinkered with
@@ -340,16 +362,7 @@ identical(orig_fit$bestTune,
 
 
 ################### Results and some graphs
-### Original Fit
-xgboost_results <- predict(paySim_xgboost, newdata = paySim_test)
-confusionMatrix(xgboost_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_xgboost, metric = "ROC")
-
-xgboost_imp <- varImp(paySim_xgboost, scale = FALSE)
-#xgboost_imp - variable importance is observed
-plot(xgboost_imp)
 
 ### Weighted fit
 xgboost_weight_results <- predict(paySim_xgboost_weighted_fit, newdata = paySim_test)
@@ -359,7 +372,6 @@ trellis.par.set(caretTheme())
 plot(paySim_weight_xgboost, metric = "ROC")
 
 xgboost_weight_imp <- varImp(paySim_xgboost_weighted_fit, scale = FALSE)
-#xgboost_imp - variable importance is observed
 plot(xgboost_weight_imp)
 
 ### Sampled-down fit
@@ -370,7 +382,6 @@ trellis.par.set(caretTheme())
 plot(paySim_down_xgboost, metric = "ROC")
 
 xgboost_down_imp <- varImp(paySim_xgboost_down_fit, scale = FALSE)
-#xgboost_imp - variable importance is observed
 plot(xgboost_down_imp)
 
 ### Sampled-up fit
@@ -381,7 +392,6 @@ trellis.par.set(caretTheme())
 plot(paySim_up_xgboost, metric = "ROC")
 
 xgboost_up_imp <- varImp(paySim_xgboost_up_fit, scale = FALSE)
-#xgboost_imp - variable importance is observed
 plot(xgboost_up_imp)
 
 ### Smote fit
@@ -392,5 +402,4 @@ trellis.par.set(caretTheme())
 plot(paySim_smote_xgboost, metric = "ROC")
 
 xgboost_smote_imp <- varImp(paySim_xgboost_smote_fit, scale = FALSE)
-#xgboost_imp - variable importance is observed
 plot(xgboost_smote_imp)
