@@ -82,6 +82,9 @@ cr_card_svm_rad <- train(Class ~ .,
 svm_results <- predict(cr_card_svm, newdata = cr_card_test)
 conf_matr_svm <- confusionMatrix(svm_results, cr_card_test$Class)
 
+svm_results_rad <- predict(cr_card_svm_rad, newdata = cr_card_test)
+conf_matr_svm_rad <- confusionMatrix(svm_results_rad, cr_card_test$Class) # slightly better than original
+
 trellis.par.set(caretTheme())
 train_plot_svm <- plot(cr_card_svm, metric = "ROC")
 
