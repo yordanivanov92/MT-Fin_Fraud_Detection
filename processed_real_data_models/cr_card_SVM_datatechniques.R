@@ -55,13 +55,14 @@ for (f in feature.names2) {
   }
 }
 
+set.seed(5)
 ctrl_cr_card <- trainControl(method = "repeatedcv",
                              number = 10,
                              repeats = 3,
                              summaryFunction = twoClassSummary,
                              classProbs = TRUE,
                              verboseIter = TRUE)
-
+set.seed(5)
 cr_card_svm <- train(Class ~ .,
                      data = cr_card_train,
                      method = "svmLinear",
@@ -69,6 +70,7 @@ cr_card_svm <- train(Class ~ .,
                      verbose = FALSE,
                      metric = "ROC", 
                      trControl = ctrl_cr_card)
+set.seed(5)
 
 cr_card_svm_rad <- train(Class ~ .,
                          data = cr_card_train,
@@ -81,14 +83,28 @@ cr_card_svm_rad <- train(Class ~ .,
 # Results Original
 svm_results <- predict(cr_card_svm, newdata = cr_card_test)
 conf_matr_svm <- confusionMatrix(svm_results, cr_card_test$Class)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 19961    28
+# X2     0    11
+
 
 svm_results_rad <- predict(cr_card_svm_rad, newdata = cr_card_test)
-conf_matr_svm_rad <- confusionMatrix(svm_results_rad, cr_card_test$Class) # slightly better than original
+conf_matr_svm_rad <- confusionMatrix(svm_results_rad, cr_card_test$Class) # radial kernel performing better
+#Radial kernel performing better, giving indicator that maybe the decision boundry is not linear
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 19957    14
+# X2     4    25
 
 trellis.par.set(caretTheme())
-train_plot_svm <- plot(cr_card_svm, metric = "ROC")
+train_plot_svm <- plot(cr_card_svm_rad, metric = "ROC")
 
-svm_imp <- varImp(cr_card_svm, scale = FALSE)
+svm_imp <- varImp(cr_card_svm_rad, scale = FALSE)
 #svm_imp - variable importance is observed
 plot(svm_imp)
 
@@ -111,7 +127,7 @@ cr_card_model_weights <- ifelse(cr_card_train$Class == "X1",
 
 #ctrl_cr_card$seeds <- cr_card_svm$control$seeds
 
-
+set.seed(5)
 cr_card_svm_weighted_fit <- train(Class ~ .,
                                   data = cr_card_train,
                                   method = "svmLinearWeights",
@@ -121,7 +137,8 @@ cr_card_svm_weighted_fit <- train(Class ~ .,
                                   metric = "ROC", 
                                   trControl = ctrl_cr_card)
 
-
+ctrl_cr_card$seeds <- cr_card_svm_weighted_fit$control$seeds
+set.seed(5)
 cr_card_svm_weighted_fit1 <- train(Class ~ .,
                                   data = cr_card_train,
                                   method = "svmLinearWeights",
@@ -135,8 +152,15 @@ svm_weighted_results <- predict(cr_card_svm_weighted_fit, newdata = cr_card_test
 conf_matr_weighted_svm <- confusionMatrix(svm_weighted_results, cr_card_test$Class)
 
 # no difference between the two weighted things
-svm_weighted_results1 <- predict(r_card_svm_weighted_fit1, newdata = cr_card_test)
+svm_weighted_results1 <- predict(cr_card_svm_weighted_fit1, newdata = cr_card_test)
 conf_matr_weighted_svm1 <- confusionMatrix(svm_weighted_results1, cr_card_test$Class)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 19958     7
+# X2     3    32
+
 
 #higher roc values by the second model - without weights in the caret function
 trellis.par.set(caretTheme())
@@ -150,6 +174,8 @@ auc_svm_weighted <- cr_card_svm_weighted_fit %>%
   auc()
 
 ############### sampled-down model
+ctrl_cr_card$seeds <- cr_card_svm$control$seeds
+
 ctrl_cr_card$sampling <- "down"
 
 cr_card_svm_down_fit <- train(Class ~ .,
