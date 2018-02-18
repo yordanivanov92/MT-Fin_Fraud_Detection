@@ -105,7 +105,7 @@ paySim_test <- paySim_test[, -c("step")]
 
 ctrl_paySim <- trainControl(method = "repeatedcv",
                             number = 10,
-                            repeats = 5,
+                            repeats = 2,
                             summaryFunction = twoClassSummary,
                             classProbs = TRUE,
                             verboseIter = TRUE)
@@ -129,14 +129,14 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+cluster <- makeCluster(detectCores() - 2)
 registerDoParallel(cluster)
 paySim_gbm <- train(isFraud ~ .,
-                        data = paySim_train,
-                        method = "gbm",
-                        verbose = FALSE,
-                        metric = "ROC", 
-                        trControl = ctrl_paySim)
+                    data = paySim_train,
+                    method = "gbm",
+                    verbose = FALSE,
+                    metric = "ROC", 
+                    trControl = ctrl_paySim)
 
 stopCluster(cluster)
 registerDoSEQ()
@@ -149,6 +149,42 @@ paySim_test_roc <- function(model, data) {
 paySim_gbm %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
+# Area under the curve: 0.5201
+### Original Fit
+gbm_results <- predict(paySim_gbm, newdata = paySim_test)
+confusionMatrix(gbm_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291    24
+# X2     1    26
+# 
+# Accuracy : 0.9986          
+# 95% CI : (0.9979, 0.9991)
+# No Information Rate : 0.9971          
+# P-Value [Acc > NIR] : 0.00007028      
+# 
+# Kappa : 0.6747          
+# Mcnemar's Test P-Value : 0.00001083      
+# 
+# Sensitivity : 0.9999          
+# Specificity : 0.5200          
+# Pos Pred Value : 0.9986          
+# Neg Pred Value : 0.9630          
+# Prevalence : 0.9971          
+# Detection Rate : 0.9971          
+# Detection Prevalence : 0.9984          
+# Balanced Accuracy : 0.7600          
+# 
+# 'Positive' Class : X1              
+
+trellis.par.set(caretTheme())
+plot(paySim_gbm, metric = "ROC")
+
+gbm_imp <- varImp(paySim_gbm, scale = FALSE)
+plot(gbm_imp)
+
 
 ################## COST SENSITIVE GBM MODEL
 # The penalization costs can be tinkered with
@@ -158,7 +194,7 @@ paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
 
 ctrl_paySim$seeds <- paySim_gbm$control$seeds
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+cluster <- makeCluster(detectCores() - 2) 
 registerDoParallel(cluster)
 paySim_gbm_weighted_fit <- train(isFraud ~ .,
                                      data = paySim_train,
@@ -170,10 +206,43 @@ paySim_gbm_weighted_fit <- train(isFraud ~ .,
 
 stopCluster(cluster)
 registerDoSEQ()
+### Weighted fit
+gbm_weight_results <- predict(paySim_gbm_weighted_fit, newdata = paySim_test)
+confusionMatrix(gbm_weight_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291     0
+# X2     1    50
+# 
+# Accuracy : 0.9999             
+# 95% CI : (0.9997, 1)        
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : <0.0000000000000002
+# 
+# Kappa : 0.9901             
+# Mcnemar's Test P-Value : 1                  
+# 
+# Sensitivity : 0.9999             
+# Specificity : 1.0000             
+# Pos Pred Value : 1.0000             
+# Neg Pred Value : 0.9804             
+# Prevalence : 0.9971             
+# Detection Rate : 0.9971             
+# Detection Prevalence : 0.9971             
+# Balanced Accuracy : 1.0000             
+# 
+# 'Positive' Class : X1               
+trellis.par.set(caretTheme())
+plot(paySim_gbm_weighted_fit, metric = "ROC")
+
+gbm_weight_imp <- varImp(paySim_gbm_weighted_fit, scale = FALSE)
+plot(gbm_weight_imp)
 
 ############### sampled-down model
 ctrl_paySim$sampling <- "down"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+cluster <- makeCluster(detectCores() - 2) 
 registerDoParallel(cluster)
 paySim_gbm_down_fit <- train(isFraud ~ .,
                                  data = paySim_train,
@@ -183,10 +252,44 @@ paySim_gbm_down_fit <- train(isFraud ~ .,
                                  trControl = ctrl_paySim)
 stopCluster(cluster)
 registerDoSEQ()
+### Sampled-down fit
+gbm_down_results <- predict(paySim_gbm_down_fit, newdata = paySim_test)
+confusionMatrix(gbm_down_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 16025     2
+# X2  1267    48
+# 
+# Accuracy : 0.9268             
+# 95% CI : (0.9228, 0.9307)   
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : 1                  
+# 
+# Kappa : 0.0651             
+# Mcnemar's Test P-Value : <0.0000000000000002
+# 
+# Sensitivity : 0.9267             
+# Specificity : 0.9600             
+# Pos Pred Value : 0.9999             
+# Neg Pred Value : 0.0365             
+# Prevalence : 0.9971             
+# Detection Rate : 0.9241             
+# Detection Prevalence : 0.9242             
+# Balanced Accuracy : 0.9434             
+# 
+# 'Positive' Class : X1   
+
+trellis.par.set(caretTheme())
+plot(paySim_gbm_down_fit, metric = "ROC")
+
+gbm_down_imp <- varImp(paySim_gbm_down_fit, scale = FALSE)
+plot(gbm_down_imp)
 
 ############# sampled-up
 ctrl_paySim$sampling <- "up"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+cluster <- makeCluster(detectCores() - 1) 
 registerDoParallel(cluster)
 paySim_gbm_up_fit <- train(isFraud ~ .,
                                data = paySim_train,
@@ -197,9 +300,44 @@ paySim_gbm_up_fit <- train(isFraud ~ .,
 stopCluster(cluster)
 registerDoSEQ()
 
+### Sampled-up fit
+gbm_up_results <- predict(paySim_gbm_up_fit, newdata = paySim_test)
+confusionMatrix(gbm_up_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291     0
+# X2     1    50
+# 
+# Accuracy : 0.9999             
+# 95% CI : (0.9997, 1)        
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : <0.0000000000000002
+# 
+# Kappa : 0.9901             
+# Mcnemar's Test P-Value : 1                  
+# 
+# Sensitivity : 0.9999             
+# Specificity : 1.0000             
+# Pos Pred Value : 1.0000             
+# Neg Pred Value : 0.9804             
+# Prevalence : 0.9971             
+# Detection Rate : 0.9971             
+# Detection Prevalence : 0.9971             
+# Balanced Accuracy : 1.0000             
+# 
+# 'Positive' Class : X1    
+
+trellis.par.set(caretTheme())
+plot(paySim_gbm_up_fit, metric = "ROC")
+
+gbm_up_imp <- varImp(paySim_gbm_up_fit, scale = FALSE)
+plot(gbm_up_imp)
+
 ############# SMOTE
 ctrl_paySim$sampling <- "smote"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+cluster <- makeCluster(detectCores() - 2) 
 registerDoParallel(cluster)
 paySim_gbm_smote_fit <- train(isFraud ~ .,
                                   data = paySim_train,
@@ -210,16 +348,69 @@ paySim_gbm_smote_fit <- train(isFraud ~ .,
 stopCluster(cluster)
 registerDoSEQ()
 
+### Smote fit
+gbm_smote_results <- predict(paySim_gbm_smote_fit, newdata = paySim_test)
+confusionMatrix(gbm_smote_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17258     0
+# X2    34    50
+# 
+# Accuracy : 0.998           
+# 95% CI : (0.9973, 0.9986)
+# No Information Rate : 0.9971          
+# P-Value [Acc > NIR] : 0.01069         
+# 
+# Kappa : 0.7453          
+# Mcnemar's Test P-Value : 0.00000001519   
+#                                           
+#             Sensitivity : 0.9980          
+#             Specificity : 1.0000          
+#          Pos Pred Value : 1.0000          
+#          Neg Pred Value : 0.5952          
+#              Prevalence : 0.9971          
+#          Detection Rate : 0.9952          
+#    Detection Prevalence : 0.9952          
+#       Balanced Accuracy : 0.9990          
+#                                           
+#        'Positive' Class : X1         
+
+trellis.par.set(caretTheme())
+plot(paySim_gbm_smote_fit, metric = "ROC")
+
+gbm_smote_imp <- varImp(paySim_gbm_smote_fit, scale = FALSE)
+plot(gbm_smote_imp)
+
+####################################################
+
 paySim_gbm_model_list <- list(original = paySim_gbm,
-                                  weighted = paySim_gbm_weighted_fit,
-                                  down = paySim_gbm_down_fit,
-                                  up = paySim_gbm_up_fit,
-                                  SMOTE = paySim_gbm_smote_fit)
+                              weighted = paySim_gbm_weighted_fit,
+                              down = paySim_gbm_down_fit,
+                              up = paySim_gbm_up_fit,
+                              SMOTE = paySim_gbm_smote_fit)
+
+
 paySim_gbm_model_list_roc <- paySim_gbm_model_list %>%
   map(paySim_test_roc, data = paySim_test)
 
 paySim_gbm_model_list_roc %>%
   map(auc)
+# $original
+# Area under the curve: 0.5201
+# 
+# $weighted
+# Area under the curve: 1
+# 
+# $down
+# Area under the curve: 0.9909
+# 
+# $up
+# Area under the curve: 1
+# 
+# $SMOTE
+# Area under the curve: 0.9999
 
 paySim_gbm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -245,22 +436,37 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = paySim_gbm_results_df_roc) +
 
 ####  Construction the precision/recall graphic
 paySim_gbm_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$isFraud == "X2"
+  index_class1 <- data$isFraud == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
 paySim_gbm_model_list_pr <- paySim_gbm_model_list %>%
   map(paySim_gbm_calc_auprc, data = paySim_test)
 
-
+# Precision recall Curve AUC calculation
 paySim_gbm_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
+# $original
+# [1] 0.517209
+# 
+# $weighted
+# [1] 0.9974719
+# 
+# $down
+# [1] 0.6088192
+# 
+# $up
+# [1] 0.9983664
+# 
+# $SMOTE
+# [1] 0.9759452
+
 
 paySim_gbm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -279,14 +485,14 @@ ggplot(aes(x = recall, y = precision, group = model), data = paySim_gbm_results_
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(paySim_test$type == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 
-
+#####################################################################################################
 paySim_gbmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
   
-  index_class2 <- data$obs == "X2"
-  index_class1 <- data$obs == "X1"
+  index_class2 <- data$isFraud == "X2"
+  index_class1 <- data$isFraud == "X1"
   
-  the_curve <- pr.curve(data$type[index_class2],
-                        data$type[index_class1],
+  the_curve <- pr.curve(data$X2[index_class2],
+                        data$X2[index_class1],
                         curve = FALSE)
   
   out <- the_curve$auc.integral
@@ -301,13 +507,13 @@ paySim_gbmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
 
 ctrl <- trainControl(method = "repeatedcv",
                      number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
+                     repeats = 2,
+                     summaryFunction = paySim_gbmSim_auprcSummary,
                      classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
+                     seeds = paySim_gbm$control$seeds)
 
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
+orig_pr <- train(isFraud ~ .,
+                 data = paySim_train,
                  method = "gbm",
                  verbose = FALSE,
                  metric = "AUPRC",
@@ -315,12 +521,12 @@ orig_pr <- train(Class ~ .,
 
 # Get results for auprc on the test set
 
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
+orig_fit_test <- paySim_gbm %>%
+  paySim_gbm_calc_auprc(data = paySim_test) %>%
   (function(the_mod) the_mod$auc.integral)
 
 orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
+  paySim_gbm_calc_auprc(data = paySim_test) %>%
   (function(the_mod) the_mod$auc.integral)
 
 # The test errors are the same
@@ -331,64 +537,18 @@ identical(orig_fit_test,
 # Because both chose the same
 # hyperparameter combination
 
-identical(orig_fit$bestTune,
+identical(paySim_gbm$bestTune,
           orig_pr$bestTune)
 
 
 
 
 ################### Results and some graphs
-### Original Fit
-gbm_results <- predict(paySim_gbm, newdata = paySim_test)
-confusionMatrix(gbm_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_gbm, metric = "ROC")
 
-gbm_imp <- varImp(paySim_gbm, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_imp)
 
-### Weighted fit
-gbm_weight_results <- predict(paySim_gbm_weighted_fit, newdata = paySim_test)
-confusionMatrix(gbm_weight_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_weight_gbm, metric = "ROC")
 
-gbm_weight_imp <- varImp(paySim_gbm_weighted_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_weight_imp)
 
-### Sampled-down fit
-gbm_down_results <- predict(paySim_gbm_down_fit, newdata = paySim_test)
-confusionMatrix(gbm_down_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_down_gbm, metric = "ROC")
 
-gbm_down_imp <- varImp(paySim_gbm_down_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_down_imp)
-
-### Sampled-up fit
-gbm_up_results <- predict(paySim_gbm_up_fit, newdata = paySim_test)
-confusionMatrix(gbm_up_results, paySim_test$isFraud)
-
-trellis.par.set(caretTheme())
-plot(paySim_up_gbm, metric = "ROC")
-
-gbm_up_imp <- varImp(paySim_gbm_up_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_up_imp)
-
-### Smote fit
-gbm_smote_results <- predict(paySim_gbm_smote_fit, newdata = paySim_test)
-confusionMatrix(gbm_smote_results, paySim_test$isFraud)
-
-trellis.par.set(caretTheme())
-plot(paySim_smote_gbm, metric = "ROC")
-
-gbm_smote_imp <- varImp(paySim_gbm_smote_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_smote_imp)
