@@ -105,7 +105,7 @@ paySim_test <- paySim_test[, -c("step")]
 
 ctrl_paySim <- trainControl(method = "repeatedcv",
                             number = 10,
-                            repeats = 5,
+                            repeats = 2,
                             summaryFunction = twoClassSummary,
                             classProbs = TRUE,
                             verboseIter = TRUE)
@@ -149,8 +149,43 @@ paySim_test_roc <- function(model, data) {
 paySim_randfor %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
+# Area under the curve: 1
+### Original Fit
+randfor_results <- predict(paySim_randfor, newdata = paySim_test)
+confusionMatrix(randfor_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291     0
+# X2     1    50
+# 
+# Accuracy : 0.9999             
+# 95% CI : (0.9997, 1)        
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : <0.0000000000000002
+# 
+# Kappa : 0.9901             
+# Mcnemar's Test P-Value : 1                  
+# 
+# Sensitivity : 0.9999             
+# Specificity : 1.0000             
+# Pos Pred Value : 1.0000             
+# Neg Pred Value : 0.9804             
+# Prevalence : 0.9971             
+# Detection Rate : 0.9971             
+# Detection Prevalence : 0.9971             
+# Balanced Accuracy : 1.0000             
+# 
+# 'Positive' Class : X1    
 
-################## COST SENSITIVE GBM MODEL
+trellis.par.set(caretTheme())
+plot(paySim_randfor, metric = "ROC")
+
+randfor_imp <- varImp(paySim_randfor, scale = FALSE)
+plot(randfor_imp)
+
+################## COST SENSITIVE RF MODEL
 # The penalization costs can be tinkered with
 paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
                                (1/table(paySim_train$isFraud)[1]) * 0.5,
@@ -338,16 +373,7 @@ identical(orig_fit$bestTune,
 
 
 ################### Results and some graphs
-### Original Fit
-randfor_results <- predict(paySim_randfor, newdata = paySim_test)
-confusionMatrix(randfor_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_randfor, metric = "ROC")
-
-randfor_imp <- varImp(paySim_randfor, scale = FALSE)
-#randfor_imp - variable importance is observed
-plot(randfor_imp)
 
 ### Weighted fit
 randfor_weight_results <- predict(paySim_randfor_weighted_fit, newdata = paySim_test)
