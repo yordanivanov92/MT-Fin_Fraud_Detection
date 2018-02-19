@@ -19,12 +19,25 @@ paySim <- fread("C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/pay_s
 paySim_small <- paySim[sample(nrow(paySim), 50000), ] 
 
 # Fraud Rate
+prop.table(table(paySim$isFraud))
+# 0          1 
+# 0.99870918 0.00129082 
 prop.table(table(paySim_small$isFraud))
+# 0       1 
+# 0.99874 0.00126 
 
 # Where does fraud occur -> only in CASH_OUT AND TRANSFER type of payments
 plyr::count(paySim_small, c("type", "isFraud"))
+#       type isFraud  freq
+# 1  CASH_IN       0 10887
+# 2 CASH_OUT       0 17405
+# 3 CASH_OUT       1    37
+# 4    DEBIT       0   353
+# 5  PAYMENT       0 17085
+# 6 TRANSFER       0  4207
+# 7 TRANSFER       1    26
 
-# Checking fraud by amount
+#Checking fraud by amount
 ggplot(paySim_small, aes(x = isFraud, y = amount, group = isFraud)) +
   geom_boxplot()
 # Fraud looks like it has a higher average amount
@@ -108,8 +121,25 @@ joinned <- merge(fraud_transfer_dest,
                  nofraud_cashout_orig)
 
 paySim[which((paySim$isFraud == 1) & (paySim$nameDest %in% joinned$code)), ]
+# step     type    amount    nameOrig oldbalanceOrg newbalanceOrig
+# 1:   65 TRANSFER 1282971.6 C1175896731     1282971.6              0
+# 2:  486 TRANSFER  214793.3 C2140495649      214793.3              0
+# 3:  738 TRANSFER  814689.9 C2029041842      814689.9              0
+# nameDest oldbalanceDest newbalanceDest isFraud isFlaggedFraud
+# 1: C1714931087              0              0       1              0
+# 2:  C423543548              0              0       1              0
+# 3: C1023330867              0              0       1              0
 paySim[which((paySim$isFraud == 0) & (paySim$nameOrig %in% joinned$code)), ]
+# step     type    amount    nameOrig oldbalanceOrg newbalanceOrig
+# 1:  132 CASH_OUT  29084.28 C1023330867         51999       22914.72
+# 2:  185 CASH_OUT 214555.85  C423543548             0           0.00
+# 3:  546 CASH_OUT  18091.05 C1714931087        197227      179135.95
+# nameDest oldbalanceDest newbalanceDest isFraud isFlaggedFraud
+# 1: C1422447255           0.00       29084.28       0              0
+# 2: C1066927674     4575179.83     4789735.69       0              0
+# 3: C1339132632       66177.84       84268.89       0              0
 
+###########################################################################
 # > paySim[which((paySim$isFraud == 1) & (paySim$nameDest %in% joinned$code)), ]
 # step     type    amount    nameOrig oldbalanceOrg newbalanceOrig    nameDest oldbalanceDest newbalanceDest isFraud isFlaggedFraud
 # 1:   65 TRANSFER 1282971.6 C1175896731     1282971.6              0 C1714931087              0              0       1              0
@@ -137,14 +167,14 @@ analysis_data_small$type <- as.factor(analysis_data_small$type)
 nrow(analysis_data_big[which(((analysis_data_big$oldbalanceDest == 0 & analysis_data_big$newbalanceDest == 0) & analysis_data_big$amount != 0) & analysis_data_big$isFraud == 1), ])/nrow(analysis_data_big[which(analysis_data_big$isFraud == 1), ])
 # 0.4955558
 nrow(analysis_data_small[which(((analysis_data_small$oldbalanceDest == 0 & analysis_data_small$newbalanceDest == 0) & analysis_data_small$amount != 0) & analysis_data_small$isFraud == 1), ])/nrow(analysis_data_small[which(analysis_data_small$isFraud == 1), ])
-# 0.5
+# 0.4126984
 
 # The fraction of genuine transactions with 'oldBalanceDest' = newBalanceDest' = 0 
 # although the transacted 'amount' is non-zero is:
 nrow(analysis_data_big[which(((analysis_data_big$oldbalanceDest == 0 & analysis_data_big$newbalanceDest == 0) & analysis_data_big$amount != 0) & analysis_data_big$isFraud == 0), ])/nrow(analysis_data_big[which(analysis_data_big$isFraud == 0), ])
 # 0.0006176245
 nrow(analysis_data_small[which(((analysis_data_small$oldbalanceDest == 0 & analysis_data_small$newbalanceDest == 0) & analysis_data_small$amount != 0) & analysis_data_small$isFraud == 0), ])/nrow(analysis_data_small[which(analysis_data_small$isFraud == 0), ])
-# 0.0005996587
+# 0.0006940589
 
 analysis_data_big[which(((analysis_data_big$oldbalanceDest == 0 & analysis_data_big$newbalanceDest == 0) & analysis_data_big$amount != 0)), ]$newbalanceDest <- (-1)
 analysis_data_big[which(((analysis_data_big$oldbalanceDest == 0 & analysis_data_big$newbalanceDest == 0) & analysis_data_big$amount != 0)), ]$oldbalanceDest <- (-1)
@@ -191,13 +221,15 @@ ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceDest), color = typ
 ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceOrig), color = type)) +
   geom_jitter()
 # error stays at zero even at fraud
-
+analysis_data_small$isFraud <- as.factor(analysis_data_small$isFraud)
 plot_ly(analysis_data_small, 
         x = ~errorBalanceDest,
-        y = ~(-log10(errorBalanceOrig)),
+        y = ~errorBalanceOrig,
         z = ~step,
         color = ~isFraud,
-        colors = c('#BF382A', '#0C4B8E'))
+        colors = c('yellow', "black"),
+        type = "scatter3d")
+
 
 # converting to binary operators
 analysis_data_small$type <- ifelse(analysis_data_small$type == "TRANSFER", 0, 1)
