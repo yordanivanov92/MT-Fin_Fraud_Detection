@@ -107,7 +107,7 @@ paySim_test <- paySim_test[, -c("step")]
 
 ctrl_paySim <- trainControl(method = "repeatedcv",
                             number = 10,
-                            repeats = 5,
+                            repeats = 2,
                             summaryFunction = twoClassSummary,
                             classProbs = TRUE,
                             verboseIter = TRUE)
@@ -131,8 +131,8 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ 
+ 
 paySim_svm <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "svmLinear",
@@ -140,9 +140,6 @@ paySim_svm <- train(isFraud ~ .,
                     verbose = FALSE,
                     metric = "ROC", 
                     trControl = ctrl_paySim)
-
-stopCluster(cluster)
-registerDoSEQ()
 
 paySim_test_roc <- function(model, data) {
   roc(data$isFraud,
@@ -152,33 +149,144 @@ paySim_test_roc <- function(model, data) {
 paySim_svm %>%
   paySim_test_roc(data = paySim_test) %>%
   auc()
+# Area under the curve: 0.956
+### Original Fit
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
+
+paySim_svm %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+#Area under the curve: 0.956
+
+svm_results <- predict(paySim_svm, newdata = paySim_test)
+confusionMatrix(svm_results, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291    27
+# X2     1    23
+# 
+# Accuracy : 0.9984          
+# 95% CI : (0.9977, 0.9989)
+# No Information Rate : 0.9971          
+# P-Value [Acc > NIR] : 0.0005031       
+# 
+# Kappa : 0.6209          
+# Mcnemar's Test P-Value : 0.000002306     
+# 
+# Sensitivity : 0.9999          
+# Specificity : 0.4600          
+# Pos Pred Value : 0.9984          
+# Neg Pred Value : 0.9583          
+# Prevalence : 0.9971          
+# Detection Rate : 0.9971          
+# Detection Prevalence : 0.9986          
+# Balanced Accuracy : 0.7300          
+# 
+# 'Positive' Class : X1  
+trellis.par.set(caretTheme())
+plot(paySim_svm, metric = "ROC")
+
+svm_imp <- varImp(paySim_svm, scale = FALSE)
+plot(svm_imp)
+
+paySim_svm_radial <- train(isFraud ~ .,
+                           data = paySim_train,
+                           method = "svmRadial",
+                           preProc = c("center", "scale"),
+                           verbose = FALSE,
+                           metric = "ROC", 
+                           trControl = ctrl_paySim)
+paySim_svm_radial %>%
+  paySim_test_roc(data = paySim_test) %>%
+  auc()
+# Area under the curve: 0.8758
+svm_results_radial <- predict(paySim_svm_radial, newdata = paySim_test)
+confusionMatrix(svm_results_radial, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17258    49
+# X2    34     1
+# 
+# Accuracy : 0.9952          
+# 95% CI : (0.9941, 0.9962)
+# No Information Rate : 0.9971          
+# P-Value [Acc > NIR] : 1.0000          
+# 
+# Kappa : 0.0212          
+# Mcnemar's Test P-Value : 0.1244          
+# 
+# Sensitivity : 0.99803         
+# Specificity : 0.02000         
+# Pos Pred Value : 0.99717         
+# Neg Pred Value : 0.02857         
+# Prevalence : 0.99712         
+# Detection Rate : 0.99516         
+# Detection Prevalence : 0.99798         
+# Balanced Accuracy : 0.50902         
+# 
+# 'Positive' Class : X1 
+trellis.par.set(caretTheme())
+plot(paySim_svm_radial, metric = "ROC")
+# The Radial kernel is obviously inferior to the Linear Version
 
 ################## COST SENSITIVE SVM MODEL
 # The penalization costs can be tinkered with
-paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
-                               (1/table(paySim_train$isFraud)[1]) * 0.5,
-                               (1/table(paySim_train$isFraud)[2]) * 0.5)
+# paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
+#                                (1/table(paySim_train$isFraud)[1]) * 0.5,
+#                                (1/table(paySim_train$isFraud)[2]) * 0.5)
 
-ctrl_paySim$seeds <- paySim_svm$control$seeds
+#ctrl_paySim$seeds <- paySim_svm$control$seeds
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ 
+ 
 paySim_svm_weighted_fit <- train(isFraud ~ .,
                                  data = paySim_train,
                                  method = "svmLinearWeights",
                                  preProc = c("center", "scale"),
                                  verbose = FALSE,
-                                 weights = paySim_model_weights,
+                                 #weights = paySim_model_weights,
                                  metric = "ROC", 
                                  trControl = ctrl_paySim)
-
-stopCluster(cluster)
-registerDoSEQ()
+svm_results_weighted <- predict(paySim_svm_weighted_fit, newdata = paySim_test)
+confusionMatrix(svm_results_weighted, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 17291    24
+# X2     1    26
+# 
+# Accuracy : 0.9986          
+# 95% CI : (0.9979, 0.9991)
+# No Information Rate : 0.9971          
+# P-Value [Acc > NIR] : 0.00007028      
+# 
+# Kappa : 0.6747          
+# Mcnemar's Test P-Value : 0.00001083      
+#                                           
+#             Sensitivity : 0.9999          
+#             Specificity : 0.5200          
+#          Pos Pred Value : 0.9986          
+#          Neg Pred Value : 0.9630          
+#              Prevalence : 0.9971          
+#          Detection Rate : 0.9971          
+#    Detection Prevalence : 0.9984          
+#       Balanced Accuracy : 0.7600          
+#                                           
+#        'Positive' Class : X1 
+ 
 
 ############### sampled-down model
 ctrl_paySim$sampling <- "down"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ 
+ 
 paySim_svm_down_fit <- train(isFraud ~ .,
                              data = paySim_train,
                              method = "svmLinear",
@@ -186,13 +294,38 @@ paySim_svm_down_fit <- train(isFraud ~ .,
                              verbose = FALSE,
                              metric = "ROC",
                              trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+svm_results_down <- predict(paySim_svm_down_fit, newdata = paySim_test)
+confusionMatrix(svm_results_down, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 11335     3
+# X2  5957    47
+# 
+# Accuracy : 0.6563             
+# 95% CI : (0.6492, 0.6634)   
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : 1                  
+# 
+# Kappa : 0.0099             
+# Mcnemar's Test P-Value : <0.0000000000000002
+#                                              
+#             Sensitivity : 0.655505           
+#             Specificity : 0.940000           
+#          Pos Pred Value : 0.999735           
+#          Neg Pred Value : 0.007828           
+#              Prevalence : 0.997117           
+#          Detection Rate : 0.653615           
+#    Detection Prevalence : 0.653788           
+#       Balanced Accuracy : 0.797753           
+#                                              
+#        'Positive' Class : X1   
 
 ############# sampled-up
 ctrl_paySim$sampling <- "up"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ 
+ 
 paySim_svm_up_fit <- train(isFraud ~ .,
                            data = paySim_train,
                            method = "svmLinear",
@@ -200,13 +333,38 @@ paySim_svm_up_fit <- train(isFraud ~ .,
                            verbose = FALSE,
                            metric = "ROC",
                            trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+svm_results_up <- predict(paySim_svm_up_fit, newdata = paySim_test)
+confusionMatrix(svm_results_up, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 16621     2
+# X2   671    48
+# 
+# Accuracy : 0.9612             
+# 95% CI : (0.9582, 0.964)    
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : 1                  
+# 
+# Kappa : 0.1201             
+# Mcnemar's Test P-Value : <0.0000000000000002
+#                                              
+#             Sensitivity : 0.96120            
+#             Specificity : 0.96000            
+#          Pos Pred Value : 0.99988            
+#          Neg Pred Value : 0.06676            
+#              Prevalence : 0.99712            
+#          Detection Rate : 0.95842            
+#    Detection Prevalence : 0.95854            
+#       Balanced Accuracy : 0.96060            
+#                                              
+#        'Positive' Class : X1 
 
 ############# SMOTE
 ctrl_paySim$sampling <- "smote"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ 
+ 
 paySim_svm_smote_fit <- train(isFraud ~ .,
                               data = paySim_train,
                               method = "svmLinear",
@@ -214,10 +372,36 @@ paySim_svm_smote_fit <- train(isFraud ~ .,
                               verbose = FALSE,
                               metric = "ROC",
                               trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
-
+svm_results_smote <- predict(paySim_svm_smote_fit, newdata = paySim_test)
+confusionMatrix(svm_results_smote, paySim_test$isFraud)
+# Confusion Matrix and Statistics
+# 
+# Reference
+# Prediction    X1    X2
+# X1 13557     5
+# X2  3735    45
+# 
+# Accuracy : 0.7843             
+# 95% CI : (0.7781, 0.7904)   
+# No Information Rate : 0.9971             
+# P-Value [Acc > NIR] : 1                  
+# 
+# Kappa : 0.0179             
+# Mcnemar's Test P-Value : <0.0000000000000002
+#                                              
+#             Sensitivity : 0.7840             
+#             Specificity : 0.9000             
+#          Pos Pred Value : 0.9996             
+#          Neg Pred Value : 0.0119             
+#              Prevalence : 0.9971             
+#          Detection Rate : 0.7817             
+#    Detection Prevalence : 0.7820             
+#       Balanced Accuracy : 0.8420             
+#                                              
+#        'Positive' Class : X1        
+#####################################################################
 paySim_svm_model_list <- list(original = paySim_svm,
+                              radial = paySim_svm_radial,
                               weighted = paySim_svm_weighted_fit,
                               down = paySim_svm_down_fit,
                               up = paySim_svm_up_fit,
@@ -227,7 +411,23 @@ paySim_svm_model_list_roc <- paySim_svm_model_list %>%
 
 paySim_svm_model_list_roc %>%
   map(auc)
-
+# $original
+# Area under the curve: 0.956
+# 
+# $radial
+# Area under the curve: 0.8758
+# 
+# $weighted
+# Area under the curve: 0.9553
+# 
+# $down
+# Area under the curve: 0.9084
+# 
+# $up
+# Area under the curve: 0.9685
+# 
+# $SMOTE
+# Area under the curve: 0.929
 paySim_svm_results_list_roc <- list(NA)
 num_mod <- 1
 
@@ -241,7 +441,7 @@ for(the_roc in paySim_svm_model_list_roc){
 
 paySim_svm_results_df_roc <- bind_rows(paySim_svm_results_list_roc)
 
-custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
+custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7", "#E939C0")
 
 ggplot(aes(x = fpr, y = tpr, group = model), data = paySim_svm_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
@@ -252,13 +452,13 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = paySim_svm_results_df_roc) +
 
 ####  Construction the precision/recall graphic
 paySim_svm_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$isFraud == "X2"
+  index_class1 <- data$isFraud == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
@@ -268,7 +468,23 @@ paySim_svm_model_list_pr <- paySim_svm_model_list %>%
 
 paySim_svm_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-
+# $original
+# [1] 0.7013127
+# 
+# $radial
+# [1] 0.05074118
+# 
+# $weighted
+# [1] 0.702694
+# 
+# $down
+# [1] 0.3955758
+# 
+# $up
+# [1] 0.761244
+# 
+# $SMOTE
+# [1] 0.6245024
 paySim_svm_results_list_pr <- list(NA)
 num_mod <- 1
 for (the_pr in paySim_svm_model_list_pr) {
@@ -346,16 +562,7 @@ identical(orig_fit$bestTune,
 
 
 ################### Results and some graphs
-### Original Fit
-svm_results <- predict(paySim_svm, newdata = paySim_test)
-confusionMatrix(svm_results, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_svm, metric = "ROC")
-
-svm_imp <- varImp(paySim_svm, scale = FALSE)
-#svm_imp - variable importance is observed
-plot(svm_imp)
 
 ### Weighted fit
 svm_weight_results <- predict(paySim_svm_weighted_fit, newdata = paySim_test)
