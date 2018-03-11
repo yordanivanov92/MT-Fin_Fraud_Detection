@@ -45,6 +45,10 @@ rm(multi_obs)
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
 ucsd_test <- subset(ucsd_data, split == FALSE)
+# ucsd_train$zip1 <- as.factor(ucsd_train$zip1)
+# ucsd_test$zip1 <- as.factor(ucsd_test$zip1)
+# ucsd_train$custAttr1 <- as.factor(ucsd_train$custAttr1)
+# ucsd_test$custAttr1 <- as.factor(ucsd_test$custAttr1)
 
 feature.names=names(ucsd_train)
 for (f in feature.names) {

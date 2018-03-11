@@ -14,11 +14,11 @@ options(scipen=999)
 
 set.seed(48)
 
-ucsd_data<- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
+ucsd_data<- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
                        header = TRUE,
                        sep = ",",
                        stringsAsFactors = TRUE)
-ucsd_data_targets <- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
+ucsd_data_targets <- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
                                 #header = TRUE,
                                 sep = ",")
 ucsd_data <- cbind(ucsd_data, ucsd_data_targets)
@@ -81,22 +81,15 @@ ctrl_ucsd <- trainControl(method = "repeatedcv",
                           classProbs = TRUE,
                           verboseIter = TRUE
 )
-mxnet.params <- expand.grid(layer1=20, 
-                            layer2=15, 
-                            layer3=10,
-                            learning.rate=0.12, 
-                            momentum=0.88,
-                            dropout=0, 
-                            repeats=1)
+
 cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_nnet <- train(Class ~ .,
-                   #x = ucsd_train %>% select(-Class),
-                   #y =  ucsd_train %>% select(Class),
                    data = ucsd_train,
-                   method = "mxnet",
-                   #linout = FALSE,
+                   method = "nnet",
+                   linout = FALSE,
                    verbose = FALSE,
+                   metric = "ROC",
                    #tuneGrid = mxnet.params,
                    trControl = ctrl_ucsd)
 stopCluster(cluster)
