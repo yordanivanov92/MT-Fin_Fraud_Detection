@@ -1,8 +1,16 @@
 ---
 title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
+css: master_thesis_style.css
+output:
+  pdf_document: 
+    fig_caption: yes
+    latex_engine: pdflatex
 bibliography: references.bib
-output: pdf_document
+urlcolor: black
+linkcolor: black
+fontsize: 12pt
+geometry: margin = 1.5in
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +33,7 @@ Classification is one of the most widely used model framework used for the appli
 
 In the current section, we will give a description of the machine learning techniques that we apply to predict fraudulent transactions. 
 
-Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_p,y_p)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point and $y_i \in \{-1,1\}$ represents the label of the class of that data point, $i = 1,...,p$.  
+Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_p,y_p)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point and $y_i \in \{-1,1\}$ represents the label of the class of that data point, $i = 1,...,p$. Let $X$ represent the vector of features and $Y$ the vector of dependent variables.   
 
 
 ## 3.2. Machine Learning Algorithms
@@ -53,29 +61,97 @@ We will further use two variations of the SVM soft margin optimization problem -
 
 #### Non-cost sensitive learning
 
-For the same missclassification cost case, we can write the soft optimization problem as follow:
+For the same missclassification cost case, we can write the soft optimization problem as follows:
 $$\min(\frac{1}{2}w \cdot w + C\sum_{i=1}^{p} \xi_i) $$ 
-$$s.t. \;\; y_i(w \cdot \Phi()x_i + b) \geq 1 - \xi_i $$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i $$
 $$\xi_i \geq 0, i = 1,...,p$$
-The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}$ can be perceived as the total number of missclassified observations of the model. Thusm from (), we can see that there are two goals - maximizing the margin the minimizing the number of missclassifications. The cost parameter C controls the trade-off between them. The quadratic optimization problem in () can be represented by a dual Lagrange problem and then solved:
+The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}$ can be perceived as the total number of missclassified observations of the model. Thusm from (), we can see that there are two goals - maximizing the margin the minimizing the number of missclassifications. The cost parameter C controls the trade-off between them, i.e. assigned misclassification cost. The quadratic optimization problem in () can be represented by a dual Lagrange problem and then solved:
 $$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_j\Phi(x_i)\cdot\Phi(x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p $$
 
-Thanks to another one of the strenghts of SVM - kernel representation - we don't need to explicitly know the mapping function $\Phi(x)$, but by applying a kernel function (i.e. $K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$), we can rewrite () as:
+$\alpha_i$ are the Lagrange multipliers also satisfying the Karush-Kuhn-Tucker (KKT) conditions (see Appendix). Thanks to another one of the strenghts of SVM - kernel representation - we don't need to explicitly know the mapping function $\Phi(x)$, but by applying a kernel function (i.e. $K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$), we can rewrite () as:
 $$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_jK(x_i,x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p$$
-
+The solution then gives us $w = \sum_{i=1}^{p}{\alpha_iy_i}\phi(x_i)$ for the optimal values of $\alpha_i$ and $w$, while $b$ is determined from KKT. The data points that have $\alpha_i$ different than zero are called the support vectors. Thus, the decision function can be written was:
+$$f(x) = sign(w \cdot \Phi(x) + b) = sign(\sum_{i=1}^{p}{\alpha_iy_i}K(x_i,x_j) + b) $$
 
 #### Cost Sensitive learning
 
-The regular SVM model has been effectively implemented when the dataset used has balanced classes, however it fails to produce good results when applied on imbalanced data [@batuwita2013class]. When trained on a dataset with extremely imbalanced classes, the SVM framework could produce so skewed hyperplances that all observations are recognized as the majority class [@akbani2004applying]. 
+The regular SVM model has been effectively implemented when the dataset used has balanced classes, however it fails to produce good results when applied on imbalanced data [@batuwita2013class]. When trained on a dataset with extremely imbalanced classes, the SVM framework could produce so skewed hyperplances that all observations are recognized as the majority class [@akbani2004applying, @veropoulos1999controlling]. This is due to the fact that when we take the soft margin optimization problem, we try to maximize the margin and minimize the penalty for the misclassifications. As we consider a constant C for all training examples, the minimization of the penalty is achieved through the minimization of all misclassifications. However, when the used dataset suffers from imbalanced classes, the majority class density would be higher than the minority class density, even when considering the class boundary region (through which the ideal hyperplane would pass). 
+
+Thus, we consider here the application of the Different Error Costs (DEC) variation of the SVM algorithm proposed by @veropoulos1999controlling. The DEC method introduces different misclassification costs - $C^+$ for the minority and $C^-$ for the majority class. With the inclusion of the higher misclassification cost for the minority class observations, the imbalanced class effect could be brought down. The soft margin optimization problem then has the following form:
+$$\min{(\frac{1}{2}w \cdot w + C^+\sum_{i|y_i=+1}^{p}\xi_i + C^-\sum_{i|y_i=-1}^{p}\xi_i)} $$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i $$
+$$\xi_i \geq 0, i = 1,...,p$$
+The Dual Lagrange optimization form is the same as before, with the exception of replacing $0 \leq\alpha_i\leq C$ with $0 \leq\alpha_i^+\leq C^+, \; 0 \leq\alpha_i^-\leq C^-$ for $i=1,...,p$. The $\alpha_i^+$ and $\alpha_i^-$ are the Lagrange multipliers. The solution of the DEC dual Lagrangian problem follows the same outline as in the normal form. 
 
 #### Kernels
 
-### 3.2.4. Classification and regression trees (CARTs) 
+As mentioned before, we used a kernel function ($K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$) in order to transform the dual Lagrange problem. The advantages of using kernel functions are computational or in some cases it allows for computations that otherwise would be impossible (@james2013introduction). For the purpose of this study, we are using the linear and radial kernels. The radial kernel shows good performance on non-linear class separation. They have the following representations:
+$$Linear: \;\;\; K(x_i,x_j) = \sum_{k=1}^{l}x_{ik}x_{jk}  $$
+$$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x{jk})^2) $$
+
+### 3.2.4. Tree-Based Methods
+
+Tree-based methods involve segmentation of the feature space into a set of regions and then fitting a simple model to each one. Even though are not too complex conceptually, they are still a very powerful method [@friedman2001elements]. Firstly, we will give a short overview of a standard classification decision tree (DT) before moving on the methods used in this study. 
+
+Let us call the set of non-overlapping regions $R_1,R_2,...,R_M$ that are used to divide the feature space. The forms of those regions are high-dimensional rectangles - for simplicity and interpretability. The aim for DT would be to find the boxes that minimize the error term, which in the case of classification can be represented in several ways - misclassification error, Gini index or cross-entropy. However, it is very computationally taxing to consider every feasible partition of the feature space into $M$ boxes. Thus, the recursive binary splitting method is used, which is a top-down, greedy approach - it starts at the top of the tree and then it splits the feature space, making the best split possible, without looking forward. The algorithm is further described in the Appendix. 
+
+However, the beforementioned algorithm can sometimes lead to over-fitting and producing very ineffecient prediction results. Thus, the tree pruning technique is applied - first a large tree is grown, then it is "pruned" and a smaller version is obtain. The procedure leads to reduction in variance at the cost of some bias. Usually the cost complexity pruning algorithm is used in practice - a more thorough description is included in the Appendix. 
+
+The regular classification DT has high interpretability, but it sometimes lacks sufficient prediction power - they are often unstable and can be too sensitive to training data [@bhattacharyya2011data]. This leads us to variations of the classic classification DT. 
+
 #### Random Forests
 
-#### Gradient Boosting Machines and Extreme Gradient Boosting Machines
+A random forest algorithm is an ensemble of classification trees [@breiman2001random]. The model starts with growing each tree on separate bootstrapped dataset. Moreover, only a randomly selected feature subset, typically $s \simeq \sqrt{p}$ [@khoshgoftaar2007empirical], is used at each individual node. As a result, the entire algorithm is based on two basic, yet powerful, concepts - bagging and random subspace method. To better illustrate the random forest method, the pseudo-algorithm is given below:
 
-## 3.3. Estimation 
+
+_Algorithm Random Forest_
+
+1. For $b$ = 1 to $B$ ($B$ is representing the number of bootstrapped datasets):
+    + Draw bootstrapped sample $Z^*$ of size $N$ from the dataset used for training 
+    + Grow a RF tree $T_b$ on the previously bootstrapped dataset by recursively looping the below given steps for each tree terminal node, up until the $n_min$ node (minimum size node) is reached:
+        - Select $s$ features randomly from the entire feature subset, $p$. 
+        - Choose the best available variable/split-point among the $s$.
+        - Split node into two children nodes.
+
+2. Output the tree ensemble $\{T_b\}^{B}_{1}$.
+3. Making the prediction for a new point $x$:
+    If $\widehat{C}_b(x)$ is the prediction of the class for the $b$th RF tree, then $\widehat{C}_{rf}^{B}(x)=majority\;vote\{\widehat{C}_b(x)\}_{1}^{B}$.
+
+The Random Forest algorith has been quite popular lately, due to its simplicity and performance. It has only two parameters that can be changed - the number of trees grown and the size of the feature subset used [@breiman2001random]. Furthermore, it has often shown superior performance to one if its rival statistic learning method - the SVM [@meyer2003support]. In the area of financial fraud detection, RF has also shown to be a promising framework [@whitrow2009transaction, @ngai2011application].
+
+#### Stochastic Gradient Boosting Machines and eXtreme Gradient Boosting Machines
+
+The ideas introduced by the boosting methodology have been among the most influential in the last twenty years [@friedman2001elements]. Among the most used and influential boosting algorithms is "AdaBoost.M1" [@freund1997decision]. It was the first developed "adaptive" boosting algorithm, due to its incorporated function to directly adjust its parameters to the used training dataset. This is due to the fact, that the performance of the model was re-evaluated at each iteration - the parameters weights and the final aggregated weights, were re-calculated and improved at each iteration, thus leading to an overall better performance. Moreover, it was found that not only AdaBoost, but boosting algorithms in general, managed to not only reduce variance, but also bias - an improvement over bagging, where only the variance could be decreased. 
+
+The followwing success led to the formulation and development of the gradient-descent based methods, which received the name gradient boosting machines or simply GBM [@freund1997decision, @friedman2000additive, @friedman2001greedy]. The general idea of GBMs is to fit new models iteratively, constructing the base-learners to be maximally correlated with the loss function's negative gradient, in order to get a better estimate of the response variable [@natekin2013gradient]. Moreover, the algorithm offers flexibility in terms of choosing the form of the loss function. In this study, we use the Bernoulli distribution, as we are dealing with a two-class classification problem. 
+
+Due to its flexibility and ease of implementation, the GBM algorithm has proven to be a successful model, that offers high predictive power when dealing with machine learning problems [@whiting2012machine, @johnson2014learning]. Furthermore, when including a random element in the algorithm, as in the Stochastic GBM (SGBM), results tend to improve [@friedman2002stochastic]. We describe the general form of the SGBM for a two-class problem below.
+
+_Stochastic Gradient Boosting Machines (Stochastic GBM)_
+
+Two-Class Classification as in the **gbm** R package.
+
+1. Initialize $f_{0}(x) = \arg\min_{\rho}\sum_{i=1}^{N}\Psi(y_i,\rho)$ and set $g = \{1,2\}$ for the two classes.
+
+2. For $m=1$ to $M$ do:
+    
+    + For $g=1$ to 2 do:
+    
+        - Compute negative gradient:
+          $$z_{ig}=-\frac{\partial{\Psi(y_{ig},f_{g}(\mathbf{x}_i))}}{\partial{f_{g}(\mathbf{x}_i)}}\rvert_{f_{g}(\mathbf{x}_i)=\widehat{f_{g}}(\mathbf{x}_i)},\; i=1,...,N$$
+        - Randomly select $p \times N$ subset.
+        - Fit regression tree with K number of terminal nodes on the previously selected subset, $g(\mathbf{x})=E(z|\mathbf{x})$.
+        - Compute the optimal terminal node predictions, $\rho_{1g},...,\rho_{Kg}$, as:
+          $$\rho_{kg}=\arg\min_{\rho}\sum_{\mathbf{x}_i \in S_k} \Psi(y_i,\widehat{f_{g}}(\mathbf{x}_{i}+\rho))$$,
+          where $S_k$ is the set of $\mathbf{x}$'s that define terminal node $k$.
+        - Update $\widehat{f_{g}}(\mathbf{x})$ as $\widehat{f_{g}}(\mathbf{x}) \leftarrow \widehat{f_{g}}(\mathbf{x}) + \lambda\rho_{k(\mathbf{x})}$, where $k(\mathbf{x})$ shows the index of the terminal node into which an observation with features $\mathbf{x}$ should fall. 
+      
+
+3. Output $\widehat{f}_g(x) = f_{gM}(x),\; g=\{1,2\}$
+
+
+
+## 3.3. Cross-Validation
 
 # 4. Data
 
