@@ -149,6 +149,7 @@ Two-Class Classification as in the **gbm** R package.
 
 3. Output $\widehat{f}_g(x) = f_{gM}(x),\; g=\{1,2\}$
 
+The eXtreme Gradient Boosting algorithm, or shortly XGBoost, was developed as an attempt to improve on the performance of GBM, both in terms of speed and prediction power [@chen2016xgboost]. It has has not only succeeded in doing so, but it has also become one of the most used models [@nielsen2016tree]. Among the differences that XGBoost introduces in comparison to the GBM model is that the former uses clever penalization of the individual trees - the leaf weights are not all decreased at the same rate, instead the weights which are estimated without much evidence from the training set will be shrunk more heavily relative to others. Furthermore, the XGBoost employs another type of boosting structure when compared to GBM - Newton boosting. Due to this, the algorithm manages to better learn tree structures, leading to learning better neighbourhoods. XGBoost also incorporates a randomization paramater, which contributes to the individual tree decorellation and reducing variance. 
 
 
 ## 3.3. Cross-Validation
