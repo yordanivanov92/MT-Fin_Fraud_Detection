@@ -1,0 +1,43 @@
+---
+title: "master_thesis_appendix"
+author: "Yordan Ivanov"
+output:
+  pdf_document: 
+    fig_caption: yes
+    latex_engine: pdflatex
+bibliography: references.bib
+urlcolor: black
+linkcolor: black
+fontsize: 12pt
+geometry: margin = 1.5in
+---
+
+# 8. Appendix
+
+## GBM vs XGBoost
+
+### Structure learning and the gradient vs Newton algorithms
+
+On each iteration, the optimiziation criterias, concerning tree structure learning, of the Newton tree boosting and the Gradient tree boosting differ. 
+
+When talking about Gradient tree boosting, we are interested in the learning of the tree, that exhibits the highest correlation with the negative gradient of the current empirical risk. The tree model is fit using:
+
+$$\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}[z_{m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k)]^2$$
+
+Newton tree boosting uses a different approach - the algorithm is learning the tree, that fits the second-order Taylor expansion of the loss function best. The tree model here is fit using:
+
+$$\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}h_m[\frac{z_m}{h_m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k]^2$$
+
+The difference is that in the case of Newton boosting, the model is fit to the negative gradient, scaled by the Hessian, using weighted least-squares regression. The Hessian is given by $h_m = \frac{\partial{\Psi(y_{i},f(\mathbf{x}_i))}^{2}}{\partial^{2}{f(\mathbf{x}_i)}}\rvert_{f(\mathbf{x}_i)=\widehat{f}(\mathbf{x}_i)}$.
+
+### Node weight learning
+
+The differences again come from the different boosting approaches. 
+
+In the Newton tree boosting, the terminal node weight is being determined by the criterion that is used to determine the tree structure - terminal node weights are same as the node weights learnt when searching for the tree structure:
+
+$$\rho_{km}=\frac{G_{km}}{H_{km}}=\frac{\sum_{x_i\in S_k}z_m(x_i)}{\sum_{x_i\in S_k}h_m(x_i)}$$
+
+In gradient tree boosting the terminal node weights are determined by separate line searches in each terminal node:
+
+$$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$
