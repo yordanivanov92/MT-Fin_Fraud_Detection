@@ -17,6 +17,52 @@ geometry: margin = 1.5in
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Variable Description
+
+$N$ - number of observations
+
+${\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}}$ - binary classification dataset, N pairs of features and dependent variables
+
+$X$ - vector of features, with dimensions $N\times p$
+
+$y_i \in \{-1,1\}$ - scope of values which the dependent variable can take
+
+$Y$ - vector of dependent variables (or classes), with dimensions $N\times1$
+
+$\beta$ - coefficient produced by fitting logistic regression
+
+$w$ - weight vector normal to the hyperplane in SVM algorithm. 
+
+$\Phi$ - nonlinear mapping function
+
+$b$ - constant for the SVM algorithm
+
+$\xi$ - slack variable in SVM algorithm
+
+$C$ - misclassification cost in SVM algorithm
+
+$K(x_i,x_j)$ - kernel functions
+
+$\gamma$ - paramater in radial kernel function
+
+$B$ - number of bootstrapped datasets in Random Forest algorithm
+
+$Z^*$ - bootstrapped data sample
+
+$T_b$ - tree grown on bootstrapped data sample
+
+$s$ - randomly chosen subset of features
+
+$\Psi(y_i,\rho)$ - loss function
+
+$\rho$ - terminal nodes
+
+$\lambda$ - regularization parameter
+
+$F$ - number of nodes in neural network hidden layer
+
+$g$ - number of classes
+
 # 1.Introduction
 
 What we provide here is an extensive study of machine learning methods on different both real-world and simulated datasets in an attempt to provide better guidelines for fraud detection. 
@@ -33,7 +79,7 @@ Classification is one of the most widely used model framework used for the appli
 
 In the current section, we will give a description of the machine learning techniques that we apply to predict fraudulent transactions. 
 
-Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_p,y_p)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point and $y_i \in \{-1,1\}$ represents the label of the class of that data point, $i = 1,...,p$. Let $X$ represent the vector of features and $Y$ the vector of dependent variables.   
+Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point and $y_i \in \{-1,1\}$ represents the label of the class of that data point, $i = 1,...,p$. Let $X$ represent the vector of features and $Y$ the vector of dependent variables.   
 
 
 ## 3.2. Machine Learning Algorithms
@@ -42,11 +88,25 @@ Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(
 
 The logistic regression framework falls under the category of generalized linear models and allows the prediction of discrete outcomes. Then, by defining the probability of a transaction being fraudulent by $p(X) = Pr(Y=1|X)$, we can portray the relationship between the dependent and independent variables as follows:
 
-[@foo] $$p(X) = \frac{e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}$$
+$$p(X) = \frac{e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}\;\;\;\;(1)$$
 
-The number of independent variables is indexed by *p*. After manipulating [@foo], we can also see that $$log(\frac{p(X)}{1-p(X)})=\beta_0+ \beta_1X_1 + ... + \beta_pX_p$$ with the LHS being called the logit. Using equation (), we will predict the probabilities of a transaction being fraudulent i.e. $p(Y = 1)$. The fitting of a logistic regression is done by the method of maximum likelihood (see Appendix). The logistic regression has been among the most widely used framework in fraud detection [@ngai2011application] due to simplicity of ease of implementation, but it does have its shortcomings - it tends to underperform when there are multiple or non-linear decision boundaries (_SEARCH FOR SOME PAPER OR BOOK ON IT?_)
+The number of independent variables is indexed by *p*. After manipulating (1), we can also see that $$log(\frac{p(X)}{1-p(X)})=\beta_0+ \beta_1X_1 + ... + \beta_pX_p\;\;\;\;(2)$$ with the LHS being called the logit. Using equation (2), we will predict the probabilities of a transaction being fraudulent i.e. $p(Y = 1)$. The fitting of a logistic regression is done by the method of maximum likelihood (see Appendix). The logistic regression has been among the most widely used framework in fraud detection [@ngai2011application] due to simplicity of ease of implementation, but it does have its shortcomings - it tends to underperform when there are multiple or non-linear decision boundaries (_SEARCH FOR SOME PAPER OR BOOK ON IT?_)
 
 ### 3.2.2. Neural Networks
+
+Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only a single hidden layer, but this can be extended to include more [friedman2001elements]. However, that is beyond the scope of this paper. 
+
+A feed-forward neural network with one hidden layer can be seen in Figure 1. It has $g$ outputs nodes, which in our case would be $g=2$, as we are dealing with two-class classification problem. Each output node would give us the probability of an observation belonging to a specific class. 
+
+![Neural Network with 1 hidden layer](figures/nnet.png){width=60%}
+
+The features $Z_f$ are being derived through linear combinations of the inputs, while the $Y_g$ outputs are then modeled as a function of linear combinations of the $Z_m$, or mathematically formulated as follows:
+
+$$Z_f=\sigma(\alpha_{0f}+\alpha_{m}^{T}X),\;f=1,...,F$$
+$$T_g=\beta_{0g}+\beta_{k}^{T}Z,\;g=1,2$$
+$$f_{g}(X)=g_g(T),\;g=1,2$$
+
+where $T=(T_1,T_2)$, $Z=(Z_1,Z_2,...,Z_F)$ and $g_g(T)=\frac{e^{T_g}}{\sum_{f=1}^{F}e^{T_f}}$ represents the softmax function. We use the sigmoid activation function $\sigma(v)=\frac{1}{1+e^{-v}}$. In order to fit the neural network and estimate the set of weights $\{\alpha_{0f},\alpha_{f};f=1,2,3...,F\}$ and $\{\beta_{0g},\beta_{g},g=1,2\}$, we use the backpropagation equations in order to minimize the error term.  
 
 ### 3.2.3. Support Vector Machines
 
@@ -54,7 +114,7 @@ Support Vector Machines, developed by Vapnik et. al. [@cortes1995support], have 
 
 The goal of the SVM classifier consists of finding the optimal separating hyperplane, which manages to effectively separate the observations from the data into two classes. As mentioned above, the observations are initially transformed by a nonlinear mapping function $\Phi$. Thus, we can write a possible separating hyperplane that resides in the transformed higher dimensional feature space by:
 
-$$w\cdot\Phi(x)+b=0$$
+$$w\cdot\Phi(x)+b=0\;\;\;\;(3)$$
 with $w$ the weight vector normal to the hyperplane. 
 
 We will further use two variations of the SVM soft margin optimization problem - one that assigns the same cost for missclassification of the different classes and one that penalizes more the missclassification of the minority class.
@@ -63,31 +123,31 @@ We will further use two variations of the SVM soft margin optimization problem -
 
 For the same missclassification cost case, we can write the soft optimization problem as follows:
 $$\min(\frac{1}{2}w \cdot w + C\sum_{i=1}^{p} \xi_i) $$ 
-$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i $$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(4) $$
 $$\xi_i \geq 0, i = 1,...,p$$
-The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}$ can be perceived as the total number of missclassified observations of the model. Thusm from (), we can see that there are two goals - maximizing the margin the minimizing the number of missclassifications. The cost parameter C controls the trade-off between them, i.e. assigned misclassification cost. The quadratic optimization problem in () can be represented by a dual Lagrange problem and then solved:
-$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_j\Phi(x_i)\cdot\Phi(x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p $$
+The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}$ can be perceived as the total number of missclassified observations of the model. Thus from (4), we can see that there are two goals - maximizing the margin the minimizing the number of missclassifications. The cost parameter C controls the trade-off between them, i.e. assigned misclassification cost. The quadratic optimization problem in (4) can be represented by a dual Lagrange problem and then solved:
+$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_j\Phi(x_i)\cdot\Phi(x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(5) $$
 
-$\alpha_i$ are the Lagrange multipliers also satisfying the Karush-Kuhn-Tucker (KKT) conditions (see Appendix). Thanks to another one of the strenghts of SVM - kernel representation - we don't need to explicitly know the mapping function $\Phi(x)$, but by applying a kernel function (i.e. $K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$), we can rewrite () as:
-$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_jK(x_i,x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p$$
+$\alpha_i$ are the Lagrange multipliers also satisfying the Karush-Kuhn-Tucker (KKT) conditions (see Appendix). Thanks to another one of the strenghts of SVM - kernel representation - we don't need to explicitly know the mapping function $\Phi(x)$, but by applying a kernel function (i.e. $K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$), we can rewrite (5) as:
+$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_jK(x_i,x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(6)$$
 The solution then gives us $w = \sum_{i=1}^{p}{\alpha_iy_i}\phi(x_i)$ for the optimal values of $\alpha_i$ and $w$, while $b$ is determined from KKT. The data points that have $\alpha_i$ different than zero are called the support vectors. Thus, the decision function can be written was:
-$$f(x) = sign(w \cdot \Phi(x) + b) = sign(\sum_{i=1}^{p}{\alpha_iy_i}K(x_i,x_j) + b) $$
+$$f(x) = sign(w \cdot \Phi(x) + b) = sign(\sum_{i=1}^{p}{\alpha_iy_i}K(x_i,x_j) + b)\;\;\;\;(7) $$
 
 #### Cost Sensitive learning
 
 The regular SVM model has been effectively implemented when the dataset used has balanced classes, however it fails to produce good results when applied on imbalanced data [@batuwita2013class]. When trained on a dataset with extremely imbalanced classes, the SVM framework could produce so skewed hyperplances that all observations are recognized as the majority class [@akbani2004applying, @veropoulos1999controlling]. This is due to the fact that when we take the soft margin optimization problem, we try to maximize the margin and minimize the penalty for the misclassifications. As we consider a constant C for all training examples, the minimization of the penalty is achieved through the minimization of all misclassifications. However, when the used dataset suffers from imbalanced classes, the majority class density would be higher than the minority class density, even when considering the class boundary region (through which the ideal hyperplane would pass). 
 
 Thus, we consider here the application of the Different Error Costs (DEC) variation of the SVM algorithm proposed by @veropoulos1999controlling. The DEC method introduces different misclassification costs - $C^+$ for the minority and $C^-$ for the majority class. With the inclusion of the higher misclassification cost for the minority class observations, the imbalanced class effect could be brought down. The soft margin optimization problem then has the following form:
-$$\min{(\frac{1}{2}w \cdot w + C^+\sum_{i|y_i=+1}^{p}\xi_i + C^-\sum_{i|y_i=-1}^{p}\xi_i)} $$
-$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i $$
+$$\min{(\frac{1}{2}w \cdot w + C^+\sum_{i|y_i=+1}^{p}\xi_i + C^-\sum_{i|y_i=-1}^{p}\xi_i)}$$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(8)$$
 $$\xi_i \geq 0, i = 1,...,p$$
 The Dual Lagrange optimization form is the same as before, with the exception of replacing $0 \leq\alpha_i\leq C$ with $0 \leq\alpha_i^+\leq C^+, \; 0 \leq\alpha_i^-\leq C^-$ for $i=1,...,p$. The $\alpha_i^+$ and $\alpha_i^-$ are the Lagrange multipliers. The solution of the DEC dual Lagrangian problem follows the same outline as in the normal form. 
 
 #### Kernels
 
 As mentioned before, we used a kernel function ($K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$) in order to transform the dual Lagrange problem. The advantages of using kernel functions are computational or in some cases it allows for computations that otherwise would be impossible (@james2013introduction). For the purpose of this study, we are using the linear and radial kernels. The radial kernel shows good performance on non-linear class separation. They have the following representations:
-$$Linear: \;\;\; K(x_i,x_j) = \sum_{k=1}^{l}x_{ik}x_{jk}  $$
-$$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x{jk})^2) $$
+$$Linear: \;\;\; K(x_i,x_j) = \sum_{k=1}^{l}x_{ik}x_{jk}\;\;\;\;(9)$$
+$$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x_{jk})^2), \;\; \gamma=\frac{1}{2\sigma^2}\;\;\;\;(10)$$
 
 ### 3.2.4. Tree-Based Methods
 
@@ -108,7 +168,7 @@ _Algorithm Random Forest_
 
 1. For $b$ = 1 to $B$ ($B$ is representing the number of bootstrapped datasets):
     + Draw bootstrapped sample $Z^*$ of size $N$ from the dataset used for training 
-    + Grow a RF tree $T_b$ on the previously bootstrapped dataset by recursively looping the below given steps for each tree terminal node, up until the $n_min$ node (minimum size node) is reached:
+    + Grow a RF tree $T_b$ on the previously bootstrapped dataset by recursively looping the below given steps for each tree terminal node, up until the $n_{min}$ node (minimum size node) is reached:
         - Select $s$ features randomly from the entire feature subset, $p$. 
         - Choose the best available variable/split-point among the $s$.
         - Split node into two children nodes.
@@ -123,7 +183,7 @@ The Random Forest algorith has been quite popular lately, due to its simplicity 
 
 The ideas introduced by the boosting methodology have been among the most influential in the last twenty years [@friedman2001elements]. Among the most used and influential boosting algorithms is "AdaBoost.M1" [@freund1997decision]. It was the first developed "adaptive" boosting algorithm, due to its incorporated function to directly adjust its parameters to the used training dataset. This is due to the fact, that the performance of the model was re-evaluated at each iteration - the parameters weights and the final aggregated weights, were re-calculated and improved at each iteration, thus leading to an overall better performance. Moreover, it was found that not only AdaBoost, but boosting algorithms in general, managed to not only reduce variance, but also bias - an improvement over bagging, where only the variance could be decreased. 
 
-The followwing success led to the formulation and development of the gradient-descent based methods, which received the name gradient boosting machines or simply GBM [@freund1997decision, @friedman2000additive, @friedman2001greedy]. The general idea of GBMs is to fit new models iteratively, constructing the base-learners to be maximally correlated with the loss function's negative gradient, in order to get a better estimate of the response variable [@natekin2013gradient]. Moreover, the algorithm offers flexibility in terms of choosing the form of the loss function. In this study, we use the Bernoulli distribution, as we are dealing with a two-class classification problem. 
+The followwing success led to the formulation and development of the gradient-descent based methods, which received the name gradient boosting machines or simply GBM [@freund1997decision; @friedman2000additive; @friedman2001greedy]. The general idea of GBMs is to fit new models iteratively, constructing the base-learners to be maximally correlated with the loss function's negative gradient, in order to get a better estimate of the response variable [@natekin2013gradient]. Moreover, the algorithm offers flexibility in terms of choosing the form of the loss function. In this study, we use the Bernoulli distribution, as we are dealing with a two-class classification problem. 
 
 Due to its flexibility and ease of implementation, the GBM algorithm has proven to be a successful model, that offers high predictive power when dealing with machine learning problems [@whiting2012machine, @johnson2014learning]. Furthermore, when including a random element in the algorithm, as in the Stochastic GBM (SGBM), results tend to improve [@friedman2002stochastic]. We describe the pseudo-code of the SGBM for a two-class problem below.
 
@@ -131,12 +191,12 @@ _Stochastic Gradient Tree Boosting Machines (Stochastic GBM)_
 
 Two-Class Classification as in the **gbm** R package.
 
-1. Initialize $f_{0}(x) = \arg\min_{\rho}\sum_{i=1}^{N}\Psi(y_i,\rho)$ and set $g = \{1,2\}$ for the two classes.
+1. Initialize $f_{0}(x) = \arg\min_{\rho}\sum_{i=1}^{N}\Psi(y_i,\rho)$.
 
 2. For $m=1$ to $M$ do:
     + Compute negative gradient:
   $$z_{im}=-\frac{\partial{\Psi(y_{i},f(\mathbf{x}_i))}}{\partial{f(\mathbf{x}_i)}}\rvert_{f(\mathbf{x}_i)=\widehat{f}(\mathbf{x}_i)},\; i=1,...,N$$
-    + Randomly select $p \times N$ subset.
+    + Randomly select $s \times N$ subset.
     + Fit regression tree with K number of terminal nodes on the previously selected subset, $g(\mathbf{x})=E(z|\mathbf{x})$.
     + Compute the optimal terminal node predictions, $\rho_{1m},...,\rho_{Km}$, as:
     $$\rho_{km}=\arg\min_{\rho}\sum_{\mathbf{x}_i \in S_k} \Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$,
@@ -147,7 +207,7 @@ Two-Class Classification as in the **gbm** R package.
 
 3. Output $\widehat{f}(x) = f_{M}(x)$
 
-The eXtreme Gradient Boosting algorithm, or shortly XGBoost, was developed as an attempt to improve on the performance of GBM, both in terms of speed and prediction power [@chen2016xgboost]. It has has not only succeeded in doing so, but it has also become one of the most used models [@nielsen2016tree]. Among the differences that XGBoost introduces in comparison to the GBM model is that the former uses clever penalization of the individual trees - the leaf weights are not all decreased at the same rate, instead the weights which are estimated without much evidence from the training set will be shrunk more heavily relative to others. Furthermore, the XGBoost employs another type of boosting structure when compared to GBM - Newton boosting. Due to this, the algorithm manages to better learn tree structures, leading to learning better neighbourhoods. XGBoost also incorporates a randomization paramater, which contributes to the individual tree decorellation and reducing variance. Some technical detail references regarding the differences between XGBoost and GBM are included in the Appendix - such as the gradient and Newton boosting and leaf weight learning. The general pseudo-codes are similar. 
+The eXtreme Gradient Boosting algorithm, or shortly XGBoost, was developed as an attempt to improve on the performance of GBM, both in terms of speed and prediction power [@chen2016xgboost]. It has has not only succeeded in doing so, but it has also become one of the most used models [@nielsen2016tree]. Among the differences that XGBoost introduces in comparison to the GBM model is that the former uses clever penalization of the individual trees - the leaf weights are not all decreased at the same rate, instead the weights which are estimated without much evidence from the training set will be shrunk more heavily relative to others. Furthermore, the XGBoost employs another type of boosting structure when compared to GBM - Newton boosting. Due to this, the algorithm manages to better learn tree structures, leading to learning better neighbourhoods. XGBoost also incorporates a randomization paramater, which contributes to the individual tree decorellation and reducing variance. Some technical detail references regarding the differences between XGBoost and GBM are included in Appendix 9.1 - such as the gradient and Newton boosting and leaf weight learning. The general pseudo-codes are similar. 
 
 
 ## 3.3. Cross-Validation

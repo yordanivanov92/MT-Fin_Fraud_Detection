@@ -1,6 +1,4 @@
 ---
-title: "master_thesis_appendix"
-author: "Yordan Ivanov"
 output:
   pdf_document: 
     fig_caption: yes
@@ -12,9 +10,40 @@ fontsize: 12pt
 geometry: margin = 1.5in
 ---
 
-# 8. Appendix
+# 9. Appendix
 
-## GBM vs XGBoost
+## 9.1 Neural Networks
+
+### Back-propagation with single hidden layer
+
+Denote set of weights with $\theta$ and use cross-entropy error as measure of fit:
+
+$$R(\theta)=\sum_{i=1}^{N}R_i =-\sum_{i=1}^{N}\sum_{g=1}^{G}y_{ig}\log{f_g(x_i)}$$
+with a classifier $G(x)=\arg\max_{g}f_g(x)$. Compute the partial derivatives of $R_i$ w.r.t. $\beta_{qf}$ and $\alpha_{fl}$:
+
+$$\frac{\partial R_i}{\partial \beta_{qf}}=\sum_{g=1}^{G}y_{ig}\frac{\frac{\partial}{\beta_{gqf}}[\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))]}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}$$
+$$=\frac{(\sum_{g=1,g\neq q}^{G}y_{ig}-y_{iq})\exp(g_{q}^{'}(\beta_q^Tz_i))z_fi}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}=\delta_{qi}z_{fi}$$
+where $\delta_{qi}=\frac{\partial R_i}{\partial (\beta_{qf} z_{fi})}$. When considering $\alpha_{fl}$:
+$$\frac{\partial R_i}{\partial \alpha_{fl}}=\sum_{g=1}^{G}\frac{\partial R_i}{\partial (\beta_{gf}z_{fi})}\frac{\partial (\beta_{gf}z_{fi})}{\partial z_{fi})}\frac{\partial z_{fi}}{\partial \alpha_{fl}}$$
+$$= (\sum_{g=1}^{G}\delta_{qi}\beta_{gf})\sigma^{'}(\alpha_{f}^{T}x)=\frac{\partial R_i}{\partial (\alpha_{fl}x_{li})}$$
+which is the backpropagation equation.
+
+
+The gradient descent at step $r+1$ is:
+
+$$\beta_{gf}^{(r+1)}\leftarrow\beta_{gf}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \beta_{gf}^{(r)}}$$
+$$\alpha_{fl}^{(r+1)}\leftarrow\alpha_{fl}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \alpha_{fl}^{(r)}}$$
+
+where $\gamma_r$ represents the learning rate. 
+
+## 9.2 SVM
+
+### Karush-Kuhn-Tucker (KKT) conditions
+
+$$\alpha_i(y_i(w\cdot\phi(x_i)+b)-1+\xi_i)=0,\;\;\;i=1,...,p$$
+$$(C-\alpha_i)\xi_i=0,\;\;\;i=1,...,p$$
+
+## 9.3. GBM vs XGBoost
 
 ### Structure learning and the gradient vs Newton algorithms
 
