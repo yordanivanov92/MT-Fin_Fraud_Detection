@@ -3,6 +3,7 @@ output:
   pdf_document: 
     fig_caption: yes
     latex_engine: pdflatex
+    keep_tex: yes
 bibliography: references.bib
 urlcolor: black
 linkcolor: black
@@ -70,3 +71,42 @@ $$\rho_{km}=\frac{G_{km}}{H_{km}}=\frac{\sum_{x_i\in S_k}z_m(x_i)}{\sum_{x_i\in 
 In gradient tree boosting the terminal node weights are determined by separate line searches in each terminal node:
 
 $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+$\;$
+
+## 9.4 Figures
+
+![k-fold CV with k=5](figures/crossval.png){width=90%}
+
+![Something else](figures/nnet.png){width=60%}
+

@@ -212,13 +212,25 @@ The eXtreme Gradient Boosting algorithm, or shortly XGBoost, was developed as an
 
 ## 3.3. Cross-Validation
 
+The framework for model training that we use in this study is a $k$-fold Cross-Validation (CV) with $k=10$ [@james2013introduction]. The method incorporates a random division of the training set into $k$ folds with approximately similar size. The initial fold is used a validation set and the chosen statistical learning model is fit on the remaining $k-1$ folds. The error is then calculated on the observations in the held-out fold. The entire process is then repeated $k$ times, with a different validation set at each iteration, thus computing $k$ estimates of the test error. The $k$-fold CV estimate can then be shown as:
+$$CV_{(k)}=\frac{1}{k}\sum_{i=1}^{k}Err_i$$ 
+where $Err_i = I(y_i\neq \widehat{y}_i)$. 
+
+There are other approaches to CV, such as the Leave-One-Out CV (LOOCV), but the $k$-fold CV has shown to be superior in both computational time and estimate accuracy [@friedman2001elements]. The latter is connected to the bias-variance trade-off problem, but a discussion is out of the scope of this paper. A graphical representation can be seen in Figure 1 in Appendix Section 9.4. 
+
 # 4. Data
 
 ## 4.1. Datasets
 
+The number of datasets that we will be using in this study is four - two real-world and two simulated. The real-world ones are masked, due to security reasons. 
+
 ### 4.1.1. Real-World Datasets
 
-#### UCSD-FICO Competition
+#### UCSD-FICO Data Mining Contest 2009
+
+The dataset was released by FICO, one of the leading analytics providers, and the University of California, San Diego (UCSD). It consists of real-world e-commerce transactions and it was released in two versions - an "easy" and a "hard" one. We will be using the "hard" version for the assessments of the models used. Due to the fact, that is a real-world data set, anonymiziation is introduced, which means that methods depending on feature aggregation or feature engineering will not lead to improvement in efficiency [@seeja2014fraudminer]. Nonetheless, some data preprocessing is done. 
+
+The dataset consists of 100 000 transactions made by 73 729 different customers throughout 98 days. Each transaction is characterized by 20 features - amount, hour1, state1, zip1, custAttr1, field1, custAttr2, field2, hour2, flag1, total, field3, field4, indicator1, indicator2, flag2, flag3, flag4, flag5. It can be observed that custAttr1 is the customer card number, while the custAttr2 is the e-mail address. 
 
 #### Université Libre de Bruxelles
 

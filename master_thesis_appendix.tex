@@ -1,0 +1,225 @@
+\documentclass[12pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin = 1.5in]{geometry}
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
+            colorlinks=true,
+            linkcolor=black,
+            citecolor=Blue,
+            urlcolor=black,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{}
+  \pretitle{\vspace{\droptitle}}
+  \posttitle{}
+  \author{}
+  \preauthor{}\postauthor{}
+  \date{}
+  \predate{}\postdate{}
+
+
+\begin{document}
+
+\hypertarget{appendix}{%
+\section{9. Appendix}\label{appendix}}
+
+\hypertarget{neural-networks}{%
+\subsection{9.1 Neural Networks}\label{neural-networks}}
+
+\hypertarget{back-propagation-with-single-hidden-layer}{%
+\subsubsection{Back-propagation with single hidden
+layer}\label{back-propagation-with-single-hidden-layer}}
+
+Denote set of weights with \(\theta\) and use cross-entropy error as
+measure of fit:
+
+\[R(\theta)=\sum_{i=1}^{N}R_i =-\sum_{i=1}^{N}\sum_{g=1}^{G}y_{ig}\log{f_g(x_i)}\]
+with a classifier \(G(x)=\arg\max_{g}f_g(x)\). Compute the partial
+derivatives of \(R_i\) w.r.t. \(\beta_{qf}\) and \(\alpha_{fl}\):
+
+\[\frac{\partial R_i}{\partial \beta_{qf}}=\sum_{g=1}^{G}y_{ig}\frac{\frac{\partial}{\beta_{gqf}}[\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))]}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}\]
+\[=\frac{(\sum_{g=1,g\neq q}^{G}y_{ig}-y_{iq})\exp(g_{q}^{'}(\beta_q^Tz_i))z_fi}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}=\delta_{qi}z_{fi}\]
+where \(\delta_{qi}=\frac{\partial R_i}{\partial (\beta_{qf} z_{fi})}\).
+When considering \(\alpha_{fl}\):
+\[\frac{\partial R_i}{\partial \alpha_{fl}}=\sum_{g=1}^{G}\frac{\partial R_i}{\partial (\beta_{gf}z_{fi})}\frac{\partial (\beta_{gf}z_{fi})}{\partial z_{fi})}\frac{\partial z_{fi}}{\partial \alpha_{fl}}\]
+\[= (\sum_{g=1}^{G}\delta_{qi}\beta_{gf})\sigma^{'}(\alpha_{f}^{T}x)=\frac{\partial R_i}{\partial (\alpha_{fl}x_{li})}\]
+which is the backpropagation equation.
+
+The gradient descent at step \(r+1\) is:
+
+\[\beta_{gf}^{(r+1)}\leftarrow\beta_{gf}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \beta_{gf}^{(r)}}\]
+\[\alpha_{fl}^{(r+1)}\leftarrow\alpha_{fl}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \alpha_{fl}^{(r)}}\]
+
+where \(\gamma_r\) represents the learning rate.
+
+\hypertarget{svm}{%
+\subsection{9.2 SVM}\label{svm}}
+
+\hypertarget{karush-kuhn-tucker-kkt-conditions}{%
+\subsubsection{Karush-Kuhn-Tucker (KKT)
+conditions}\label{karush-kuhn-tucker-kkt-conditions}}
+
+\[\alpha_i(y_i(w\cdot\phi(x_i)+b)-1+\xi_i)=0,\;\;\;i=1,...,p\]
+\[(C-\alpha_i)\xi_i=0,\;\;\;i=1,...,p\]
+
+\hypertarget{gbm-vs-xgboost}{%
+\subsection{9.3. GBM vs XGBoost}\label{gbm-vs-xgboost}}
+
+\hypertarget{structure-learning-and-the-gradient-vs-newton-algorithms}{%
+\subsubsection{Structure learning and the gradient vs Newton
+algorithms}\label{structure-learning-and-the-gradient-vs-newton-algorithms}}
+
+On each iteration, the optimiziation criterias, concerning tree
+structure learning, of the Newton tree boosting and the Gradient tree
+boosting differ.
+
+When talking about Gradient tree boosting, we are interested in the
+learning of the tree, that exhibits the highest correlation with the
+negative gradient of the current empirical risk. The tree model is fit
+using:
+
+\[\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}[z_{m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k)]^2\]
+
+Newton tree boosting uses a different approach - the algorithm is
+learning the tree, that fits the second-order Taylor expansion of the
+loss function best. The tree model here is fit using:
+
+\[\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}h_m[\frac{z_m}{h_m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k]^2\]
+
+The difference is that in the case of Newton boosting, the model is fit
+to the negative gradient, scaled by the Hessian, using weighted
+least-squares regression. The Hessian is given by
+\(h_m = \frac{\partial{\Psi(y_{i},f(\mathbf{x}_i))}^{2}}{\partial^{2}{f(\mathbf{x}_i)}}\rvert_{f(\mathbf{x}_i)=\widehat{f}(\mathbf{x}_i)}\).
+
+\hypertarget{node-weight-learning}{%
+\subsubsection{Node weight learning}\label{node-weight-learning}}
+
+The differences again come from the different boosting approaches.
+
+In the Newton tree boosting, the terminal node weight is being
+determined by the criterion that is used to determine the tree structure
+- terminal node weights are same as the node weights learnt when
+searching for the tree structure:
+
+\[\rho_{km}=\frac{G_{km}}{H_{km}}=\frac{\sum_{x_i\in S_k}z_m(x_i)}{\sum_{x_i\in S_k}h_m(x_i)}\]
+
+In gradient tree boosting the terminal node weights are determined by
+separate line searches in each terminal node:
+
+\[\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)\]
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\(\;\)
+
+\hypertarget{figures}{%
+\subsection{9.4 Figures}\label{figures}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth,height=\textheight]{figures/crossval.png}
+\caption{k-fold CV with k=5}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/nnet.png}
+\caption{Something else}
+\end{figure}
+
+
+\end{document}
