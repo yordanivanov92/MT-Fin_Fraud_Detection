@@ -15,11 +15,11 @@ options(scipen=999)
 
 set.seed(48)
 
-ucsd_data<- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
+ucsd_data<- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
                        header = TRUE,
                        sep = ",",
                        stringsAsFactors = TRUE)
-ucsd_data_targets <- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
+ucsd_data_targets <- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
                                 #header = TRUE,
                                 sep = ",")
 ucsd_data <- cbind(ucsd_data, ucsd_data_targets)
@@ -42,6 +42,9 @@ multi_obs <- ucsd_data %>%
 ucsd_data <- join(ucsd_data, multi_obs, by = "custAttr1", type = "inner") %>%
   dplyr::select(-freq)
 rm(multi_obs)
+
+ucsd_data$Class <- as.factor(ucsd_data$Class)
+prop.table(table(ucsd_data$Class))
 
 plyr::count(ucsd_data, c("zip1", "Class")) %>% dplyr::arrange(-freq) %>% dplyr::filter(Class == 1)
 #     zip1 Class freq
