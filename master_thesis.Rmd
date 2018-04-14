@@ -230,7 +230,7 @@ The number of datasets that we will be using in this study is four - two real-wo
 
 The dataset was released by FICO, one of the leading analytics providers, and the University of California, San Diego (UCSD). It consists of real-world e-commerce transactions and it was released in two versions - an "easy" and a "hard" one. We will be using the "hard" version for the assessments of the models used. Due to the fact, that is a real-world data set, anonymiziation is introduced, which means that methods depending on feature aggregation or feature engineering will not lead to improvement in efficiency [@seeja2014fraudminer]. Nonetheless, some data preprocessing is done. 
 
-The dataset consists of 100 000 transactions made by 73 729 different customers throughout 98 days. Each transaction is characterized by 20 features - amount, hour1, state1, zip1, custAttr1, field1, custAttr2, field2, hour2, flag1, total, field3, field4, indicator1, indicator2, flag2, flag3, flag4, flag5. It can be observed that custAttr1 is the customer card number, while the custAttr2 is the e-mail address. 
+The dataset consists of 100 000 transactions made by 73 729 different customers throughout 98 days. Each transaction is characterized by 20 features - amount, hour1, state1, zip1, custAttr1, field1, custAttr2, field2, hour2, flag1, total, field3, field4, indicator1, indicator2, flag2, flag3, flag4, flag5. It can be observed that custAttr1 is the customer card number, while the custAttr2 is the e-mail address. As both fields are unique, we discard custAttr2. 
 
 #### Université Libre de Bruxelles
 
