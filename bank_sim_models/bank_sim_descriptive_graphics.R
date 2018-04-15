@@ -17,6 +17,10 @@ bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project
                     header = TRUE,
                     sep = ",")
 
+prop.table(table(bankSim$fraud))
+# 0          1 
+# 0.98789189 0.01210811
+
 plyr::count(bankSim, c("category", "fraud"))
 # es_contents - no fraud
 # es_food - no fraud
