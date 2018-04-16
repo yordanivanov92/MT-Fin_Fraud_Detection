@@ -11,6 +11,7 @@ linkcolor: black
 fontsize: 12pt
 bibliography: references.bib
 urlcolor: black
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -77,11 +78,17 @@ The definition for fraud, as given by The Institute of Internal Auditors’ Inte
 
 “… any illegal act characterized by deceit, concealment, or violation of trust. These acts are not dependent upon the threat of violence or physical force. Frauds are perpetrated by parties and organizations to obtain money, property, or services; to avoid payment or loss of services; or to secure personal or business advantage.”
 
+Financial Fraud as a whole can be divided into two major categories - Customer Fraud and Management Fraud. 
+
+![Financial Fraud Types](figures/fraud_hieararchy.png){width=60%}
+
 ## 2.2. Costs of Financial Fraud
 
 Financial Fraud is currently one of the biggest threats to business establishments, resulting in enormous finance losses each year. Only throughout the year 2015, the losses from credit card fraud amounted to $21.84 Billion [@nilson2016nilson]. Moreover, the losses occured by firms are not only monetary - damage on reputation and customer ties could prove to be devastating [@fraudanalyticsacl]. Thus, the overall losses from financial fraud are simply incalculable [@ngai2011application]. 
 
 ## 2.3. Combating Financial Fraud
+
+
 
 # 3. Methodology
 

@@ -1,0 +1,12 @@
+library(data.tree)
+fraud_category <- Node$new("Financial Fraud")
+man_fraud <- fraud_category$AddChild("Management Fraud")
+fin_statement <- man_fraud$AddChild("Financial Statement Fraud")
+cust_fraud <- fraud_category$AddChild("Customer Fraud")
+cred_card <- cust_fraud$AddChild("Credit Card Fraud")
+insurance <- cust_fraud$AddChild("Insurance Fraud")
+SetGraphStyle(fraud_category, rankdir = "TB")
+SetEdgeStyle(fraud_category, arrowhead = "vee", color = "grey35", penwidth = 2)
+SetNodeStyle(fraud_category, style = "filled,rounded", shape = "box", fillcolor = "GreenYellow",
+             fontname = "helvetica", tooltip = GetDefaultTooltip)
+plot(fraud_category)
