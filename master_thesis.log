@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  16 APR 2018 11:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  17 APR 2018 15:44
 entering extended mode
 **./master_thesis.tex
 (master_thesis.tex
@@ -972,44 +972,44 @@ LaTeX Font Info:    Try loading font information for TS1+lmr on input line 153.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\ts1lmr.fd"
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-<figures/fraud_hieararchy.png, id=119, 721.19438pt x 262.73157pt>
-File: figures/fraud_hieararchy.png Graphic file (type png)
-<use figures/fraud_hieararchy.png>
-Package pdftex.def Info: figures/fraud_hieararchy.png  used on input line 177.
-(pdftex.def)             Requested size: 266.2435pt x 96.99266pt.
-[2 <./figures/fraud_hieararchy.png (PNG copy)>] [3]
-<figures/nnet.png, id=142, 376.40625pt x 397.485pt>
+<figures/fraud_hierarchy.png, id=119, 532.23843pt x 362.85562pt>
+File: figures/fraud_hierarchy.png Graphic file (type png)
+<use figures/fraud_hierarchy.png>
+Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 179.
+(pdftex.def)             Requested size: 310.62325pt x 211.7686pt.
+[2] [3 <./figures/fraud_hierarchy.png (PNG copy)>]
+<figures/nnet.png, id=139, 376.40625pt x 397.485pt>
 File: figures/nnet.png Graphic file (type png)
 <use figures/nnet.png>
-Package pdftex.def Info: figures/nnet.png  used on input line 263.
+Package pdftex.def Info: figures/nnet.png  used on input line 275.
 (pdftex.def)             Requested size: 266.26242pt x 281.17311pt.
-[4 <./figures/nnet.png>] [5]
-Overfull \hbox (9.48466pt too wide) detected at line 330
+[4] [5 <./figures/nnet.png>]
+Overfull \hbox (9.48466pt too wide) detected at line 342
 []\OMS/lmsy/m/n/12 f[] []   [] [] [] []g  \OML/lmm/m/it/12 s:t:   [] [] \OT1/lm
 r/m/n/12 = 0\OML/lmm/m/it/12 ;   \OT1/lmr/m/n/12 0 \OMS/lmsy/m/n/12  \OML/lmm/
 m/it/12 [] \OMS/lmsy/m/n/12  \OML/lmm/m/it/12 C;   i \OT1/lmr/m/n/12 = 1\OML/
 lmm/m/it/12 ; :::; p    \OT1/lmr/m/n/12 (5)
  []
 
-[6] [7] [8] [9] [10] [11] [12] [13] [14] [15]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 938.
-[16]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 938.
+[6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 960.
+[17]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 960.
 (master_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 938.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 938.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 960.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 960.
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 1E8414419E4047B9C8074A4A2E9F4052;4484.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 938.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 960.
  ) 
 Here is how much of TeX's memory you used:
- 12811 strings out of 493305
- 186824 string characters out of 3138849
+ 12814 strings out of 493305
+ 186878 string characters out of 3138849
  285901 words of memory out of 3000000
  15947 multiletter control sequences out of 15000+200000
  61561 words of font info for 105 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,6n,38p,438b,448s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 32i,6n,38p,438b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
 iKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/e
 nc/dvips/lm/lm-mathex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ma
@@ -1027,9 +1027,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis.pdf (16 pages, 1323216 bytes).
+Output written on master_thesis.pdf (17 pages, 1344483 bytes).
 PDF statistics:
- 363 PDF objects out of 1000 (max. 8388607)
- 127 named destinations out of 1000 (max. 500000)
+ 369 PDF objects out of 1000 (max. 8388607)
+ 130 named destinations out of 1000 (max. 500000)
  10451 words of extra memory for PDF output out of 12000 (max. 10000000)
 

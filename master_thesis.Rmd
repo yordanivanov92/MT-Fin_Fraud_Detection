@@ -1,17 +1,18 @@
 ---
 title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
-css: master_thesis_style.css
+bibliography: references.bib
 output:
+  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
+fontsize: 12pt
 geometry: margin = 1.18in
 linkcolor: black
-fontsize: 12pt
-bibliography: references.bib
-urlcolor: black
+css: master_thesis_style.css
 always_allow_html: yes
+urlcolor: black
 ---
 
 ```{r setup, include=FALSE}
@@ -78,9 +79,13 @@ The definition for fraud, as given by The Institute of Internal Auditors’ Inte
 
 “… any illegal act characterized by deceit, concealment, or violation of trust. These acts are not dependent upon the threat of violence or physical force. Frauds are perpetrated by parties and organizations to obtain money, property, or services; to avoid payment or loss of services; or to secure personal or business advantage.”
 
-Financial Fraud as a whole can be divided into two major categories - Customer Fraud and Management Fraud. 
+Financial Fraud as a whole can be divided into two major categories - Customer Fraud and Management Fraud [@bhardwaj2016financial]. In this paper, we will be focusing on Customer Fraud, or more precisely on Credit Card and Transaction Fraud. 
 
-![Financial Fraud Types](figures/fraud_hieararchy.png){width=60%}
+![Financial Fraud Types](figures/fraud_hierarchy.png){width=70%}
+
+Credit Card can also be categorized in two groups - application and behavioural fraud [@bolton2001unsupervised].The former category is essentialy the acquisition of new cards from the issuing companies using fraudulent or stolen information. The latter can be subcategorized into stolen or lost card, counterfeit card, "card not present" fraud and mail theft (See Figure 1). The stolen or lost card occurs when fraudster manages to obtain physical posession of the card. The next two fraud types, counterfeit and card not present, have been steadily rising in numbers, thanks to the emergence of online transactions [@fletcher2007challenges]. Lastly, mail theft fraud occurs when the credit card is intercepted before arriving by mail to the customer, or when fraudster steal personal information from bank and credit card statements [@capitaloneguide]. 
+
+Broadly speaking, 
 
 ## 2.2. Costs of Financial Fraud
 
