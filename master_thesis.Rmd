@@ -3,7 +3,6 @@ title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
 bibliography: references.bib
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
@@ -85,7 +84,9 @@ Financial Fraud as a whole can be divided into two major categories - Customer F
 
 Credit Card can also be categorized in two groups - application and behavioural fraud [@bolton2001unsupervised].The former category is essentialy the acquisition of new cards from the issuing companies using fraudulent or stolen information. The latter can be subcategorized into stolen or lost card, counterfeit card, "card not present" fraud and mail theft (See Figure 1). The stolen or lost card occurs when fraudster manages to obtain physical posession of the card. The next two fraud types, counterfeit and card not present, have been steadily rising in numbers, thanks to the emergence of online transactions [@fletcher2007challenges]. Lastly, mail theft fraud occurs when the credit card is intercepted before arriving by mail to the customer, or when fraudster steal personal information from bank and credit card statements [@capitaloneguide]. 
 
-Broadly speaking, 
+Broadly speaking, e-commerce represents the business transactions that are being made cyberspace, or "Digitally enabled transactions" [@laudon2013commerce]. There are five types of e-commerce - business-to-commerce (B2C), business-to-business (B2B), consumer-to-consumer (C2C), peer-to-peer (P2P) and mobile commerce (m-commerce). The most vulnerable to fraud are B2C and C2C, as the main reason is that in e-commerce the products and services can not be inspected before the transaction is done [@grabosky2001electronic]. Hence, we have increased risks of fraud. 
+
+Thus, implementation of analytics that can scan through the transactions being made is necessary for minimizing losses [@buanuarescu2015detecting]. 
 
 ## 2.2. Costs of Financial Fraud
 
@@ -93,7 +94,7 @@ Financial Fraud is currently one of the biggest threats to business establishmen
 
 ## 2.3. Combating Financial Fraud
 
-
+As a result from the increase in the amount of data globally, there has also been a rise in the use of predictive analytics [@buanuarescu2015detecting]. When talking about financial fraud, the forensic data analytics (FDA) are being used, but the percentage of sophisticated methods and software applied is not very high (See Table 1). 
 
 # 3. Methodology
 
