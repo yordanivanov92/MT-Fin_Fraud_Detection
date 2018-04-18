@@ -96,6 +96,26 @@ Financial Fraud is currently one of the biggest threats to business establishmen
 
 As a result from the increase in the amount of data globally, there has also been a rise in the use of predictive analytics [@buanuarescu2015detecting]. When talking about financial fraud, the forensic data analytics (FDA) are being used, but the percentage of sophisticated methods and software applied is not very high (See Table 1). 
 
+```{r table analytics, echo = FALSE}
+library(knitr)
+analytics_table <- data.frame ("Forensic Data" = c("Spreadsheet tools such as MS Excel",
+                                                   "Database tools such as MS Access or MS SQL Server",
+                                                   "Continious monitoring tools, which may include                                                           governance risk and compliance (GRC) tools (SAP,                                                         Oracle, SAI Global)",
+                                                   "Text analytics tools or keyword searching",
+                                                   "Forensic analytics software (ACL, iDEA)",
+                                                   "Social media/web monitoring tools",
+                                                   "Visualization and reporting tools (Tableau, Spotfire,                                                     QlikView",
+                                                   "Statistical analysis and data-mining packages (R,                                                        SAS, Stata, SPSS",
+                                                   "Big data technologies (Hadoop, Map Reduce)",
+                                                   "Voice searching and analysis (Nexidia, NICE)"),
+                               "Percent" = c("65%", "43%", "29%", 
+                                             "26%", "26%", "21%", 
+                                             "12%", "11%", "2%", 
+                                             "2%"))
+kable(analytics_table, format = "markdown")
+```
+
+
 # 3. Methodology
 
 Classification is one of the most widely used model framework used for the application of machine learning techniques in terms of FFD [@ngai2011application]. Some of the most common classification techniques include logistic regression, neural networks, support vector machine and decision trees and their variations.
