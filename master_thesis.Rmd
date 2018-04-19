@@ -3,6 +3,7 @@ title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
 bibliography: references.bib
 output:
+  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
@@ -122,7 +123,8 @@ kable(analytics_table, format = "pandoc", caption = "Forensic Data Analysis Tool
 
 In the report by @analytics_tools_table, the respondents state that by using more complicated and proactive methods, they have faced a 59,7% reduction in median loss, in comparison to the respondents that did not. 
 
-Among the more complex and successful methods for fraud reduction are machine learning techniques [@chaudhary2012credit]. Among the techniques most used for credit card are logistic regression, support vector machines, neural networks, bayesian networks, cluster methods and different tree models [@ngai2011application; @bhattacharyya2011data; @chaudhary2012credit].
+Among the more complex and successful methods for fraud reduction are machine learning (ML) techniques [@chaudhary2012credit]. The ML models used for FFD, and especially credit card fraud, can be broadly categorized into two major groups - supervised and unsupervised learning methods. The unsupervised techniques depend only on the characteristics of each transaction, grouping them into clusters with homogenous attributes. Whenever an observation is not assigned to an already existing cluster of legal transactions, it signals that there is a probability that the transaction is fraudulent [@bolton2001unsupervised]. However, most studies in the field have focused on the use of supervised learning methods for FFD [@ngai2011application]. In this framework, the model is trained on already labeled datasets, recognizing the patterns associated with fraudulent transactions. Among the techniques most used for credit card are logistic regression, support vector machines, neural networks, bayesian networks, and different tree models [@ngai2011application; @bhattacharyya2011data; @chaudhary2012credit].
+
 
 
 # 3. Methodology
