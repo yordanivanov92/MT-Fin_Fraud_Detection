@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  18 APR 2018 13:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  18 APR 2018 23:23
 entering extended mode
 **./master_thesis.tex
 (master_thesis.tex
@@ -835,33 +835,33 @@ Package: titling 2009/09/04 v2.1d maketitle typesetting
 ) (master_thesis.aux)
 \openout1 = `master_thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 91.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 91.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 93.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 93.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd"
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 91.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 93.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\t1lmr.fd"
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Info: Redefining \microtypecontext on input line 91.
+LaTeX Info: Redefining \microtypecontext on input line 93.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -921,7 +921,7 @@ Package color Info: Driver file: pdftex.def on input line 147.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\dvipsnam.def"
 File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
 ))
-Package hyperref Info: Link coloring ON on input line 91.
+Package hyperref Info: Link coloring ON on input line 93.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\hyperref\nameref.sty"
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 ("C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty"
@@ -929,9 +929,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count123
 )
-LaTeX Info: Redefining \ref on input line 91.
-LaTeX Info: Redefining \pageref on input line 91.
-LaTeX Info: Redefining \nameref on input line 91.
+LaTeX Info: Redefining \ref on input line 93.
+LaTeX Info: Redefining \pageref on input line 93.
+LaTeX Info: Redefining \nameref on input line 93.
 (master_thesis.out) (master_thesis.out)
 \@outlinefile=\write3
 \openout3 = `master_thesis.out'.
@@ -963,31 +963,31 @@ Package grfext Info: Graphics extension search list:
 G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 97.
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 99.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\ot1lmr.fd"
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 97.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 99.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\omllmm.fd"
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 97.
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 99.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\omslmsy.fd"
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 97.
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 99.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\omxlmex.fd"
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 97.
+(Font)              <12> on input line 99.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 97.
+(Font)              <8> on input line 99.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 97.
-LaTeX Font Info:    Try loading font information for U+msa on input line 97.
+(Font)              <6> on input line 99.
+LaTeX Font Info:    Try loading font information for U+msa on input line 99.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -995,7 +995,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 cfg"
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 97.
+LaTeX Font Info:    Try loading font information for U+msb on input line 99.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
@@ -1005,7 +1005,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {C:/Users/Yordan Ivanov/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 154.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 156.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\ts1lmr.fd"
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -1013,102 +1013,53 @@ File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 <figures/fraud_hierarchy.png, id=119, 532.23843pt x 362.85562pt>
 File: figures/fraud_hierarchy.png Graphic file (type png)
 <use figures/fraud_hierarchy.png>
-Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 180.
+Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 182.
 (pdftex.def)             Requested size: 310.62325pt x 211.7686pt.
-[2]
-Overfull \hbox (24.57614pt too wide) in paragraph at lines 237--238
-[]\T1/lmr/m/n/12 (-20) Percent|  
- []
-
-
-Overfull \hbox (7.79953pt too wide) in paragraph at lines 244--245
-[]\T1/lmr/m/n/12 (-20) 65%|  
- []
-
-
-Overfull \hbox (7.38829pt too wide) in paragraph at lines 249--250
-[]\T1/lmr/m/n/12 (-20) 43%|  
- []
-
-
-Overfull \hbox (7.50578pt too wide) in paragraph at lines 255--256
-[]\T1/lmr/m/n/12 (-20) 29%|  
- []
-
-
-Overfull \hbox (7.50578pt too wide) in paragraph at lines 260--261
-[]\T1/lmr/m/n/12 (-20) 26%|  
- []
-
-
-Overfull \hbox (7.50578pt too wide) in paragraph at lines 265--266
-[]\T1/lmr/m/n/12 (-20) 26%|  
- []
-
-
-Overfull \hbox (7.50578pt too wide) in paragraph at lines 270--271
-[]\T1/lmr/m/n/12 (-20) 21%|  
- []
-
-
-Overfull \hbox (7.21204pt too wide) in paragraph at lines 275--276
-[]\T1/lmr/m/n/12 (-20) 12%|  
- []
-
-
-Overfull \hbox (7.21204pt too wide) in paragraph at lines 280--281
-[]\T1/lmr/m/n/12 (-20) 11%|  
- []
-
-
-Overfull \hbox (1.74829pt too wide) in paragraph at lines 285--286
-[]\T1/lmr/m/n/12 (-20) 2%|  
- []
-
-
-Overfull \hbox (1.74829pt too wide) in paragraph at lines 290--291
-[]\T1/lmr/m/n/12 (-20) 2%|  
- []
-
-[3 <./figures/fraud_hierarchy.png (PNG copy)>] [4]
-<figures/nnet.png, id=145, 376.40625pt x 397.485pt>
+[2] [3 <./figures/fraud_hierarchy.png (PNG copy)>] [4]
+<figures/nnet.png, id=144, 376.40625pt x 397.485pt>
 File: figures/nnet.png Graphic file (type png)
 <use figures/nnet.png>
-Package pdftex.def Info: figures/nnet.png  used on input line 361.
+Package pdftex.def Info: figures/nnet.png  used on input line 341.
 (pdftex.def)             Requested size: 266.26242pt x 281.17311pt.
 [5] [6 <./figures/nnet.png>]
-Overfull \hbox (9.48466pt too wide) detected at line 428
+Overfull \hbox (9.48466pt too wide) detected at line 408
 []\OMS/lmsy/m/n/12 f[] []   [] [] [] []g  \OML/lmm/m/it/12 s:t:   [] [] \OT1/lm
 r/m/n/12 = 0\OML/lmm/m/it/12 ;   \OT1/lmr/m/n/12 0 \OMS/lmsy/m/n/12  \OML/lmm/
 m/it/12 [] \OMS/lmsy/m/n/12  \OML/lmm/m/it/12 C;   i \OT1/lmr/m/n/12 = 1\OML/
 lmm/m/it/12 ; :::; p    \OT1/lmr/m/n/12 (5)
  []
 
-[7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1069.
+[7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
+Underfull \hbox (badness 10000) in paragraph at lines 932--935
+\T1/lmr/m/n/12 (+20) Publication / vwLUAssets / EY-[]Global-[]Forensic-[]Data-[
+]Analytics-[]Survey-[]2014 / $FILE /
+ []
+
+[17]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1057.
 [18]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1069.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1057.
 (master_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1069.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1069.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1057.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1057.
 
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 1E8414419E4047B9C8074A4A2E9F4052;4484.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1069.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1057.
  ) 
 Here is how much of TeX's memory you used:
- 12961 strings out of 493305
- 188826 string characters out of 3138849
- 288461 words of memory out of 3000000
- 16079 multiletter control sequences out of 15000+200000
- 61561 words of font info for 105 fonts, out of 3000000 for 9000
+ 12967 strings out of 493305
+ 188920 string characters out of 3138849
+ 287461 words of memory out of 3000000
+ 16082 multiletter control sequences out of 15000+200000
+ 64553 words of font info for 106 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,6n,38p,438b,498s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 32i,6n,38p,438b,439s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
 iKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/e
 nc/dvips/lm/lm-mathex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ma
-thit.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ts1.enc}{C:/Program
- Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}<C:/Program Files/MiKTeX 2.9/fon
+thit.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}{C:/Program 
+Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ts1.enc}<C:/Program Files/MiKTeX 2.9/fon
 ts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/l
 m/lmbx8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmex10.pfb><C:/P
 rogram Files/MiKTeX 2.9/fonts/type1/public/lm/lmmi12.pfb><C:/Program Files/MiKT
@@ -1121,9 +1072,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis.pdf (18 pages, 1349680 bytes).
+Output written on master_thesis.pdf (18 pages, 1352589 bytes).
 PDF statistics:
- 382 PDF objects out of 1000 (max. 8388607)
- 137 named destinations out of 1000 (max. 500000)
+ 390 PDF objects out of 1000 (max. 8388607)
+ 139 named destinations out of 1000 (max. 500000)
  10451 words of extra memory for PDF output out of 12000 (max. 10000000)
 

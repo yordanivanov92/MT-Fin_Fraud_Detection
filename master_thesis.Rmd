@@ -15,7 +15,8 @@ urlcolor: black
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
 ```
 
 # Variable Description
@@ -94,26 +95,34 @@ Financial Fraud is currently one of the biggest threats to business establishmen
 
 ## 2.3. Combating Financial Fraud
 
-As a result from the increase in the amount of data globally, there has also been a rise in the use of predictive analytics [@buanuarescu2015detecting]. When talking about financial fraud, the forensic data analytics (FDA) are being used, but the percentage of sophisticated methods and software applied is not very high (See Table 1). 
+As a result from the increase in the amount of data globally, there has also been a rise in the use of predictive analytics [@buanuarescu2015detecting]. When talking about financial fraud, the forensic data analytics (FDA) are being used, but the percentage of sophisticated methods and software applied is not very high (See Table 1). A big percentage of the industry uses spreadsheet tools or database tools, which in their nature are primitive in terms of data analysis. 
 
 ```{r table analytics, echo = FALSE}
+library(dplyr)
 library(knitr)
+library(kableExtra)
 analytics_table <- data.frame ("Forensic Data" = c("Spreadsheet tools such as MS Excel",
                                                    "Database tools such as MS Access or MS SQL Server",
-                                                   "Continious monitoring tools, which may include                                                           governance risk and compliance (GRC) tools (SAP,                                                         Oracle, SAI Global)",
+                                                   "Continious monitoring tools  (SAP, Oracle, SAI Global)",
                                                    "Text analytics tools or keyword searching",
                                                    "Forensic analytics software (ACL, iDEA)",
                                                    "Social media/web monitoring tools",
-                                                   "Visualization and reporting tools (Tableau, Spotfire,                                                     QlikView",
-                                                   "Statistical analysis and data-mining packages (R,                                                        SAS, Stata, SPSS",
+                                                   "Visualization and reporting tools (Tableau, Spotfire,                                                     QlikView)",
+                                                   "Statistical analysis and data-mining packages (R,                                                        SAS, Stata, SPSS)",
                                                    "Big data technologies (Hadoop, Map Reduce)",
                                                    "Voice searching and analysis (Nexidia, NICE)"),
-                               "Percent" = c("65%", "43%", "29%", 
+                               "Percent" = c("65%", "43%", " \n 29%", 
                                              "26%", "26%", "21%", 
                                              "12%", "11%", "2%", 
                                              "2%"))
-kable(analytics_table, format = "markdown")
+
+kable(analytics_table, format = "pandoc", caption = "Forensic Data Analysis Tools in use") %>%
+  add_footnote(c("Source [@analytics_tools_table]")) 
 ```
+
+In the report by @analytics_tools_table, the respondents state that by using more complicated and proactive methods, they have faced a 59,7% reduction in median loss, in comparison to the respondents that did not. 
+
+Among the more complex and successful methods for fraud reduction are machine learning techniques [@chaudhary2012credit]. Among the techniques most used for credit card are logistic regression, support vector machines, neural networks, bayesian networks, cluster methods and different tree models [@ngai2011application; @bhattacharyya2011data; @chaudhary2012credit].
 
 
 # 3. Methodology
