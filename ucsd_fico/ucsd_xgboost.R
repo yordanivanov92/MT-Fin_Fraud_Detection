@@ -14,13 +14,15 @@ options(scipen=999)
 
 set.seed(48)
 
-ucsd_data<- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
+# Loading the features and the classes
+ucsd_data<- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
                        header = TRUE,
                        sep = ",",
                        stringsAsFactors = TRUE)
-ucsd_data_targets <- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
+ucsd_data_targets <- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
                                 #header = TRUE,
                                 sep = ",")
+# Binding classes and features in one set
 ucsd_data <- cbind(ucsd_data, ucsd_data_targets)
 rm(ucsd_data_targets)
 
@@ -33,15 +35,16 @@ prop.table(table(ucsd_data$Class))
 # 0       1 
 # 0.97346 0.02654 
 
-multi_obs <- ucsd_data %>%
+# Getting only those customers that appear more than one
+ucsd_data <- ucsd_data %>%
   dplyr::group_by(custAttr1) %>%
   dplyr::summarise(freq = n()) %>%
-  dplyr::filter(freq > 1)
-
-ucsd_data <- join(ucsd_data, multi_obs, by = "custAttr1", type = "inner") %>%
+  dplyr::filter(freq > 1) %>%
+  dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
   dplyr::select(-freq)
-rm(multi_obs)
 
+
+# Splitting into train and test datasets
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
 ucsd_test <- subset(ucsd_data, split == FALSE)
@@ -78,14 +81,15 @@ prop.table(table(ucsd_test$Class))
 
 ctrl_ucsd <- trainControl(method = "repeatedcv",
                           number = 10,
-                          repeats = 2,
+                          repeats = 1,
                           summaryFunction = twoClassSummary,
                           #allowParallel = TRUE,
                           classProbs = TRUE,
                           verboseIter = TRUE
-)
+                          )
 
-cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
+ptm <- proc.time()
+cluster <- makeCluster(detectCores() - 3) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_xgboost <- train(Class ~ .,
                       data = ucsd_train,
@@ -93,8 +97,13 @@ ucsd_xgboost <- train(Class ~ .,
                       verbose = FALSE,
                       metric = "ROC", 
                       trControl = ctrl_ucsd)
+
 stopCluster(cluster)
 registerDoSEQ()
+proc.time() - ptm
+# No parallel computing
+# user  system elapsed 
+# 939.05   37.31  388.53 
 
 ######################################### XGBOOST PREDICTIONS
 xgboost_results <- predict(ucsd_xgboost, newdata = ucsd_test)
@@ -104,27 +113,27 @@ conf_matr_xgboost
 # 
 # Reference
 # Prediction    X1    X2
-# X1 15861   385
-# X2    28    93
+# X1 15861   371
+# X2    28   107
 # 
-# Accuracy : 0.9748               
-# 95% CI : (0.9722, 0.9771)     
+# Accuracy : 0.9756               
+# 95% CI : (0.9731, 0.9779)     
 # No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.001121             
+# P-Value [Acc > NIR] : 0.00009176           
 # 
-# Kappa : 0.3023               
+# Kappa : 0.3406               
 # Mcnemar's Test P-Value : < 0.00000000000000022
-#                                                
-#             Sensitivity : 0.9982               
-#             Specificity : 0.1946               
-#          Pos Pred Value : 0.9763               
-#          Neg Pred Value : 0.7686               
-#              Prevalence : 0.9708               
-#          Detection Rate : 0.9691               
-#    Detection Prevalence : 0.9926               
-#       Balanced Accuracy : 0.5964               
-#                                                
-#        'Positive' Class : X1             
+# 
+# Sensitivity : 0.9982               
+# Specificity : 0.2238               
+# Pos Pred Value : 0.9771               
+# Neg Pred Value : 0.7926               
+# Prevalence : 0.9708               
+# Detection Rate : 0.9691               
+# Detection Prevalence : 0.9918               
+# Balanced Accuracy : 0.6110               
+# 
+# 'Positive' Class : X1          
 
 xgboost_results_prob <- predict(ucsd_xgboost, newdata = ucsd_test, type = "prob")
 xgboost_results_probs <- ifelse(xgboost_results_prob$X2 > 0.1, "X2", "X1")

@@ -14,11 +14,11 @@ options(scipen=999)
 
 set.seed(48)
 
-ucsd_data<- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
+ucsd_data<- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
                        header = TRUE,
                        sep = ",",
                        stringsAsFactors = TRUE)
-ucsd_data_targets <- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
+ucsd_data_targets <- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
                                 #header = TRUE,
                                 sep = ",")
 ucsd_data <- cbind(ucsd_data, ucsd_data_targets)
@@ -33,14 +33,12 @@ prop.table(table(ucsd_data$Class))
 # 0       1 
 # 0.97346 0.02654 
 
-multi_obs <- ucsd_data %>%
+ucsd_data <- ucsd_data %>%
   dplyr::group_by(custAttr1) %>%
   dplyr::summarise(freq = n()) %>%
-  dplyr::filter(freq > 1)
-
-ucsd_data <- join(ucsd_data, multi_obs, by = "custAttr1", type = "inner") %>%
+  dplyr::filter(freq > 1) %>%
+  dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
   dplyr::select(-freq)
-rm(multi_obs)
 
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
@@ -74,21 +72,21 @@ prop.table(table(ucsd_test$Class))
 
 ctrl_ucsd <- trainControl(method = "repeatedcv",
                           number = 10,
-                          repeats = 2,
+                          repeats = 1,
                           summaryFunction = twoClassSummary,
                           #allowParallel = TRUE,
                           classProbs = TRUE,
                           verboseIter = TRUE
-)
+                          )
 
 
 
 ucsd_svm <- train(Class ~ .,
-                      data = ucsd_train,
-                      method = "svmLinear",
-                      verbose = FALSE,
-                      metric = "ROC", 
-                      trControl = ctrl_ucsd)
+                  data = ucsd_train,
+                  method = "svmLinear",
+                  verbose = FALSE,
+                  metric = "ROC", 
+                  trControl = ctrl_ucsd)
 
 
 
@@ -173,11 +171,11 @@ plot(roc(ucsd_test$Class, predict(ucsd_svm, ucsd_test,type = "prob")[,"X2"]))
 
 ############# Radial
 ucsd_svm_radial <- train(Class ~ .,
-                  data = ucsd_train,
-                  method = "svmRadial",
-                  verbose = FALSE,
-                  metric = "ROC", 
-                  trControl = ctrl_ucsd)
+                         data = ucsd_train,
+                         method = "svmRadial",
+                         verbose = FALSE,
+                         metric = "ROC", 
+                         trControl = ctrl_ucsd)
 
 
 
@@ -192,12 +190,12 @@ ctrl_ucsd$seeds <- ucsd_svm$control$seeds
 
 
 ucsd_svm_weighted_fit <- train(Class ~ .,
-                                   data = ucsd_train,
-                                   method = "svmLinearWeights",
-                                   verbose = FALSE,
-                                   #weights = ucsd_model_weights,
-                                   metric = "ROC", 
-                                   trControl = ctrl_ucsd)
+                               data = ucsd_train,
+                               method = "svmLinearWeights",
+                               verbose = FALSE,
+                               #weights = ucsd_model_weights,
+                               metric = "ROC", 
+                               trControl = ctrl_ucsd)
 
 
 
@@ -245,22 +243,22 @@ plot(svm_imp_weight)
 
 ####################### Radial weights
 ucsd_svm_radial_weights <- train(Class ~ .,
-                  data = ucsd_train,
-                  method = "svmRadialWeights",
-                  verbose = FALSE,
-                  metric = "ROC", 
-                  trControl = ctrl_ucsd)
+                                 data = ucsd_train,
+                                 method = "svmRadialWeights",
+                                 verbose = FALSE,
+                                 metric = "ROC", 
+                                 trControl = ctrl_ucsd)
 
 
 ####################################### sampled-down model
 ctrl_ucsd$sampling <- "down"
 
 ucsd_svm_down_fit <- train(Class ~ .,
-                               data = ucsd_train,
-                               method = "svmLinear",
-                               verbose = FALSE,
-                               metric = "ROC",
-                               trControl = ctrl_ucsd)
+                           data = ucsd_train,
+                           method = "svmLinear",
+                           verbose = FALSE,
+                           metric = "ROC",
+                           trControl = ctrl_ucsd)
 
 
 
@@ -333,11 +331,11 @@ ctrl_ucsd$sampling <- "up"
 
 
 ucsd_svm_up_fit <- train(Class ~ .,
-                             data = ucsd_train,
-                             method = "svmLinear",
-                             verbose = FALSE,
-                             metric = "ROC",
-                             trControl = ctrl_ucsd)
+                         data = ucsd_train,
+                         method = "svmLinear",
+                         verbose = FALSE,
+                         metric = "ROC",
+                         trControl = ctrl_ucsd)
 
 
 
@@ -410,11 +408,11 @@ ctrl_ucsd$sampling <- "smote"
 
 
 ucsd_svm_smote_fit <- train(Class ~ .,
-                                data = ucsd_train,
-                                method = "svmLinear",
-                                verbose = FALSE,
-                                metric = "ROC",
-                                trControl = ctrl_ucsd)
+                            data = ucsd_train,
+                            method = "svmLinear",
+                            verbose = FALSE,
+                            metric = "ROC",
+                            trControl = ctrl_ucsd)
 
 
 

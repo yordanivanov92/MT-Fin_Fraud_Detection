@@ -14,11 +14,12 @@ options(scipen=999)
 
 set.seed(48)
 
-ucsd_data<- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
+# Loading the features and the classes
+ucsd_data<- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Inputs",
                        header = TRUE,
                        sep = ",",
                        stringsAsFactors = TRUE)
-ucsd_data_targets <- read.table(file = "C:/Users/zxmum28/Documents/MT/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
+ucsd_data_targets <- read.table(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/UCSD-FICO competition/DataminingContest2009.Task2.Train.Targets",
                                 #header = TRUE,
                                 sep = ",")
 ucsd_data <- cbind(ucsd_data, ucsd_data_targets)
@@ -33,14 +34,13 @@ prop.table(table(ucsd_data$Class))
 # 0       1 
 # 0.97346 0.02654 
 
-multi_obs <- ucsd_data %>%
+# Getting only those customers that appear more than one
+ucsd_data <- ucsd_data %>%
   dplyr::group_by(custAttr1) %>%
   dplyr::summarise(freq = n()) %>%
-  dplyr::filter(freq > 1)
-
-ucsd_data <- join(ucsd_data, multi_obs, by = "custAttr1", type = "inner") %>%
+  dplyr::filter(freq > 1) %>%
+  dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
   dplyr::select(-freq)
-rm(multi_obs)
 
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
@@ -74,7 +74,7 @@ prop.table(table(ucsd_test$Class))
 
 ctrl_ucsd <- trainControl(method = "repeatedcv",
                           number = 10,
-                          repeats = 2,
+                          repeats = 1,
                           summaryFunction = twoClassSummary,
                           #allowParallel = TRUE,
                           classProbs = TRUE,
@@ -84,15 +84,15 @@ ctrl_ucsd <- trainControl(method = "repeatedcv",
 cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_gbm <- train(Class ~ .,
-                      data = ucsd_train,
-                      method = "gbm",
-                      verbose = FALSE,
-                      metric = "ROC", 
-                      trControl = ctrl_ucsd)
+                  data = ucsd_train,
+                  method = "gbm",
+                  verbose = FALSE,
+                  metric = "ROC", 
+                  trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
-######################################### XGBOOST PREDICTIONS
+######################################### GBM PREDICTIONS
 gbm_results <- predict(ucsd_gbm, newdata = ucsd_test)
 conf_matr_gbm <- confusionMatrix(gbm_results, ucsd_test$Class)
 conf_matr_gbm
@@ -183,12 +183,12 @@ ctrl_ucsd$seeds <- ucsd_gbm$control$seeds
 cluster <- makeCluster(detectCores() - 2) 
 registerDoParallel(cluster)
 ucsd_gbm_weighted_fit <- train(Class ~ .,
-                                   data = ucsd_train,
-                                   method = "gbm",
-                                   verbose = FALSE,
-                                   weights = ucsd_model_weights,
-                                   metric = "ROC", 
-                                   trControl = ctrl_ucsd)
+                               data = ucsd_train,
+                               method = "gbm",
+                               verbose = FALSE,
+                               weights = ucsd_model_weights,
+                               metric = "ROC", 
+                               trControl = ctrl_ucsd)
 
 stopCluster(cluster)
 registerDoSEQ()
@@ -238,11 +238,11 @@ ctrl_ucsd$sampling <- "down"
 cluster <- makeCluster(detectCores() - 2)
 registerDoParallel(cluster)
 ucsd_gbm_down_fit <- train(Class ~ .,
-                               data = ucsd_train,
-                               method = "gbm",
-                               verbose = FALSE,
-                               metric = "ROC",
-                               trControl = ctrl_ucsd)
+                           data = ucsd_train,
+                           method = "gbm",
+                           verbose = FALSE,
+                           metric = "ROC",
+                           trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
@@ -290,11 +290,11 @@ ctrl_ucsd$sampling <- "up"
 cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_gbm_up_fit <- train(Class ~ .,
-                             data = ucsd_train,
-                             method = "gbm",
-                             verbose = FALSE,
-                             metric = "ROC",
-                             trControl = ctrl_ucsd)
+                         data = ucsd_train,
+                         method = "gbm",
+                         verbose = FALSE,
+                         metric = "ROC",
+                         trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
@@ -343,11 +343,11 @@ ctrl_ucsd$sampling <- "smote"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_gbm_smote_fit <- train(Class ~ .,
-                                data = ucsd_train,
-                                method = "gbm",
-                                verbose = FALSE,
-                                metric = "ROC",
-                                trControl = ctrl_ucsd)
+                            data = ucsd_train,
+                            method = "gbm",
+                            verbose = FALSE,
+                            metric = "ROC",
+                            trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
