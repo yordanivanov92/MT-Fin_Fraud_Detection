@@ -3,7 +3,6 @@ title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
 bibliography: references.bib
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
@@ -337,6 +336,70 @@ The two techniques are the simplest and most common [@van2007experimental]. In m
 The Synthetic Minority Oversampling Technique (SMOTE), proposed by Chawla et al. [@chawla2002smote], artificial minority instances are created not simply through duplication, but rather with the extrapolation between preexisting observations. The technique starts by taking into account the k nearest neighbourhoods to a minority observation for every instance from that class. Then, the artificial observation are created, taking into account just a part of the nearest neighbours or all of them (with respect to the desired oversampling specification). 
 
 # 5. Results
+
+## 5.1. Performance Measures
+
+As the problem that we deal with in this paper is a classification one, the performance measures used to evaluate how successful a model will be related to the main building block of binary classification - the confusion matrix.
+
+```{r conf_matr_basis, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+conf_matrix <- data.frame("." = c("Predicted Positive", "Predicted Negative"),
+                          "Actual Positive" = c("True Positive (TP)", "False Negative (FN)"),
+                          "Actual Negative" = c("False Positive (FP)", "True Negative (TN)"))
+
+kable(conf_matrix, format = "pandoc") 
+```
+
+### 5.1.1. Threshold Metrics
+
+$$Sensitivity = \frac{TP}{TP + FN}\;\;\;\;\;\;Specificity =\frac{TN}{FP+TN} $$
+The sensitivity of a given classifier indicates what percent of the positive class has been actually predicted as positive. Analogically, specifity gives the percent of the negative class which has been assigned as negative by the model. Overall, the measures give us a picture of the proportions that have been correctly predicted.
+
+$$Precision = \frac{TP}{TP+FP}\;\;\;\;\;\;Recall=\frac{TP}{TP+FN}$$
+The precision measure indicates how well the used classifier identifies a given class' observation, i.e. checks the percent of the observations assigned a positive class that are truly positive. The recall formulation is same as the sensitivity one. Both measures are typically used together in order to get more information about the positive class. 
+
+$$F_\alpha=\frac{(1+\alpha)[precision \times recall]}{[\alpha\times precision] + recall}$$
+The F-measure falls to the category of combination metrics and its purpose is to combine the precision and recall in a single scalar. One of its advantages is that allows us to weight the two components as desired through the $\alpha$ component. Usual values of $\alpha$ are $0.5, 1$ or $2$ - with $1$ we specify that precision and recall are equal in weights, $2$ indicates precision is twice as important as recall and $0.5$ gives two times more weight to recall. When dealing with class imbalanace, the F-measure can give more in-depth insight [@japkowicz2013assessment].
+
+### 5.1.2. Ranking Methods and Metrics
+
+#### ROC Curve Analysis
+
+The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it performs no better than simple random guessing. 
+
+![Well performing ROC curve example](figures/roc_curve_example.png){width = 60%}
+
+Moreover, when dealing with imbalanced classes, the ROC metric is a very suitable indicator of whether a model is a good fit. The first reason is that we have the performance of each class shown separately (through the two axes) and the second one is that it gives a good overview what can happen in different situations [@japkowicz2013assessment]. 
+
+#### Precision and Recall Curve Analysis
+
+The Precision and Recall (PR) Curve Analysis is very similar to ROC Curve Analysis, as it once again gives an overview of the correctly-classified positive class and and the number of incorrectly-classified negative observations. However, the PR curve plots, as expected, the precision and recall on the two axes, showing the various states the precision metric can take given different levels of recall. Unlike the ROC curve, the PR one has a negative slope, due to the fact precision decreases with the increase of recall. There have been suggestions that PR curves can be more informative than ROC curves when working with imbalanced classes [@davis2006relationship].
+
+#### Area-Under-Curve (AUC)
+
+The AUC metric illustrates the performance of a classification model averaged over all of the feasible cost ratios. Given that the ROC curve operates in a unit square, it can be seen that the AUC in this case could take values only between 0 and 1, i.e. $AUC \in [0,1]$, with $AUC=1$ representig the perfect classifier and $AUC=0.5$ the random one. It can be argued that the AUC is a good summary metric that can assess the performance of a classifier and be used for comparisons, but it too loses significant information over the entire operating range (for instance trade-off behaviour between TP and FP performances).  
+
+## 5.2. Experimental Results
+
+We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz and ATI Radeon 7470M. The programming software that we used was R. 
+
+We will use 10-fold Cross-Validation in order to tune the model parameters and will use the ROC as an optimization criterion, as it is argued that it is a good indicator when dealing with imbalanced classes [@he2009learning]. The Accuracy metric will be used as little as possible to determine a classifier performance, as even if a model fails to classify a single observation from the minority class, the accuraccy will still be high (and close to 100% in some cases).  
+
+### 5.2.1. UCSD
+
+ - State if data-sampling techniques have made any real improvement - put the ROC, PR and AUC measures in appendix or in small table, graphs.
+
+- Get the best classifier from each model type and plot all of them - ROC, PR and AUC
+
+- Discuss result
+
+### 5.2.2. Credit Card
+
+### 5.2.3. PaySim
+
+### 5.2.4. BankSim
 
 # 6. Further Improvements
 

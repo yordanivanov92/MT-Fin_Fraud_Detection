@@ -130,8 +130,7 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
-cluster <- makeCluster(detectCores() - 2)
-registerDoParallel(cluster)
+
 paySim_nnet <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "nnet",
@@ -141,8 +140,6 @@ paySim_nnet <- train(isFraud ~ .,
                     tuneGrid = nnet_grid,
                     trControl = ctrl_paySim)
 
-stopCluster(cluster)
-registerDoSEQ()
 
 paySim_test_roc <- function(model, data) {
   roc(data$isFraud,
