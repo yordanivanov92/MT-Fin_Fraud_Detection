@@ -499,12 +499,12 @@ ucsd_xgboost_results_df_roc <- bind_rows(ucsd_xgboost_results_list_roc)
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
-ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_xgboost_results_df_roc) +
+xgboost_rocs <- ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_xgboost_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
   theme_bw(base_size = 18)
-
+ggsave("xgboost_rocs.png", width = 20, height = 20, units = "cm")
 
 ####  Construction the precision/recall graphic
 ucsd_xgboost_calc_auprc <- function(model, data) {

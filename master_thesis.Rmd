@@ -3,6 +3,7 @@ title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
 bibliography: references.bib
 output:
+  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
@@ -388,6 +389,8 @@ We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM
 We will use 10-fold Cross-Validation in order to tune the model parameters and will use the ROC as an optimization criterion, as it is argued that it is a good indicator when dealing with imbalanced classes [@he2009learning]. The Accuracy metric will be used as little as possible to determine a classifier performance, as even if a model fails to classify a single observation from the minority class, the accuraccy will still be high (and close to 100% in some cases).  
 
 ### 5.2.1. UCSD
+
+
 
  - State if data-sampling techniques have made any real improvement - put the ROC, PR and AUC measures in appendix or in small table, graphs.
 

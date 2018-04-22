@@ -33,14 +33,13 @@ prop.table(table(ucsd_data$Class))
 # 0       1 
 # 0.97346 0.02654 
 
-multi_obs <- ucsd_data %>%
+#Getting only those customers that appear more than one
+ucsd_data <- ucsd_data %>%
   dplyr::group_by(custAttr1) %>%
   dplyr::summarise(freq = n()) %>%
-  dplyr::filter(freq > 1)
-
-ucsd_data <- join(ucsd_data, multi_obs, by = "custAttr1", type = "inner") %>%
+  dplyr::filter(freq > 1) %>%
+  dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
   dplyr::select(-freq)
-rm(multi_obs)
 
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
@@ -122,36 +121,6 @@ conf_matr_randfor
 # 
 # 'Positive' Class : X1 
 
-randfor_results_prob <- predict(ucsd_randfor, newdata = ucsd_test, type = "prob")
-randfor_results_probs <- ifelse(randfor_results_prob$X2 > 0.1, "X2", "X1")
-conf_matr_randfor2 <- confusionMatrix(randfor_results_probs, ucsd_test$Class)
-conf_matr_randfor2
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15326   156
-# X2   563   322
-# 
-# Accuracy : 0.9561             
-# 95% CI : (0.9528, 0.9592)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.4517             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9646             
-# Specificity : 0.6736             
-# Pos Pred Value : 0.9899             
-# Neg Pred Value : 0.3638             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9364             
-# Detection Prevalence : 0.9459             
-# Balanced Accuracy : 0.8191             
-# 
-# 'Positive' Class : X1       
-
 trellis.par.set(caretTheme())
 train_plot_randfor <- plot(ucsd_randfor, metric = "ROC")
 
@@ -222,11 +191,6 @@ conf_matr_randfor_weight
 # 
 # 'Positive' Class : X1  
 
-randfor_results_prob_weight <- predict(ucsd_randfor_weighted_fit, newdata = ucsd_test, type = "prob")
-randfor_results_probs_weight <- ifelse(randfor_results_prob_weight$X2 > 0.1, "X2", "X1")
-conf_matr_randfor2_weight <- confusionMatrix(randfor_results_probs_weight, ucsd_test$Class)
-conf_matr_randfor2_weight
-# same as with no weights
 
 trellis.par.set(caretTheme())
 train_plot_randfor_weight <- plot(ucsd_randfor_weighted_fit, metric = "ROC")
@@ -275,35 +239,6 @@ conf_matr_randfor_down
 # Balanced Accuracy : 0.77269            
 # 
 # 'Positive' Class : X1 
-randfor_results_prob_down <- predict(ucsd_randfor_down_fit, newdata = ucsd_test, type = "prob")
-randfor_results_probs_down <- ifelse(randfor_results_prob_down$X2 > 0.1, "X2", "X1")
-conf_matr_randfor2_down <- confusionMatrix(randfor_results_probs_down, ucsd_test$Class)
-conf_matr_randfor2_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1   714     2
-# X2 15175   476
-# 
-# Accuracy : 0.0727             
-# 95% CI : (0.0688, 0.0768)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0025             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.04494            
-#             Specificity : 0.99582            
-#          Pos Pred Value : 0.99721            
-#          Neg Pred Value : 0.03041            
-#              Prevalence : 0.97079            
-#          Detection Rate : 0.04362            
-#    Detection Prevalence : 0.04375            
-#       Balanced Accuracy : 0.52038            
-#                                              
-#        'Positive' Class : X1     
 
 trellis.par.set(caretTheme())
 train_plot_randfor_down <- plot(ucsd_randfor_down_fit, metric = "ROC")
@@ -352,35 +287,7 @@ conf_matr_randfor_up
 # Balanced Accuracy : 0.7377               
 # 
 # 'Positive' Class : X1  
-randfor_results_prob_up <- predict(ucsd_randfor_up_fit, newdata = ucsd_test, type = "prob")
-randfor_results_probs_up <- ifelse(randfor_results_prob_up$X2 > 0.1, "X2", "X1")
-conf_matr_randfor2_up <- confusionMatrix(randfor_results_probs_up, ucsd_test$Class)
-conf_matr_randfor2_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15059   155
-# X2   830   323
-# 
-# Accuracy : 0.9398             
-# 95% CI : (0.9361, 0.9434)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.3701             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9478             
-# Specificity : 0.6757             
-# Pos Pred Value : 0.9898             
-# Neg Pred Value : 0.2801             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9201             
-# Detection Prevalence : 0.9296             
-# Balanced Accuracy : 0.8117             
-# 
-# 'Positive' Class : X1 
+
 trellis.par.set(caretTheme())
 train_plot_randfor_up <- plot(ucsd_randfor_up_fit, metric = "ROC")
 
@@ -429,35 +336,6 @@ conf_matr_randfor_smote
 # Balanced Accuracy : 0.7481             
 # 
 # 'Positive' Class : X1    
-randfor_results_prob_smote <- predict(ucsd_randfor_smote_fit, newdata = ucsd_test, type = "prob")
-randfor_results_probs_smote <- ifelse(randfor_results_prob_smote$X2 > 0.1, "X2", "X1")
-conf_matr_randfor2_smote <- confusionMatrix(randfor_results_probs_smote, ucsd_test$Class)
-conf_matr_randfor2_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1  4432    19
-# X2 11457   459
-# 
-# Accuracy : 0.2988             
-# 95% CI : (0.2918, 0.3059)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.019              
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.27894            
-# Specificity : 0.96025            
-# Pos Pred Value : 0.99573            
-# Neg Pred Value : 0.03852            
-# Prevalence : 0.97079            
-# Detection Rate : 0.27079            
-# Detection Prevalence : 0.27195            
-# Balanced Accuracy : 0.61959            
-# 
-# 'Positive' Class : X1   
 
 trellis.par.set(caretTheme())
 train_plot_randfor_smote <- plot(ucsd_randfor_smote_fit, metric = "ROC")
