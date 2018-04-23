@@ -9,7 +9,7 @@ library(caTools)
 library(doParallel)
 library(parallel)
 library(plyr)
-library(mxnet)
+library(nnet)
 options(scipen=999)
 
 set.seed(48)
@@ -118,7 +118,8 @@ conf_matr_nnet
 #####################    
 
 trellis.par.set(caretTheme())
-train_plot_nnet <- plot(ucsd_nnet, metric = "ROC")
+train_plot_nnet <- plot(ucsd_nnet_sub, metric = "ROC")
+train_plot_nnet
 
 nnet_imp <- varImp(ucsd_nnet)
 plot(nnet_imp)
@@ -128,14 +129,6 @@ ucsd_test_roc <- function(model, data) {
   roc(data$Class,
       predict(model, data, type = "prob")[, "X2"])
 }
-
-ucsd_nnet %>%
-  ucsd_test_roc(data = ucsd_test) %>%
-  auc()
-# Area under the curve: 0.8872
-
-plot(roc(ucsd_test$Class, predict(ucsd_nnet, ucsd_test,type = "prob")[,"X2"]))
-
 
 ############################### COST SENSITIVE RANDFOR MODEL
 # The penalization costs can be tinkered with
@@ -161,6 +154,7 @@ conf_matr_nnet_weight
 
 trellis.par.set(caretTheme())
 train_plot_nnet_weight <- plot(ucsd_nnet_weighted_fit, metric = "ROC")
+train_plot_nnet_weight
 
 nnet_imp_weight <- varImp(ucsd_nnet_weighted_fit, scale = FALSE)
 plot(nnet_imp_weight)
@@ -184,6 +178,7 @@ conf_matr_nnet_down
 
 trellis.par.set(caretTheme())
 train_plot_nnet_down <- plot(ucsd_nnet_down_fit, metric = "ROC")
+train_plot_nnet_down
 
 nnet_imp_down <- varImp(ucsd_nnet_down_fit, scale = FALSE)
 plot(nnet_imp_down)
@@ -202,11 +197,10 @@ ucsd_nnet_up_fit <- train(Class ~ .,
 nnet_results_up <- predict(ucsd_nnet_up_fit, newdata = ucsd_test)
 conf_matr_nnet_up <- confusionMatrix(nnet_results_up, ucsd_test$Class)
 conf_matr_nnet_up
-#
 
-# 'Positive' Class : X1 
 trellis.par.set(caretTheme())
 train_plot_nnet_up <- plot(ucsd_nnet_up_fit, metric = "ROC")
+train_plot_nnet_up
 
 nnet_imp_up <- varImp(ucsd_nnet_up_fit, scale = FALSE)
 plot(nnet_imp_up)
@@ -228,10 +222,10 @@ ucsd_nnet_smote_fit <- train(Class ~ .,
 nnet_results_smote <- predict(ucsd_nnet_smote_fit, newdata = ucsd_test)
 conf_matr_nnet_smote <- confusionMatrix(nnet_results_smote, ucsd_test$Class)
 conf_matr_nnet_smote
-#
 
 trellis.par.set(caretTheme())
 train_plot_nnet_smote <- plot(ucsd_nnet_smote_fit, metric = "ROC")
+train_plot_nnet_smote
 
 nnet_imp_smote <- varImp(ucsd_nnet_smote_fit, scale = FALSE)
 plot(nnet_imp_smote)
@@ -324,21 +318,4 @@ ucsd_nnet_results_df_pr <- bind_rows(ucsd_nnet_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_nnet_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(ucsd_test$type == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-ucsd_nnetSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
+  geom_abline(intercept = sum(ucsd_test$Class == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)

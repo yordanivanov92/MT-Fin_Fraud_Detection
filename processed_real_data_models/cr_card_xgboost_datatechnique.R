@@ -14,9 +14,9 @@ options(scipen=999)
 
 set.seed(48)
 
-credit_card_data <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/dal_pozzlo_real_data_PCA/creditcard.csv",
-                             header = TRUE,
-                             sep = ",")
+credit_card_data <- fread(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/dal_pozzlo_real_data_PCA/creditcard.csv",
+                          header = TRUE,
+                          sep = ",")
 credit_card_data <- credit_card_data[sample(nrow(credit_card_data), 50000),]
 # Fraud Rate
 prop.table(table(credit_card_data$Class))
@@ -42,7 +42,7 @@ for (f in feature.names) {
   if (class(cr_card_train[[f]])=="factor") {
     levels <- unique(c(cr_card_train[[f]]))
     cr_card_train[[f]] <- factor(cr_card_train[[f]],
-                                labels=make.names(levels))
+                                 labels=make.names(levels))
   }
 }
 feature.names2=names(cr_card_test)
@@ -50,13 +50,13 @@ for (f in feature.names2) {
   if (class(cr_card_test[[f]])=="factor") {
     levels <- unique(c(cr_card_test[[f]]))
     cr_card_test[[f]] <- factor(cr_card_test[[f]],
-                               labels=make.names(levels))
+                                labels=make.names(levels))
   }
 }
 
 ctrl_cr_card <- trainControl(method = "repeatedcv",
                              number = 10,
-                             repeats = 3,
+                             repeats = 1,
                              summaryFunction = twoClassSummary,
                              classProbs = TRUE,
                              verboseIter = TRUE)
@@ -71,9 +71,7 @@ cr_card_xgboost <- train(Class ~ .,
 # Results Original
 xgboost_results <- predict(cr_card_xgboost, newdata = cr_card_test)
 conf_matr_xgboost <- confusionMatrix(xgboost_results, cr_card_test$Class)
-
-xgboost_results_prob <- predict(cr_card_xgboost, newdata = cr_card_test, type = "prob")
-
+conf_matr_xgboost
 
 trellis.par.set(caretTheme())
 train_plot_xgboost <- plot(cr_card_xgboost, metric = "ROC")
@@ -88,31 +86,23 @@ cr_card_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-auc_xgboost <- cr_card_xgboost %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
 
 ################## COST SENSITIVE XGBOOST MODEL
 # The penalization costs can be tinkered with
 cr_card_model_weights <- ifelse(cr_card_train$Class == "X1",
-                               (1/table(cr_card_train$Class)[1]) * 0.5,
-                               (1/table(cr_card_train$Class)[2]) * 0.5)
+                                (1/table(cr_card_train$Class)[1]) * 0.5,
+                                (1/table(cr_card_train$Class)[2]) * 0.5)
 
 ctrl_cr_card$seeds <- cr_card_xgboost$control$seeds
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
 cr_card_xgboost_weighted_fit <- train(Class ~ .,
-                                     data = cr_card_train,
-                                     method = "xgbTree",
-                                     verbose = FALSE,
-                                     weights = cr_card_model_weights,
-                                     metric = "ROC", 
-                                     trControl = ctrl_cr_card)
+                                      data = cr_card_train,
+                                      method = "xgbTree",
+                                      verbose = FALSE,
+                                      weights = cr_card_model_weights,
+                                      metric = "ROC", 
+                                      trControl = ctrl_cr_card)
 
-stopCluster(cluster)
-registerDoSEQ()
 
 # Results CS
 xgboost_weighted_results <- predict(cr_card_xgboost_weighted_fit, newdata = cr_card_test)
@@ -131,16 +121,13 @@ auc_xgboost_weighted <- cr_card_xgboost_weighted_fit %>%
 
 ############### sampled-down model
 ctrl_cr_card$sampling <- "down"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+
 cr_card_xgboost_down_fit <- train(Class ~ .,
-                                 data = cr_card_train,
-                                 method = "xgbTree",
-                                 verbose = FALSE,
-                                 metric = "ROC",
-                                 trControl = ctrl_cr_card)
-stopCluster(cluster)
-registerDoSEQ()
+                                  data = cr_card_train,
+                                  method = "xgbTree",
+                                  verbose = FALSE,
+                                  metric = "ROC",
+                                  trControl = ctrl_cr_card)
 
 # Results Down
 xgboost_down_results <- predict(cr_card_xgboost_down_fit, newdata = cr_card_test)
@@ -159,16 +146,13 @@ auc_xgboost_down <- cr_card_xgboost_down_fit %>%
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+
 cr_card_xgboost_up_fit <- train(Class ~ .,
-                               data = cr_card_train,
-                               method = "xgbTree",
-                               verbose = FALSE,
-                               metric = "ROC",
-                               trControl = ctrl_cr_card)
-stopCluster(cluster)
-registerDoSEQ()
+                                data = cr_card_train,
+                                method = "xgbTree",
+                                verbose = FALSE,
+                                metric = "ROC",
+                                trControl = ctrl_cr_card)
 
 # Results Up
 xgboost_up_results <- predict(cr_card_xgboost_up_fit, newdata = cr_card_test)
@@ -181,22 +165,14 @@ xgboost_up_imp <- varImp(cr_card_xgboost_up_fit, scale = FALSE)
 #xgboost_imp - variable importance is observed
 plot(xgboost_up_imp)
 
-auc_xgboost_up <- cr_card_xgboost_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
 ############# SMOTE
 ctrl_cr_card$sampling <- "smote"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
 cr_card_xgboost_smote_fit <- train(Class ~ .,
-                                  data = cr_card_train,
-                                  method = "xgbTree",
-                                  verbose = FALSE,
-                                  metric = "ROC",
-                                  trControl = ctrl_cr_card)
-stopCluster(cluster)
-registerDoSEQ()
+                                   data = cr_card_train,
+                                   method = "xgbTree",
+                                   verbose = FALSE,
+                                   metric = "ROC",
+                                   trControl = ctrl_cr_card)
 
 # Results Up
 xgboost_up_results <- predict(cr_card_xgboost_up_fit, newdata = cr_card_test)
@@ -250,17 +226,16 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_xgboost_results_df_r
 
 ####  Construction the precision/recall graphic
 cr_card_xgboost_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$Class == "X2"
+  index_class1 <- data$Class == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
-#### ERROR HERE - FIX
 cr_card_xgboost_model_list_pr <- cr_card_xgboost_model_list %>%
   map(cr_card_xgboost_calc_auprc, data = cr_card_test)
 
@@ -283,63 +258,9 @@ cr_card_xgboost_results_df_pr <- bind_rows(cr_card_xgboost_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = cr_card_xgboost_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
+  geom_abline(intercept = sum(cr_card_test$Class == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
 
 
-##### HAVE ANOTHER LOOK HERE - NOT ADAPTED
-cr_card_xgboostSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$obs == "X2"
-  index_class1 <- data$obs == "X1"
-  
-  the_curve <- pr.curve(data$type[index_class2],
-                        data$type[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
-                     classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
-
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
-                 method = "xgbTree",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(orig_fit$bestTune,
-          orig_pr$bestTune)
 
 
 

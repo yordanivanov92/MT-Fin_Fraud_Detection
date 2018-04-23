@@ -103,13 +103,6 @@ paySim_test$isFraud <- as.factor(paySim_test$isFraud)
 paySim_test$type<-as.factor(paySim_test$type)
 paySim_test <- paySim_test[, -c("step")]
 
-ctrl_paySim <- trainControl(method = "repeatedcv",
-                            number = 10,
-                            repeats = 2,
-                            summaryFunction = twoClassSummary,
-                            classProbs = TRUE,
-                            verboseIter = TRUE)
-nnet_grid <- expand.grid(.decay = c(0.5, 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7), .size = c(3, 5, 10, 20))
 
 feature.names=names(paySim_train)
 for (f in feature.names) {
@@ -130,12 +123,21 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
+ctrl_paySim <- trainControl(method = "repeatedcv",
+                            number = 10,
+                            repeats = 1,
+                            summaryFunction = twoClassSummary,
+                            classProbs = TRUE,
+                            verboseIter = TRUE)
+nnet_grid <- expand.grid(.decay = c(0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7), .size = c(3, 5, 10, 20))
+
 
 paySim_nnet <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "nnet",
                     linout = FALSE,
                     verbose = FALSE,
+                    maxit = 2000,
                     metric = "ROC", 
                     tuneGrid = nnet_grid,
                     trControl = ctrl_paySim)
@@ -146,38 +148,11 @@ paySim_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-paySim_nnet %>%
-  paySim_test_roc(data = paySim_test) %>%
-  auc()
-# Area under the curve: 0.9855
+
 ### Original Fit
 nnet_results <- predict(paySim_nnet, newdata = paySim_test)
 confusionMatrix(nnet_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17291    26
-# X2     1    24
-# 
-# Accuracy : 0.9984         
-# 95% CI : (0.9977, 0.999)
-# No Information Rate : 0.9971         
-# P-Value [Acc > NIR] : 0.0002705      
-# 
-# Kappa : 0.6393         
-# Mcnemar's Test P-Value : 0.00000386     
-#                                          
-#             Sensitivity : 0.9999         
-#             Specificity : 0.4800         
-#          Pos Pred Value : 0.9985         
-#          Neg Pred Value : 0.9600         
-#              Prevalence : 0.9971         
-#          Detection Rate : 0.9971         
-#    Detection Prevalence : 0.9986         
-#       Balanced Accuracy : 0.7400         
-#                                          
-#        'Positive' Class : X1  
+
 trellis.par.set(caretTheme())
 plot(paySim_nnet, metric = "ROC")
 
@@ -201,7 +176,8 @@ paySim_nnet_weighted_fit <- train(isFraud ~ .,
                                  verbose = FALSE,
                                  linout = FALSE,
                                  weights = paySim_model_weights,
-                                 metric = "ROC", 
+                                 metric = "ROC",
+                                 maxit = 2000,
                                  tuneGrid = nnet_grid,
                                  trControl = ctrl_paySim)
 
@@ -210,31 +186,7 @@ registerDoSEQ()
 ### Weighted fit
 nnet_weight_results <- predict(paySim_nnet_weighted_fit, newdata = paySim_test)
 confusionMatrix(nnet_weight_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 16923     3
-# X2   369    47
-# 
-# Accuracy : 0.9785             
-# 95% CI : (0.9763, 0.9807)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1976             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9787             
-# Specificity : 0.9400             
-# Pos Pred Value : 0.9998             
-# Neg Pred Value : 0.1130             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9758             
-# Detection Prevalence : 0.9760             
-# Balanced Accuracy : 0.9593             
-# 
-# 'Positive' Class : X1              
+    
 trellis.par.set(caretTheme())
 plot(paySim_nnet_weighted_fit, metric = "ROC")
 
@@ -258,31 +210,6 @@ registerDoSEQ()
 ### Sampled-down fit
 nnet_down_results <- predict(paySim_nnet_down_fit, newdata = paySim_test)
 confusionMatrix(nnet_down_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15313     0
-# X2  1979    50
-# 
-# Accuracy : 0.8859             
-# 95% CI : (0.8811, 0.8906)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0427             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.88555            
-# Specificity : 1.00000            
-# Pos Pred Value : 1.00000            
-# Neg Pred Value : 0.02464            
-# Prevalence : 0.99712            
-# Detection Rate : 0.88300            
-# Detection Prevalence : 0.88300            
-# Balanced Accuracy : 0.94278            
-# 
-# 'Positive' Class : X1
 
 trellis.par.set(caretTheme())
 plot(paySim_nnet_down_fit, metric = "ROC")
@@ -308,31 +235,7 @@ registerDoSEQ()
 ### Sampled-up fit
 nnet_up_results <- predict(paySim_nnet_up_fit, newdata = paySim_test)
 confusionMatrix(nnet_up_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17239     3
-# X2    53    47
-# 
-# Accuracy : 0.9968          
-# 95% CI : (0.9958, 0.9976)
-# No Information Rate : 0.9971          
-# P-Value [Acc > NIR] : 0.8224          
-# 
-# Kappa : 0.6252          
-# Mcnemar's Test P-Value : 0.00000000005835
-#                                           
-#             Sensitivity : 0.9969          
-#             Specificity : 0.9400          
-#          Pos Pred Value : 0.9998          
-#          Neg Pred Value : 0.4700          
-#              Prevalence : 0.9971          
-#          Detection Rate : 0.9941          
-#    Detection Prevalence : 0.9942          
-#       Balanced Accuracy : 0.9685          
-#                                           
-#        'Positive' Class : X1             
+ 
 trellis.par.set(caretTheme())
 plot(paySim_nnet_up_fit, metric = "ROC")
 
@@ -357,31 +260,6 @@ registerDoSEQ()
 ### Smote fit
 nnet_smote_results <- predict(paySim_nnet_smote_fit, newdata = paySim_test)
 confusionMatrix(nnet_smote_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17192     3
-# X2   100    47
-# 
-# Accuracy : 0.9941             
-# 95% CI : (0.9928, 0.9951)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.4749             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.9942             
-#             Specificity : 0.9400             
-#          Pos Pred Value : 0.9998             
-#          Neg Pred Value : 0.3197             
-#              Prevalence : 0.9971             
-#          Detection Rate : 0.9914             
-#    Detection Prevalence : 0.9915             
-#       Balanced Accuracy : 0.9671             
-#                                              
-#        'Positive' Class : X1              
 
 trellis.par.set(caretTheme())
 plot(paySim_nnet_smote_fit, metric = "ROC")
@@ -403,20 +281,6 @@ paySim_nnet_model_list_roc <- paySim_nnet_model_list %>%
 
 paySim_nnet_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.9855
-# 
-# $weighted
-# Area under the curve: 0.9892
-# 
-# $down
-# Area under the curve: 0.9513
-# 
-# $up
-# Area under the curve: 0.9649
-# 
-# $SMOTE
-# Area under the curve: 0.9962
 
 paySim_nnet_results_list_roc <- list(NA)
 num_mod <- 1
@@ -458,20 +322,6 @@ paySim_nnet_model_list_pr <- paySim_nnet_model_list %>%
 # Precision recall Curve AUC calculation
 paySim_nnet_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.7030771
-# 
-# $weighted
-# [1] 0.2299441
-# 
-# $down
-# [1] 0.02719428
-# 
-# $up
-# [1] 0.7307157
-# 
-# $SMOTE
-# [1] 0.7087689
 
 
 paySim_nnet_results_list_pr <- list(NA)
@@ -489,72 +339,5 @@ paySim_nnet_results_df_pr <- bind_rows(paySim_nnet_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_nnet_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(paySim_test$type == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-paySim_nnetSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$isFraud == "X2"
-  index_class1 <- data$isFraud == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 2,
-                     summaryFunction = paySim_nnetSim_auprcSummary,
-                     classProbs = TRUE,
-                     seeds = paySim_nnet$control$seeds)
-
-orig_pr <- train(isFraud ~ .,
-                 data = paySim_train,
-                 method = "nnet",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- paySim_nnet %>%
-  paySim_nnet_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  paySim_nnet_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(paySim_nnet$bestTune,
-          orig_pr$bestTune)
-
-
-
-
-################### Results and some graphs
-
-
-
-
-
-
-
+  geom_abline(intercept = sum(paySim_test$Class == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 

@@ -103,12 +103,6 @@ paySim_test$isFraud <- as.factor(paySim_test$isFraud)
 paySim_test$type<-as.factor(paySim_test$type)
 paySim_test <- paySim_test[, -c("step")]
 
-ctrl_paySim <- trainControl(method = "repeatedcv",
-                            number = 10,
-                            repeats = 2,
-                            summaryFunction = twoClassSummary,
-                            classProbs = TRUE,
-                            verboseIter = TRUE)
 
 feature.names=names(paySim_train)
 for (f in feature.names) {
@@ -129,6 +123,13 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
+ctrl_paySim <- trainControl(method = "repeatedcv",
+                            number = 10,
+                            repeats = 1,
+                            summaryFunction = twoClassSummary,
+                            classProbs = TRUE,
+                            verboseIter = TRUE)
+
 cluster <- makeCluster(detectCores() - 2)
 registerDoParallel(cluster)
 paySim_rf <- train(isFraud ~ .,
@@ -146,38 +147,10 @@ paySim_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-paySim_rf %>%
-  paySim_test_roc(data = paySim_test) %>%
-  auc()
-# Area under the curve: 1
 ### Original Fit
 rf_results <- predict(paySim_rf, newdata = paySim_test)
 confusionMatrix(rf_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17291     0
-# X2     1    50
-# 
-# Accuracy : 0.9999             
-# 95% CI : (0.9997, 1)        
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : <0.0000000000000002
-# 
-# Kappa : 0.9901             
-# Mcnemar's Test P-Value : 1                  
-# 
-# Sensitivity : 0.9999             
-# Specificity : 1.0000             
-# Pos Pred Value : 1.0000             
-# Neg Pred Value : 0.9804             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9971             
-# Detection Prevalence : 0.9971             
-# Balanced Accuracy : 1.0000             
-# 
-# 'Positive' Class : X1    
+  
 trellis.par.set(caretTheme())
 plot(paySim_rf, metric = "ROC")
 
@@ -208,31 +181,7 @@ registerDoSEQ()
 ### Weighted fit
 rf_weight_results <- predict(paySim_rf_weighted_fit, newdata = paySim_test)
 confusionMatrix(rf_weight_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17291     0
-# X2     1    50
-# 
-# Accuracy : 0.9999             
-# 95% CI : (0.9997, 1)        
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : <0.0000000000000002
-# 
-# Kappa : 0.9901             
-# Mcnemar's Test P-Value : 1                  
-#                                              
-#             Sensitivity : 0.9999             
-#             Specificity : 1.0000             
-#          Pos Pred Value : 1.0000             
-#          Neg Pred Value : 0.9804             
-#              Prevalence : 0.9971             
-#          Detection Rate : 0.9971             
-#    Detection Prevalence : 0.9971             
-#       Balanced Accuracy : 1.0000             
-#                                              
-#        'Positive' Class : X1      
+
 trellis.par.set(caretTheme())
 plot(paySim_rf_weighted_fit, metric = "ROC")
 
@@ -254,31 +203,6 @@ registerDoSEQ()
 ### Sampled-down fit
 rf_down_results <- predict(paySim_rf_down_fit, newdata = paySim_test)
 confusionMatrix(rf_down_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 16645     1
-# X2   647    49
-# 
-# Accuracy : 0.9626             
-# 95% CI : (0.9597, 0.9654)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1267             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9626             
-# Specificity : 0.9800             
-# Pos Pred Value : 0.9999             
-# Neg Pred Value : 0.0704             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9598             
-# Detection Prevalence : 0.9599             
-# Balanced Accuracy : 0.9713             
-# 
-# 'Positive' Class : X1        
 
 trellis.par.set(caretTheme())
 plot(paySim_rf_down_fit, metric = "ROC")
@@ -302,31 +226,7 @@ registerDoSEQ()
 ### Sampled-up fit
 rf_up_results <- predict(paySim_rf_up_fit, newdata = paySim_test)
 confusionMatrix(rf_up_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17292     2
-# X2     0    48
-# 
-# Accuracy : 0.9999             
-# 95% CI : (0.9996, 1)        
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : <0.0000000000000002
-# 
-# Kappa : 0.9795             
-# Mcnemar's Test P-Value : 0.4795             
-# 
-# Sensitivity : 1.0000             
-# Specificity : 0.9600             
-# Pos Pred Value : 0.9999             
-# Neg Pred Value : 1.0000             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9971             
-# Detection Prevalence : 0.9972             
-# Balanced Accuracy : 0.9800             
-# 
-# 'Positive' Class : X1
+
 trellis.par.set(caretTheme())
 plot(paySim_rf_up_fit, metric = "ROC")
 
@@ -349,31 +249,7 @@ registerDoSEQ()
 ### Smote fit
 rf_smote_results <- predict(paySim_rf_smote_fit, newdata = paySim_test)
 confusionMatrix(rf_smote_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17202     1
-# X2    90    49
-# 
-# Accuracy : 0.9948             
-# 95% CI : (0.9936, 0.9958)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.5165             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9948             
-# Specificity : 0.9800             
-# Pos Pred Value : 0.9999             
-# Neg Pred Value : 0.3525             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9919             
-# Detection Prevalence : 0.9920             
-# Balanced Accuracy : 0.9874             
-# 
-# 'Positive' Class : X1              
+          
 
 trellis.par.set(caretTheme())
 plot(paySim_rf_smote_fit, metric = "ROC")
@@ -395,20 +271,7 @@ paySim_rf_model_list_roc <- paySim_rf_model_list %>%
 
 paySim_rf_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 1
-# 
-# $weighted
-# Area under the curve: 1
-# 
-# $down
-# Area under the curve: 0.9977
-# 
-# $up
-# Area under the curve: 1
-# 
-# $SMOTE
-# Area under the curve: 0.9994
+
 paySim_rf_results_list_roc <- list(NA)
 num_mod <- 1
 
@@ -449,21 +312,6 @@ paySim_rf_model_list_pr <- paySim_rf_model_list %>%
 # Precision recall Curve AUC calculation
 paySim_rf_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.9991999
-# 
-# $weighted
-# [1] 0.9991999
-# 
-# $down
-# [1] 0.7094357
-# 
-# $up
-# [1] 0.9984531
-# 
-# $SMOTE
-# [1] 0.8223349
-
 
 paySim_rf_results_list_pr <- list(NA)
 num_mod <- 1
@@ -480,70 +328,7 @@ paySim_rf_results_df_pr <- bind_rows(paySim_rf_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_rf_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(paySim_test$type == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-paySim_rfSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$isFraud == "X2"
-  index_class1 <- data$isFraud == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 2,
-                     summaryFunction = paySim_rfSim_auprcSummary,
-                     classProbs = TRUE,
-                     seeds = paySim_rf$control$seeds)
-
-orig_pr <- train(isFraud ~ .,
-                 data = paySim_train,
-                 method = "rf",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- paySim_rf %>%
-  paySim_rf_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  paySim_rf_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(paySim_rf$bestTune,
-          orig_pr$bestTune)
-
-
-
-
-################### Results and some graphs
-
-
-
+  geom_abline(intercept = sum(paySim_test$Class == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 
 
 

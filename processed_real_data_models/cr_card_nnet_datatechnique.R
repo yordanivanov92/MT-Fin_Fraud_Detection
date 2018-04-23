@@ -54,9 +54,11 @@ for (f in feature.names2) {
   }
 }
 
+nnet_grid <- expand.grid(.decay = c(0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7), 
+                         .size = c(3, 5, 10, 20))
 ctrl_cr_card <- trainControl(method = "repeatedcv",
                              number = 10,
-                             repeats = 5,
+                             repeats = 1,
                              summaryFunction = twoClassSummary,
                              classProbs = TRUE,
                              verboseIter = TRUE)
@@ -68,6 +70,8 @@ cr_card_nnet <- train(Class ~ .,
                      linout = FALSE,
                      verbose = FALSE,
                      metric = "ROC", 
+                     maxit = 2000,
+                     tuneGrid = nnet_grid,
                      trControl = ctrl_cr_card)
 
 # Results Original
@@ -86,11 +90,6 @@ cr_card_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-auc_nnet <- cr_card_nnet %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
-
 ################## COST SENSITIVE XGBOOST MODEL
 # The penalization costs can be tinkered with
 cr_card_model_weights <- ifelse(cr_card_train$Class == "X1",
@@ -107,7 +106,9 @@ cr_card_nnet_weighted_fit <- train(Class ~ .,
                                   linout = FALSE,
                                   verbose = FALSE,
                                   weights = cr_card_model_weights,
-                                  metric = "ROC", 
+                                  maxit = 2000,
+                                  metric = "ROC",
+                                  tuneGrid = nnet_grid,
                                   trControl = ctrl_cr_card)
 
 stopCluster(cluster)
@@ -116,6 +117,7 @@ registerDoSEQ()
 # Results CS
 nnet_weighted_results <- predict(cr_card_nnet_weighted_fit, newdata = cr_card_test)
 conf_matr_weighted_nnet <- confusionMatrix(nnet_weighted_results, cr_card_test$Class)
+conf_matr_weighted_nnet
 
 trellis.par.set(caretTheme())
 train_plot_weighted_nnet <- plot(cr_card_nnet_weighted_fit, metric = "ROC")
@@ -138,6 +140,8 @@ cr_card_nnet_down_fit <- train(Class ~ .,
                               linout = FALSE,
                               verbose = FALSE,
                               metric = "ROC",
+                              maxit = 2000,
+                              tuneGrid = nnet_grid, 
                               trControl = ctrl_cr_card)
 stopCluster(cluster)
 registerDoSEQ()
@@ -152,10 +156,6 @@ train_plot_down_nnet <- plot(cr_card_nnet_down_fit, metric = "ROC")
 nnet_down_imp <- varImp(cr_card_nnet_down_fit, scale = FALSE)
 #nnet_imp - variable importance is observed
 plot(nnet_down_imp)
-
-auc_nnet_down <- cr_card_nnet_down_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
@@ -181,11 +181,6 @@ train_plot_up_nnet <- plot(cr_card_nnet_up_fit, metric = "ROC")
 nnet_up_imp <- varImp(cr_card_nnet_up_fit, scale = FALSE)
 #nnet_imp - variable importance is observed
 plot(nnet_up_imp)
-
-auc_nnet_up <- cr_card_nnet_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
 ############# SMOTE
 ctrl_cr_card$sampling <- "smote"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
@@ -201,19 +196,15 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results Up
-nnet_up_results <- predict(cr_card_nnet_up_fit, newdata = cr_card_test)
-conf_matr_up_nnet <- confusionMatrix(nnet_up_results, cr_card_test$Class)
+nnet_smote_results <- predict(cr_card_nnet_smote_fit, newdata = cr_card_test)
+conf_matr_smote_nnet <- confusionMatrix(nnet_smote_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_up_nnet <- plot(cr_card_nnet_up_fit, metric = "ROC")
+train_plot_smote_nnet <- plot(cr_card_nnet_smote_fit, metric = "ROC")
 
-nnet_up_imp <- varImp(cr_card_nnet_up_fit, scale = FALSE)
+nnet_smote_imp <- varImp(cr_card_nnet_smote_fit, scale = FALSE)
 #nnet_imp - variable importance is observed
-plot(nnet_up_imp)
-
-auc_nnet_up <- cr_card_nnet_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
+plot(nnet_smote_imp)
 
 
 ##############################################################

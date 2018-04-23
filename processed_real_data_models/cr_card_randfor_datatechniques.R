@@ -74,6 +74,7 @@ conf_matr_rf <- confusionMatrix(rf_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_rf <- plot(cr_card_rf, metric = "ROC")
+train_plot_rf
 
 rf_imp <- varImp(cr_card_rf, scale = FALSE)
 #rf_imp - variable importance is observed
@@ -84,10 +85,6 @@ cr_card_test_roc <- function(model, data) {
   roc(data$Class,
       predict(model, data, type = "prob")[, "X2"])
 }
-
-auc_rf <- cr_card_rf %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 
 ################## COST SENSITIVE XGBOOST MODEL
@@ -117,14 +114,11 @@ conf_matr_weighted_rf <- confusionMatrix(rf_weighted_results, cr_card_test$Class
 
 trellis.par.set(caretTheme())
 train_plot_weighted_rf <- plot(cr_card_rf_weighted_fit, metric = "ROC")
+train_plot_weighted_rf
 
 rf_weighted_imp <- varImp(cr_card_rf_weighted_fit, scale = FALSE)
 #rf_imp - variable importance is observed
 plot(rf_weighted_imp)
-
-auc_rf_weighted <- cr_card_rf_weighted_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############### sampled-down model
 ctrl_cr_card$sampling <- "down"
@@ -145,14 +139,11 @@ conf_matr_down_rf <- confusionMatrix(rf_down_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_down_rf <- plot(cr_card_rf_down_fit, metric = "ROC")
+train_plot_down_rf
 
 rf_down_imp <- varImp(cr_card_rf_down_fit, scale = FALSE)
 #rf_imp - variable importance is observed
 plot(rf_down_imp)
-
-auc_rf_down <- cr_card_rf_down_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
@@ -170,17 +161,16 @@ registerDoSEQ()
 # Results Up
 rf_up_results <- predict(cr_card_rf_up_fit, newdata = cr_card_test)
 conf_matr_up_rf <- confusionMatrix(rf_up_results, cr_card_test$Class)
+conf_matr_up_rf
 
 trellis.par.set(caretTheme())
 train_plot_up_rf <- plot(cr_card_rf_up_fit, metric = "ROC")
+train_plot_up_rf
 
 rf_up_imp <- varImp(cr_card_rf_up_fit, scale = FALSE)
 #rf_imp - variable importance is observed
 plot(rf_up_imp)
 
-auc_rf_up <- cr_card_rf_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# SMOTE
 ctrl_cr_card$sampling <- "smote"
@@ -198,17 +188,15 @@ registerDoSEQ()
 # Results Up
 rf_smote_results <- predict(cr_card_rf_smote_fit, newdata = cr_card_test)
 conf_matr_smote_rf <- confusionMatrix(rf_smote_results, cr_card_test$Class)
+conf_matr_smote_rf
 
 trellis.par.set(caretTheme())
 train_plot_smote_rf <- plot(cr_card_rf_smote_fit, metric = "ROC")
+train_plot_smote_rf
 
 rf_smote_imp <- varImp(cr_card_rf_smote_fit, scale = FALSE)
 #rf_imp - variable importance is observed
 plot(rf_smote_imp)
-
-auc_rf_up <- cr_card_rf_smote_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 
 ##############################################################
@@ -247,17 +235,16 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_rf_results_df_roc) +
 
 ####  Construction the precision/recall graphic
 cr_card_rf_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$Class == "X2"
+  index_class1 <- data$Class == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
-#### ERROR HERE - FIX
 cr_card_rf_model_list_pr <- cr_card_rf_model_list %>%
   map(cr_card_rf_calc_auprc, data = cr_card_test)
 
@@ -281,64 +268,4 @@ ggplot(aes(x = recall, y = precision, group = model), data = cr_card_rf_results_
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
-
-
-##### HAVE ANOTHER LOOK HERE - NOT ADAPTED
-cr_card_rfSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
-                     classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
-
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
-                 method = "rf",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(orig_fit$bestTune,
-          orig_pr$bestTune)
-
-
-
-
 
