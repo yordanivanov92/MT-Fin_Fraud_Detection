@@ -114,36 +114,7 @@ ucsd_nnet_sub <- caret::train(Class ~ .,
 nnet_results <- predict(ucsd_nnet_sub, newdata = ucsd_test)
 conf_matr_nnet <- confusionMatrix(nnet_results, ucsd_test$Class)
 conf_matr_nnet
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15884   471
-# X2     5     7
-# 
-# Accuracy : 0.9709             
-# 95% CI : (0.9682, 0.9734)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 0.4751             
-# 
-# Kappa : 0.0272             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.99969            
-# Specificity : 0.01464            
-# Pos Pred Value : 0.97120            
-# Neg Pred Value : 0.58333            
-# Prevalence : 0.97079            
-# Detection Rate : 0.97049            
-# Detection Prevalence : 0.99927            
-# Balanced Accuracy : 0.50716            
-# 
-# 'Positive' Class : X1   
 
-nnet_results_prob <- predict(ucsd_nnet, newdata = ucsd_test, type = "prob")
-nnet_results_probs <- ifelse(nnet_results_prob$X2 > 0.1, "X2", "X1")
-conf_matr_nnet2 <- confusionMatrix(nnet_results_probs, ucsd_test$Class)
-conf_matr_nnet2
 #####################    
 
 trellis.par.set(caretTheme())
@@ -187,37 +158,6 @@ ucsd_nnet_weighted_fit <- train(Class ~ .,
 nnet_results_weight <- predict(ucsd_nnet_weighted_fit, newdata = ucsd_test)
 conf_matr_nnet_weight <- confusionMatrix(nnet_results_weight, ucsd_test$Class)
 conf_matr_nnet_weight
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 10798   169
-# X2  5091   309
-# 
-# Accuracy : 0.6786             
-# 95% CI : (0.6714, 0.6858)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0544             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.67959            
-#             Specificity : 0.64644            
-#          Pos Pred Value : 0.98459            
-#          Neg Pred Value : 0.05722            
-#              Prevalence : 0.97079            
-#          Detection Rate : 0.65974            
-#    Detection Prevalence : 0.67007            
-#       Balanced Accuracy : 0.66302            
-#                                              
-#        'Positive' Class : X1   
-
-nnet_results_prob_weight <- predict(ucsd_nnet_weighted_fit, newdata = ucsd_test, type = "prob")
-nnet_results_probs_weight <- ifelse(nnet_results_prob_weight$X2 > 0.1, "X2", "X1")
-conf_matr_nnet2_weight <- confusionMatrix(nnet_results_probs_weight, ucsd_test$Class)
-conf_matr_nnet2_weight
-# same as with no weights
 
 trellis.par.set(caretTheme())
 train_plot_nnet_weight <- plot(ucsd_nnet_weighted_fit, metric = "ROC")
@@ -240,61 +180,7 @@ ucsd_nnet_down_fit <- train(Class ~ .,
 nnet_results_down <- predict(ucsd_nnet_down_fit, newdata = ucsd_test)
 conf_matr_nnet_down <- confusionMatrix(nnet_results_down, ucsd_test$Class)
 conf_matr_nnet_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 10643   182
-# X2  5246   296
-# 
-# Accuracy : 0.6684             
-# 95% CI : (0.6611, 0.6756)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0471             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.66983            
-#             Specificity : 0.61925            
-#          Pos Pred Value : 0.98319            
-#          Neg Pred Value : 0.05341            
-#              Prevalence : 0.97079            
-#          Detection Rate : 0.65027            
-#    Detection Prevalence : 0.66139            
-#       Balanced Accuracy : 0.64454            
-#                                              
-#        'Positive' Class : X1                 
-
-nnet_results_prob_down <- predict(ucsd_nnet_down_fit, newdata = ucsd_test, type = "prob")
-nnet_results_probs_down <- ifelse(nnet_results_prob_down$X2 > 0.1, "X2", "X1")
-conf_matr_nnet2_down <- confusionMatrix(nnet_results_probs_down, ucsd_test$Class)
-conf_matr_nnet2_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1   714     2
-# X2 15175   476
-# 
-# Accuracy : 0.0727             
-# 95% CI : (0.0688, 0.0768)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0025             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.04494            
-#             Specificity : 0.99582            
-#          Pos Pred Value : 0.99721            
-#          Neg Pred Value : 0.03041            
-#              Prevalence : 0.97079            
-#          Detection Rate : 0.04362            
-#    Detection Prevalence : 0.04375            
-#       Balanced Accuracy : 0.52038            
-#                                              
-#        'Positive' Class : X1     
+    
 
 trellis.par.set(caretTheme())
 train_plot_nnet_down <- plot(ucsd_nnet_down_fit, metric = "ROC")
@@ -316,36 +202,7 @@ ucsd_nnet_up_fit <- train(Class ~ .,
 nnet_results_up <- predict(ucsd_nnet_up_fit, newdata = ucsd_test)
 conf_matr_nnet_up <- confusionMatrix(nnet_results_up, ucsd_test$Class)
 conf_matr_nnet_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 11925   200
-# X2  3964   278
-# 
-# Accuracy : 0.7456             
-# 95% CI : (0.7388, 0.7522)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0689             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.75052            
-# Specificity : 0.58159            
-# Pos Pred Value : 0.98351            
-# Neg Pred Value : 0.06554            
-# Prevalence : 0.97079            
-# Detection Rate : 0.72860            
-# Detection Prevalence : 0.74082            
-# Balanced Accuracy : 0.66605            
-# 
-# 'Positive' Class : X1
-
-nnet_results_prob_up <- predict(ucsd_nnet_up_fit, newdata = ucsd_test, type = "prob")
-nnet_results_probs_up <- ifelse(nnet_results_prob_up$X2 > 0.1, "X2", "X1")
-conf_matr_nnet2_up <- confusionMatrix(nnet_results_probs_up, ucsd_test$Class)
-conf_matr_nnet2_up
+#
 
 # 'Positive' Class : X1 
 trellis.par.set(caretTheme())
@@ -371,36 +228,7 @@ ucsd_nnet_smote_fit <- train(Class ~ .,
 nnet_results_smote <- predict(ucsd_nnet_smote_fit, newdata = ucsd_test)
 conf_matr_nnet_smote <- confusionMatrix(nnet_results_smote, ucsd_test$Class)
 conf_matr_nnet_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 12460   246
-# X2  3429   232
-# 
-# Accuracy : 0.7755             
-# 95% CI : (0.769, 0.7818)    
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0637             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.78419            
-# Specificity : 0.48536            
-# Pos Pred Value : 0.98064            
-# Neg Pred Value : 0.06337            
-# Prevalence : 0.97079            
-# Detection Rate : 0.76129            
-# Detection Prevalence : 0.77632            
-# Balanced Accuracy : 0.63477            
-# 
-# 'Positive' Class : X1         
-nnet_results_prob_smote <- predict(ucsd_nnet_smote_fit, newdata = ucsd_test, type = "prob")
-nnet_results_probs_smote <- ifelse(nnet_results_prob_smote$X2 > 0.1, "X2", "X1")
-conf_matr_nnet2_smote <- confusionMatrix(nnet_results_probs_smote, ucsd_test$Class)
-conf_matr_nnet2_smote
-
+#
 
 trellis.par.set(caretTheme())
 train_plot_nnet_smote <- plot(ucsd_nnet_smote_fit, metric = "ROC")
@@ -423,20 +251,7 @@ ucsd_nnet_model_list_roc <- ucsd_nnet_model_list %>%
 
 ucsd_nnet_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.8872
-# 
-# $weighted
-# Area under the curve: 0.8872
-# 
-# $down
-# Area under the curve: 0.8596
-# 
-# $up
-# Area under the curve: 0.8841
-# 
-# $SMOTE
-# Area under the curve: 0.8505
+
 
 ucsd_nnet_results_list_roc <- list(NA)
 num_mod <- 1

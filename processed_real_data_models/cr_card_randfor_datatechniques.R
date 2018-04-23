@@ -61,23 +61,23 @@ ctrl_cr_card <- trainControl(method = "repeatedcv",
                              classProbs = TRUE,
                              verboseIter = TRUE)
 
-cr_card_gbm <- train(Class ~ .,
+cr_card_rf <- train(Class ~ .,
                      data = cr_card_train,
-                     method = "gbm",
+                     method = "rf",
                      verbose = FALSE,
                      metric = "ROC", 
                      trControl = ctrl_cr_card)
 
 # Results Original
-gbm_results <- predict(cr_card_gbm, newdata = cr_card_test)
-conf_matr_gbm <- confusionMatrix(gbm_results, cr_card_test$Class)
+rf_results <- predict(cr_card_rf, newdata = cr_card_test)
+conf_matr_rf <- confusionMatrix(rf_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_gbm <- plot(cr_card_gbm, metric = "ROC")
+train_plot_rf <- plot(cr_card_rf, metric = "ROC")
 
-gbm_imp <- varImp(cr_card_gbm, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_imp)
+rf_imp <- varImp(cr_card_rf, scale = FALSE)
+#rf_imp - variable importance is observed
+plot(rf_imp)
 
 
 cr_card_test_roc <- function(model, data) {
@@ -85,7 +85,7 @@ cr_card_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-auc_gbm <- cr_card_gbm %>%
+auc_rf <- cr_card_rf %>%
   cr_card_test_roc(data = cr_card_test) %>%
   auc()
 
@@ -96,13 +96,13 @@ cr_card_model_weights <- ifelse(cr_card_train$Class == "X1",
                                 (1/table(cr_card_train$Class)[1]) * 0.5,
                                 (1/table(cr_card_train$Class)[2]) * 0.5)
 
-ctrl_cr_card$seeds <- cr_card_gbm$control$seeds
+ctrl_cr_card$seeds <- cr_card_rf$control$seeds
 
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
-cr_card_gbm_weighted_fit <- train(Class ~ .,
+cr_card_rf_weighted_fit <- train(Class ~ .,
                                   data = cr_card_train,
-                                  method = "gbm",
+                                  method = "rf",
                                   verbose = FALSE,
                                   weights = cr_card_model_weights,
                                   metric = "ROC", 
@@ -112,17 +112,17 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results CS
-gbm_weighted_results <- predict(cr_card_gbm_weighted_fit, newdata = cr_card_test)
-conf_matr_weighted_gbm <- confusionMatrix(gbm_weighted_results, cr_card_test$Class)
+rf_weighted_results <- predict(cr_card_rf_weighted_fit, newdata = cr_card_test)
+conf_matr_weighted_rf <- confusionMatrix(rf_weighted_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_weighted_gbm <- plot(cr_card_gbm_weighted_fit, metric = "ROC")
+train_plot_weighted_rf <- plot(cr_card_rf_weighted_fit, metric = "ROC")
 
-gbm_weighted_imp <- varImp(cr_card_gbm_weighted_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_weighted_imp)
+rf_weighted_imp <- varImp(cr_card_rf_weighted_fit, scale = FALSE)
+#rf_imp - variable importance is observed
+plot(rf_weighted_imp)
 
-auc_gbm_weighted <- cr_card_gbm_weighted_fit %>%
+auc_rf_weighted <- cr_card_rf_weighted_fit %>%
   cr_card_test_roc(data = cr_card_test) %>%
   auc()
 
@@ -130,9 +130,9 @@ auc_gbm_weighted <- cr_card_gbm_weighted_fit %>%
 ctrl_cr_card$sampling <- "down"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
-cr_card_gbm_down_fit <- train(Class ~ .,
+cr_card_rf_down_fit <- train(Class ~ .,
                               data = cr_card_train,
-                              method = "gbm",
+                              method = "rf",
                               verbose = FALSE,
                               metric = "ROC",
                               trControl = ctrl_cr_card)
@@ -140,17 +140,17 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results Down
-gbm_down_results <- predict(cr_card_gbm_down_fit, newdata = cr_card_test)
-conf_matr_down_gbm <- confusionMatrix(gbm_down_results, cr_card_test$Class)
+rf_down_results <- predict(cr_card_rf_down_fit, newdata = cr_card_test)
+conf_matr_down_rf <- confusionMatrix(rf_down_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_down_gbm <- plot(cr_card_gbm_down_fit, metric = "ROC")
+train_plot_down_rf <- plot(cr_card_rf_down_fit, metric = "ROC")
 
-gbm_down_imp <- varImp(cr_card_gbm_down_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_down_imp)
+rf_down_imp <- varImp(cr_card_rf_down_fit, scale = FALSE)
+#rf_imp - variable importance is observed
+plot(rf_down_imp)
 
-auc_gbm_down <- cr_card_gbm_down_fit %>%
+auc_rf_down <- cr_card_rf_down_fit %>%
   cr_card_test_roc(data = cr_card_test) %>%
   auc()
 
@@ -158,9 +158,9 @@ auc_gbm_down <- cr_card_gbm_down_fit %>%
 ctrl_cr_card$sampling <- "up"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
-cr_card_gbm_up_fit <- train(Class ~ .,
+cr_card_rf_up_fit <- train(Class ~ .,
                             data = cr_card_train,
-                            method = "gbm",
+                            method = "rf",
                             verbose = FALSE,
                             metric = "ROC",
                             trControl = ctrl_cr_card)
@@ -168,17 +168,17 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results Up
-gbm_up_results <- predict(cr_card_gbm_up_fit, newdata = cr_card_test)
-conf_matr_up_gbm <- confusionMatrix(gbm_up_results, cr_card_test$Class)
+rf_up_results <- predict(cr_card_rf_up_fit, newdata = cr_card_test)
+conf_matr_up_rf <- confusionMatrix(rf_up_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_up_gbm <- plot(cr_card_gbm_up_fit, metric = "ROC")
+train_plot_up_rf <- plot(cr_card_rf_up_fit, metric = "ROC")
 
-gbm_up_imp <- varImp(cr_card_gbm_up_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_up_imp)
+rf_up_imp <- varImp(cr_card_rf_up_fit, scale = FALSE)
+#rf_imp - variable importance is observed
+plot(rf_up_imp)
 
-auc_gbm_up <- cr_card_gbm_up_fit %>%
+auc_rf_up <- cr_card_rf_up_fit %>%
   cr_card_test_roc(data = cr_card_test) %>%
   auc()
 
@@ -186,9 +186,9 @@ auc_gbm_up <- cr_card_gbm_up_fit %>%
 ctrl_cr_card$sampling <- "smote"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
-cr_card_gbm_smote_fit <- train(Class ~ .,
+cr_card_rf_smote_fit <- train(Class ~ .,
                                data = cr_card_train,
-                               method = "gbm",
+                               method = "rf",
                                verbose = FALSE,
                                metric = "ROC",
                                trControl = ctrl_cr_card)
@@ -196,49 +196,49 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results Up
-gbm_up_results <- predict(cr_card_gbm_up_fit, newdata = cr_card_test)
-conf_matr_up_gbm <- confusionMatrix(gbm_up_results, cr_card_test$Class)
+rf_smote_results <- predict(cr_card_rf_smote_fit, newdata = cr_card_test)
+conf_matr_smote_rf <- confusionMatrix(rf_smote_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_up_gbm <- plot(cr_card_gbm_up_fit, metric = "ROC")
+train_plot_smote_rf <- plot(cr_card_rf_smote_fit, metric = "ROC")
 
-gbm_up_imp <- varImp(cr_card_gbm_up_fit, scale = FALSE)
-#gbm_imp - variable importance is observed
-plot(gbm_up_imp)
+rf_smote_imp <- varImp(cr_card_rf_smote_fit, scale = FALSE)
+#rf_imp - variable importance is observed
+plot(rf_smote_imp)
 
-auc_gbm_up <- cr_card_gbm_up_fit %>%
+auc_rf_up <- cr_card_rf_smote_fit %>%
   cr_card_test_roc(data = cr_card_test) %>%
   auc()
 
 
 ##############################################################
-cr_card_gbm_model_list <- list(original = cr_card_gbm,
-                               weighted = cr_card_gbm_weighted_fit,
-                               down = cr_card_gbm_down_fit,
-                               up = cr_card_gbm_up_fit,
-                               SMOTE = cr_card_gbm_smote_fit)
-cr_card_gbm_model_list_roc <- cr_card_gbm_model_list %>%
+cr_card_rf_model_list <- list(original = cr_card_rf,
+                               weighted = cr_card_rf_weighted_fit,
+                               down = cr_card_rf_down_fit,
+                               up = cr_card_rf_up_fit,
+                               SMOTE = cr_card_rf_smote_fit)
+cr_card_rf_model_list_roc <- cr_card_rf_model_list %>%
   map(cr_card_test_roc, data = cr_card_test)
 
-cr_card_gbm_model_list_roc %>%
+cr_card_rf_model_list_roc %>%
   map(auc)
 
-cr_card_gbm_results_list_roc <- list(NA)
+cr_card_rf_results_list_roc <- list(NA)
 num_mod <- 1
 
-for(the_roc in cr_card_gbm_model_list_roc){
-  cr_card_gbm_results_list_roc[[num_mod]] <-
+for(the_roc in cr_card_rf_model_list_roc){
+  cr_card_rf_results_list_roc[[num_mod]] <-
     data_frame(tpr = the_roc$sensitivities,
                fpr = 1 - the_roc$specificities,
-               model = names(cr_card_gbm_model_list)[num_mod])
+               model = names(cr_card_rf_model_list)[num_mod])
   num_mod <- num_mod + 1
 }
 
-cr_card_gbm_results_df_roc <- bind_rows(cr_card_gbm_results_list_roc)
+cr_card_rf_results_df_roc <- bind_rows(cr_card_rf_results_list_roc)
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
-ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_gbm_results_df_roc) +
+ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_rf_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
@@ -246,7 +246,7 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_gbm_results_df_roc) 
 
 
 ####  Construction the precision/recall graphic
-cr_card_gbm_calc_auprc <- function(model, data) {
+cr_card_rf_calc_auprc <- function(model, data) {
   index_class2 <- data$type == "X2"
   index_class1 <- data$type == "X1"
   
@@ -258,39 +258,39 @@ cr_card_gbm_calc_auprc <- function(model, data) {
 }
 
 #### ERROR HERE - FIX
-cr_card_gbm_model_list_pr <- cr_card_gbm_model_list %>%
-  map(cr_card_gbm_calc_auprc, data = cr_card_test)
+cr_card_rf_model_list_pr <- cr_card_rf_model_list %>%
+  map(cr_card_rf_calc_auprc, data = cr_card_test)
 
 
-cr_card_gbm_model_list_pr %>%
+cr_card_rf_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
 
-cr_card_gbm_results_list_pr <- list(NA)
+cr_card_rf_results_list_pr <- list(NA)
 num_mod <- 1
-for (the_pr in cr_card_gbm_model_list_pr) {
-  cr_card_gbm_results_list_pr[[num_mod]] <-
+for (the_pr in cr_card_rf_model_list_pr) {
+  cr_card_rf_results_list_pr[[num_mod]] <-
     data_frame(recall = the_pr$curve[, 1],
                precision = the_pr$curve[, 2],
-               model = names(cr_card_gbm_model_list_pr)[num_mod])
+               model = names(cr_card_rf_model_list_pr)[num_mod])
   num_mod <- num_mod + 1
 }
 
-cr_card_gbm_results_df_pr <- bind_rows(cr_card_gbm_results_list_pr)
+cr_card_rf_results_df_pr <- bind_rows(cr_card_rf_results_list_pr)
 
-ggplot(aes(x = recall, y = precision, group = model), data = cr_card_gbm_results_df_pr) +
+ggplot(aes(x = recall, y = precision, group = model), data = cr_card_rf_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
 
 
 ##### HAVE ANOTHER LOOK HERE - NOT ADAPTED
-cr_card_gbmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
+cr_card_rfSim_auprcSummary <- function(data, lev = NULL, model = NULL){
   
-  index_class2 <- data$obs == "X2"
-  index_class1 <- data$obs == "X1"
+  index_class2 <- data$Class == "X2"
+  index_class1 <- data$Class == "X1"
   
-  the_curve <- pr.curve(data$type[index_class2],
-                        data$type[index_class1],
+  the_curve <- pr.curve(data$X2[index_class2],
+                        data$X2[index_class1],
                         curve = FALSE)
   
   out <- the_curve$auc.integral
@@ -312,7 +312,7 @@ ctrl <- trainControl(method = "repeatedcv",
 
 orig_pr <- train(Class ~ .,
                  data = imbal_train,
-                 method = "gbm",
+                 method = "rf",
                  verbose = FALSE,
                  metric = "AUPRC",
                  trControl = ctrl)
