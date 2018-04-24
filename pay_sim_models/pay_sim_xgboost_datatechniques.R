@@ -103,13 +103,6 @@ paySim_test$isFraud <- as.factor(paySim_test$isFraud)
 paySim_test$type<-as.factor(paySim_test$type)
 paySim_test <- paySim_test[, -c("step")]
 
-ctrl_paySim <- trainControl(method = "repeatedcv",
-                            number = 10,
-                            repeats = 2,
-                            summaryFunction = twoClassSummary,
-                            classProbs = TRUE,
-                            verboseIter = TRUE)
-
 feature.names=names(paySim_train)
 for (f in feature.names) {
   if (class(paySim_train[[f]])=="factor") {
@@ -129,8 +122,14 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
-cluster <- makeCluster(detectCores() - 2)
-registerDoParallel(cluster)
+ctrl_paySim <- trainControl(method = "repeatedcv",
+                            number = 10,
+                            repeats = 1,
+                            summaryFunction = twoClassSummary,
+                            classProbs = TRUE,
+                            verboseIter = TRUE)
+
+
 paySim_xgb <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "xgbTree",
@@ -138,46 +137,12 @@ paySim_xgb <- train(isFraud ~ .,
                     metric = "ROC", 
                     trControl = ctrl_paySim)
 
-stopCluster(cluster)
-registerDoSEQ()
 
-paySim_test_roc <- function(model, data) {
-  roc(data$isFraud,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
-paySim_xgb %>%
-  paySim_test_roc(data = paySim_test) %>%
-  auc()
 # Area under the curve: 1
 ### Original Fit
 xgb_results <- predict(paySim_xgb, newdata = paySim_test)
 confusionMatrix(xgb_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17292     9
-# X2     0    41
-# 
-# Accuracy : 0.9995         
-# 95% CI : (0.999, 0.9998)
-# No Information Rate : 0.9971         
-# P-Value [Acc > NIR] : 0.0000000000012
-# 
-# Kappa : 0.9008         
-# Mcnemar's Test P-Value : 0.007661       
-#                                          
-#             Sensitivity : 1.0000         
-#             Specificity : 0.8200         
-#          Pos Pred Value : 0.9995         
-#          Neg Pred Value : 1.0000         
-#              Prevalence : 0.9971         
-#          Detection Rate : 0.9971         
-#    Detection Prevalence : 0.9976         
-#       Balanced Accuracy : 0.9100         
-#                                          
-#        'Positive' Class : X1
+
 trellis.par.set(caretTheme())
 plot(paySim_xgb, metric = "ROC")
 
@@ -185,6 +150,10 @@ xgb_imp <- varImp(paySim_xgb, scale = FALSE)
 plot(xgb_imp)
 
 
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
 ################## COST SENSITIVE XGB MODEL
 # The penalization costs can be tinkered with
 paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
@@ -193,8 +162,6 @@ paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
 
 ctrl_paySim$seeds <- paySim_xgb$control$seeds
 
-cluster <- makeCluster(detectCores() - 2) 
-registerDoParallel(cluster)
 paySim_xgb_weighted_fit <- train(isFraud ~ .,
                                  data = paySim_train,
                                  method = "xgbTree",
@@ -203,36 +170,10 @@ paySim_xgb_weighted_fit <- train(isFraud ~ .,
                                  metric = "ROC", 
                                  trControl = ctrl_paySim)
 
-stopCluster(cluster)
-registerDoSEQ()
 ### Weighted fit
 xgb_weight_results <- predict(paySim_xgb_weighted_fit, newdata = paySim_test)
 confusionMatrix(xgb_weight_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17291     3
-# X2     1    47
-# 
-# Accuracy : 0.9998             
-# 95% CI : (0.9994, 0.9999)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : <0.0000000000000002
-# 
-# Kappa : 0.9591             
-# Mcnemar's Test P-Value : 0.6171             
-# 
-# Sensitivity : 0.9999             
-# Specificity : 0.9400             
-# Pos Pred Value : 0.9998             
-# Neg Pred Value : 0.9792             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9971             
-# Detection Prevalence : 0.9972             
-# Balanced Accuracy : 0.9700             
-# 
-# 'Positive' Class : X1                
+            
 trellis.par.set(caretTheme())
 plot(paySim_xgb_weighted_fit, metric = "ROC")
 
@@ -241,44 +182,17 @@ plot(xgb_weight_imp)
 
 ############### sampled-down model
 ctrl_paySim$sampling <- "down"
-cluster <- makeCluster(detectCores() - 2) 
-registerDoParallel(cluster)
+
 paySim_xgb_down_fit <- train(isFraud ~ .,
                              data = paySim_train,
                              method = "xgbTree",
                              verbose = FALSE,
                              metric = "ROC",
                              trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+
 ### Sampled-down fit
 xgb_down_results <- predict(paySim_xgb_down_fit, newdata = paySim_test)
 confusionMatrix(xgb_down_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 16140     0
-# X2  1152    50
-# 
-# Accuracy : 0.9336             
-# 95% CI : (0.9298, 0.9372)   
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0747             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9334             
-# Specificity : 1.0000             
-# Pos Pred Value : 1.0000             
-# Neg Pred Value : 0.0416             
-# Prevalence : 0.9971             
-# Detection Rate : 0.9307             
-# Detection Prevalence : 0.9307             
-# Balanced Accuracy : 0.9667             
-# 
-# 'Positive' Class : X1    
 
 trellis.par.set(caretTheme())
 plot(paySim_xgb_down_fit, metric = "ROC")
@@ -288,45 +202,19 @@ plot(xgb_down_imp)
 
 ############# sampled-up
 ctrl_paySim$sampling <- "up"
-cluster <- makeCluster(detectCores() - 1) 
-registerDoParallel(cluster)
+
 paySim_xgb_up_fit <- train(isFraud ~ .,
                            data = paySim_train,
                            method = "xgbTree",
                            verbose = FALSE,
                            metric = "ROC",
                            trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+
 
 ### Sampled-up fit
 xgb_up_results <- predict(paySim_xgb_up_fit, newdata = paySim_test)
 confusionMatrix(xgb_up_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 16211     0
-# X2  1081    50
-# 
-# Accuracy : 0.9377             
-# 95% CI : (0.934, 0.9412)    
-# No Information Rate : 0.9971             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0796             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.93749            
-# Specificity : 1.00000            
-# Pos Pred Value : 1.00000            
-# Neg Pred Value : 0.04421            
-# Prevalence : 0.99712            
-# Detection Rate : 0.93478            
-# Detection Prevalence : 0.93478            
-# Balanced Accuracy : 0.96874            
-# 
-# 'Positive' Class : X1  
+
 trellis.par.set(caretTheme())
 plot(paySim_xgb_up_fit, metric = "ROC")
 
@@ -335,45 +223,18 @@ plot(xgb_up_imp)
 
 ############# SMOTE
 ctrl_paySim$sampling <- "smote"
-cluster <- makeCluster(detectCores() - 2) 
-registerDoParallel(cluster)
+
 paySim_xgb_smote_fit <- train(isFraud ~ .,
                               data = paySim_train,
                               method = "xgbTree",
                               verbose = FALSE,
                               metric = "ROC",
                               trControl = ctrl_paySim)
-stopCluster(cluster)
-registerDoSEQ()
+
 
 ### Smote fit
 xgb_smote_results <- predict(paySim_xgb_smote_fit, newdata = paySim_test)
 confusionMatrix(xgb_smote_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17250     0
-# X2    42    50
-# 
-# Accuracy : 0.9976          
-# 95% CI : (0.9967, 0.9983)
-# No Information Rate : 0.9971          
-# P-Value [Acc > NIR] : 0.1431          
-# 
-# Kappa : 0.7031          
-# Mcnemar's Test P-Value : 0.0000000002509 
-#                                           
-#             Sensitivity : 0.9976          
-#             Specificity : 1.0000          
-#          Pos Pred Value : 1.0000          
-#          Neg Pred Value : 0.5435          
-#              Prevalence : 0.9971          
-#          Detection Rate : 0.9947          
-#    Detection Prevalence : 0.9947          
-#       Balanced Accuracy : 0.9988          
-#                                           
-#        'Positive' Class : X1               
 
 trellis.par.set(caretTheme())
 plot(paySim_xgb_smote_fit, metric = "ROC")
@@ -395,20 +256,6 @@ paySim_xgb_model_list_roc <- paySim_xgb_model_list %>%
 
 paySim_xgb_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 1
-# 
-# $weighted
-# Area under the curve: 1
-# 
-# $down
-# Area under the curve: 0.9966
-# 
-# $up
-# Area under the curve: 0.9939
-# 
-# $SMOTE
-# Area under the curve: 0.9998
 
 paySim_xgb_results_list_roc <- list(NA)
 num_mod <- 1
@@ -450,21 +297,6 @@ paySim_xgb_model_list_pr <- paySim_xgb_model_list %>%
 # Precision recall Curve AUC calculation
 paySim_xgb_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.9978021
-# 
-# $weighted
-# [1] 0.9985762
-# 
-# $down
-# [1] 0.757157
-# 
-# $up
-# [1] 0.715702
-# 
-# $SMOTE
-# [1] 0.9497468
-
 
 paySim_xgb_results_list_pr <- list(NA)
 num_mod <- 1
@@ -482,71 +314,4 @@ ggplot(aes(x = recall, y = precision, group = model), data = paySim_xgb_results_
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(paySim_test$type == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-paySim_xgbSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$isFraud == "X2"
-  index_class1 <- data$isFraud == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 2,
-                     summaryFunction = paySim_xgbSim_auprcSummary,
-                     classProbs = TRUE,
-                     seeds = paySim_xgb$control$seeds)
-
-orig_pr <- train(isFraud ~ .,
-                 data = paySim_train,
-                 method = "xgbTree",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- paySim_xgb %>%
-  paySim_xgb_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  paySim_xgb_calc_auprc(data = paySim_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(paySim_xgb$bestTune,
-          orig_pr$bestTune)
-
-
-
-
-################### Results and some graphs
-
-
-
-
-
-
-
 

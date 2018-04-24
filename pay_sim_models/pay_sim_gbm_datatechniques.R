@@ -227,7 +227,6 @@ registerDoSEQ()
 gbm_up_results <- predict(paySim_gbm_up_fit, newdata = paySim_test)
 confusionMatrix(gbm_up_results, paySim_test$isFraud)
 
-
 trellis.par.set(caretTheme())
 plot(paySim_gbm_up_fit, metric = "ROC")
 
@@ -251,7 +250,6 @@ registerDoSEQ()
 gbm_smote_results <- predict(paySim_gbm_smote_fit, newdata = paySim_test)
 confusionMatrix(gbm_smote_results, paySim_test$isFraud)
         
-
 trellis.par.set(caretTheme())
 plot(paySim_gbm_smote_fit, metric = "ROC")
 
@@ -329,7 +327,7 @@ paySim_gbm_results_df_pr <- bind_rows(paySim_gbm_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_gbm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(paySim_test$type == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
+  geom_abline(intercept = sum(paySim_test$isFraud == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 
 
 

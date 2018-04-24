@@ -56,17 +56,17 @@ for (f in feature.names2) {
 
 ctrl_cr_card <- trainControl(method = "repeatedcv",
                              number = 10,
-                             repeats = 5,
+                             repeats = 1,
                              summaryFunction = twoClassSummary,
                              classProbs = TRUE,
                              verboseIter = TRUE)
 
 cr_card_gbm <- train(Class ~ .,
-                         data = cr_card_train,
-                         method = "gbm",
-                         verbose = FALSE,
-                         metric = "ROC", 
-                         trControl = ctrl_cr_card)
+                     data = cr_card_train,
+                     method = "gbm",
+                     verbose = FALSE,
+                     metric = "ROC", 
+                     trControl = ctrl_cr_card)
 
 # Results Original
 gbm_results <- predict(cr_card_gbm, newdata = cr_card_test)
@@ -74,6 +74,7 @@ conf_matr_gbm <- confusionMatrix(gbm_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_gbm <- plot(cr_card_gbm, metric = "ROC")
+train_plot_gbm
 
 gbm_imp <- varImp(cr_card_gbm, scale = FALSE)
 #gbm_imp - variable importance is observed
@@ -84,10 +85,6 @@ cr_card_test_roc <- function(model, data) {
   roc(data$Class,
       predict(model, data, type = "prob")[, "X2"])
 }
-
-auc_gbm <- cr_card_gbm %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 
 ################## COST SENSITIVE XGBOOST MODEL
@@ -117,14 +114,11 @@ conf_matr_weighted_gbm <- confusionMatrix(gbm_weighted_results, cr_card_test$Cla
 
 trellis.par.set(caretTheme())
 train_plot_weighted_gbm <- plot(cr_card_gbm_weighted_fit, metric = "ROC")
+train_plot_weighted_gbm
 
 gbm_weighted_imp <- varImp(cr_card_gbm_weighted_fit, scale = FALSE)
 #gbm_imp - variable importance is observed
 plot(gbm_weighted_imp)
-
-auc_gbm_weighted <- cr_card_gbm_weighted_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############### sampled-down model
 ctrl_cr_card$sampling <- "down"
@@ -145,14 +139,11 @@ conf_matr_down_gbm <- confusionMatrix(gbm_down_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_down_gbm <- plot(cr_card_gbm_down_fit, metric = "ROC")
+train_plot_down_gbm
 
 gbm_down_imp <- varImp(cr_card_gbm_down_fit, scale = FALSE)
 #gbm_imp - variable importance is observed
 plot(gbm_down_imp)
-
-auc_gbm_down <- cr_card_gbm_down_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
@@ -173,14 +164,11 @@ conf_matr_up_gbm <- confusionMatrix(gbm_up_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_up_gbm <- plot(cr_card_gbm_up_fit, metric = "ROC")
+train_plot_up_gbm
 
 gbm_up_imp <- varImp(cr_card_gbm_up_fit, scale = FALSE)
 #gbm_imp - variable importance is observed
 plot(gbm_up_imp)
-
-auc_gbm_up <- cr_card_gbm_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# SMOTE
 ctrl_cr_card$sampling <- "smote"
@@ -196,20 +184,16 @@ stopCluster(cluster)
 registerDoSEQ()
 
 # Results Up
-gbm_up_results <- predict(cr_card_gbm_up_fit, newdata = cr_card_test)
-conf_matr_up_gbm <- confusionMatrix(gbm_up_results, cr_card_test$Class)
+gbm_smote_results <- predict(cr_card_gbm_smote_fit, newdata = cr_card_test)
+conf_matr_smote_gbm <- confusionMatrix(gbm_smote_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
-train_plot_up_gbm <- plot(cr_card_gbm_up_fit, metric = "ROC")
+train_plot_smote_gbm <- plot(cr_card_gbm_smote_fit, metric = "ROC")
+train_plot_smote_gbm
 
-gbm_up_imp <- varImp(cr_card_gbm_up_fit, scale = FALSE)
+gbm_smote_imp <- varImp(cr_card_gbm_smote_fit, scale = FALSE)
 #gbm_imp - variable importance is observed
-plot(gbm_up_imp)
-
-auc_gbm_up <- cr_card_gbm_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
+plot(gbm_smote_imp)
 
 ##############################################################
 cr_card_gbm_model_list <- list(original = cr_card_gbm,
@@ -247,17 +231,16 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_gbm_results_df_roc) 
 
 ####  Construction the precision/recall graphic
 cr_card_gbm_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$Class == "X2"
+  index_class1 <- data$Class == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
-#### ERROR HERE - FIX
 cr_card_gbm_model_list_pr <- cr_card_gbm_model_list %>%
   map(cr_card_gbm_calc_auprc, data = cr_card_test)
 
@@ -280,65 +263,5 @@ cr_card_gbm_results_df_pr <- bind_rows(cr_card_gbm_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = cr_card_gbm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
-
-
-##### HAVE ANOTHER LOOK HERE - NOT ADAPTED
-cr_card_gbmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$obs == "X2"
-  index_class1 <- data$obs == "X1"
-  
-  the_curve <- pr.curve(data$type[index_class2],
-                        data$type[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
-                     classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
-
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
-                 method = "gbm",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(orig_fit$bestTune,
-          orig_pr$bestTune)
-
-
-
-
+  geom_abline(intercept = sum(cr_card_test$Class == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
 

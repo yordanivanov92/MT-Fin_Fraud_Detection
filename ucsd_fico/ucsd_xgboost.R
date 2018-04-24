@@ -108,6 +108,7 @@ conf_matr_xgboost
 
 trellis.par.set(caretTheme())
 train_plot_xgboost <- plot(ucsd_xgboost, metric = "ROC")
+train_plot_xgboost
 
 xgboost_imp <- varImp(ucsd_xgboost, scale = FALSE)
 plot(xgboost_imp)
@@ -117,9 +118,6 @@ ucsd_test_roc <- function(model, data) {
   roc(data$Class,
       predict(model, data, type = "prob")[, "X2"])
 }
-
-
-plot(roc(ucsd_test$Class, predict(ucsd_xgboost, ucsd_test,type = "prob")[,"X2"]))
 
 
 ############################### COST SENSITIVE XGBOOST MODEL
@@ -149,6 +147,7 @@ conf_matr_xgboost_weight
 
 trellis.par.set(caretTheme())
 train_plot_xgboost_weight <- plot(ucsd_xgboost_weighted_fit, metric = "ROC")
+train_plot_xgboost_weight
 
 xgboost_imp_weight <- varImp(ucsd_xgboost_weighted_fit, scale = FALSE)
 plot(xgboost_imp_weight)
@@ -172,6 +171,7 @@ conf_matr_xgboost_down
 
 trellis.par.set(caretTheme())
 train_plot_xgboost_down <- plot(ucsd_xgboost_down_fit, metric = "ROC")
+train_plot_xgboost_down
 
 xgboost_imp_down <- varImp(ucsd_xgboost_down_fit, scale = FALSE)
 plot(xgboost_imp_down)
@@ -195,6 +195,7 @@ conf_matr_xgboost_up
 
 trellis.par.set(caretTheme())
 train_plot_xgboost_up <- plot(ucsd_xgboost_up_fit, metric = "ROC")
+train_plot_xgboost_up
 
 xgboost_imp_up <- varImp(ucsd_xgboost_up_fit, scale = FALSE)
 plot(xgboost_imp_up)
@@ -219,6 +220,7 @@ conf_matr_xgboost_smote
 
 trellis.par.set(caretTheme())
 train_plot_xgboost_smote <- plot(ucsd_xgboost_smote_fit, metric = "ROC")
+train_plot_xgboost_smote
 
 xgboost_imp_smote <- varImp(ucsd_xgboost_smote_fit, scale = FALSE)
 plot(xgboost_imp_smote)
@@ -238,20 +240,6 @@ ucsd_xgboost_model_list_roc <- ucsd_xgboost_model_list %>%
 
 ucsd_xgboost_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.8579
-# 
-# $weighted
-# Area under the curve: 0.5
-# 
-# $down
-# Area under the curve: 0.8201
-# 
-# $up
-# Area under the curve: 0.8576
-# 
-# $SMOTE
-# Area under the curve: 0.8357
 
 ucsd_xgboost_results_list_roc <- list(NA)
 num_mod <- 1
@@ -268,12 +256,11 @@ ucsd_xgboost_results_df_roc <- bind_rows(ucsd_xgboost_results_list_roc)
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
-xgboost_rocs <- ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_xgboost_results_df_roc) +
+ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_xgboost_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
   theme_bw(base_size = 18)
-ggsave("xgboost_rocs.png", width = 20, height = 20, units = "cm")
 
 ####  Construction the precision/recall graphic
 ucsd_xgboost_calc_auprc <- function(model, data) {
@@ -293,21 +280,6 @@ ucsd_xgboost_model_list_pr <- ucsd_xgboost_model_list %>%
 # Precision recall Curve AUC calculation
 ucsd_xgboost_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.517209
-# 
-# $weighted
-# [1] 0.9974719
-# 
-# $down
-# [1] 0.6088192
-# 
-# $up
-# [1] 0.9983664
-# 
-# $SMOTE
-# [1] 0.9759452
-
 
 ucsd_xgboost_results_list_pr <- list(NA)
 num_mod <- 1
@@ -324,21 +296,4 @@ ucsd_xgboost_results_df_pr <- bind_rows(ucsd_xgboost_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_xgboost_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(ucsd_test$type == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-ucsd_xgboostSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
+  geom_abline(intercept = sum(ucsd_test$Class == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)

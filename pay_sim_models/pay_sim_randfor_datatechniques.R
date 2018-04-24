@@ -330,7 +330,3 @@ ggplot(aes(x = recall, y = precision, group = model), data = paySim_rf_results_d
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(paySim_test$Class == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 
-
-
-
-

@@ -339,5 +339,5 @@ paySim_nnet_results_df_pr <- bind_rows(paySim_nnet_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_nnet_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(paySim_test$Class == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
+  geom_abline(intercept = sum(paySim_test$isFraud == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
 

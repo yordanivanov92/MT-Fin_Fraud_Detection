@@ -75,6 +75,7 @@ conf_matr_xgboost
 
 trellis.par.set(caretTheme())
 train_plot_xgboost <- plot(cr_card_xgboost, metric = "ROC")
+train_plot_xgboost
 
 xgboost_imp <- varImp(cr_card_xgboost, scale = FALSE)
 #xgboost_imp - variable importance is observed
@@ -110,14 +111,11 @@ conf_matr_weighted_xgboost <- confusionMatrix(xgboost_weighted_results, cr_card_
 
 trellis.par.set(caretTheme())
 train_plot_weighted_xgboost <- plot(cr_card_xgboost_weighted_fit, metric = "ROC")
+train_plot_weighted_xgboost
 
 xgboost_weighted_imp <- varImp(cr_card_xgboost_weighted_fit, scale = FALSE)
 #xgboost_imp - variable importance is observed
 plot(xgboost_weighted_imp)
-
-auc_xgboost_weighted <- cr_card_xgboost_weighted_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############### sampled-down model
 ctrl_cr_card$sampling <- "down"
@@ -135,14 +133,11 @@ conf_matr_down_xgboost <- confusionMatrix(xgboost_down_results, cr_card_test$Cla
 
 trellis.par.set(caretTheme())
 train_plot_down_xgboost <- plot(cr_card_xgboost_down_fit, metric = "ROC")
+train_plot_down_xgboost
 
 xgboost_down_imp <- varImp(cr_card_xgboost_down_fit, scale = FALSE)
 #xgboost_imp - variable importance is observed
 plot(xgboost_down_imp)
-
-auc_xgboost_down <- cr_card_xgboost_down_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
@@ -160,6 +155,7 @@ conf_matr_up_xgboost <- confusionMatrix(xgboost_up_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_up_xgboost <- plot(cr_card_xgboost_up_fit, metric = "ROC")
+train_plot_up_xgboost
 
 xgboost_up_imp <- varImp(cr_card_xgboost_up_fit, scale = FALSE)
 #xgboost_imp - variable importance is observed
@@ -180,6 +176,7 @@ conf_matr_up_xgboost <- confusionMatrix(xgboost_up_results, cr_card_test$Class)
 
 trellis.par.set(caretTheme())
 train_plot_up_xgboost <- plot(cr_card_xgboost_up_fit, metric = "ROC")
+train_plot_up_xgboost
 
 xgboost_up_imp <- varImp(cr_card_xgboost_up_fit, scale = FALSE)
 #xgboost_imp - variable importance is observed
@@ -259,10 +256,3 @@ ggplot(aes(x = recall, y = precision, group = model), data = cr_card_xgboost_res
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(cr_card_test$Class == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
-
-
-
-
-
-
-
