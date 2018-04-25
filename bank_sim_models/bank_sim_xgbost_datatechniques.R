@@ -11,13 +11,17 @@ library(plyr)
 library(xgboost)
 
 
-set.seed(1)
-###########################################################################
-############################### BankSim data ##############################
-###########################################################################
+set.seed(48)
 bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
                     header = TRUE,
                     sep = ",")
+
+plyr::count(bankSim, c("category", "fraud"))
+
+plyr::count(bankSim, c("gender", "fraud"))
+plyr::count(bankSim, c("merchant", "fraud"))
+plyr::count(bankSim, c("age", "fraud"))
+
 bankSim <- bankSim %>%
   select(age, gender, merchant, category, amount, fraud)
 
@@ -27,75 +31,42 @@ bankSim <- bankSim %>%
   filter(category != "'es_contents'") %>%
   filter(gender != "'U'")
 
-
-###################################################################
-filtered_customers <- plyr::count(bankSim, c("customer", "fraud"))
-dupl_data_customers <- filtered_customers[duplicated(filtered_customers[, "customer"]), ]
-
-#getting those customers that have exhibited fraud
-bankSim_filter_customers <- bankSim %>%
-  filter(customer %in% dupl_data_customers[, "customer"])  %>%
-  select(customer) %>%
-  distinct(customer) %>%
-  arrange(customer)
-
-bankSim <- bankSim %>%
-  filter(customer %in% bankSim_filter_customers[, "customer"])
-rm(filtered_customers)
-rm(dupl_data_customers)
-rm(bankSim_filter_customers)
-###################
-filtered_merchant <- plyr::count(bankSim, c("merchant", "fraud"))
-dupl_data_merchant <- filtered_merchant[duplicated(filtered_merchant[, "merchant"]), ]
-
-#getting those merchants that have exhibited fraud
-bankSim_filter_merchant <- bankSim %>%
-  filter(merchant %in% dupl_data_merchant[, "merchant"])  %>%
-  select(merchant) %>%
-  distinct(merchant) %>%
-  arrange(merchant)
-
-bankSim <- bankSim %>%
-  filter(merchant %in% bankSim_filter_merchant[, "merchant"])
-
-rm(filtered_merchant)
-rm(dupl_data_merchant)
-rm(bankSim_filter_merchant)
-###################################################################
-
-split = sample.split(bankSim_model$fraud, SplitRatio = 0.6)
+### Splitting the data into train and test sets
+split = sample.split(bankSim$fraud, SplitRatio = 0.6)
 
 bankSim_train = subset(bankSim, split == TRUE)
 bankSim_test = subset(bankSim, split == FALSE)
 
 prop.table(table(bankSim_train$fraud))
-
-ctrl_bankSim <- trainControl(method = "repeatedcv",
-                             number = 10,
-                             repeats = 5,
-                             summaryFunction = twoClassSummary,
-                             classProbs = TRUE,
-                             verboseIter = TRUE)
+prop.table(table(bankSim_test$fraud))
 
 
-bankSim_train$fraud <- as.factor(bankSim_train$fraud)
 #bankSim_train$customer <- as.factor(bankSim_train$customer)
 bankSim_train$age <- as.factor(bankSim_train$age)
 bankSim_train$gender <- as.factor(bankSim_train$gender)
 bankSim_train$merchant <- as.factor(bankSim_train$merchant)
 bankSim_train$category <- as.factor(bankSim_train$category)
 bankSim_train$fraud <- ifelse(bankSim_train$fraud == 1, "fraud", "clean")
+bankSim_train$fraud <- as.factor(bankSim_train$fraud)
 
-bankSim_test$fraud <- as.factor(bankSim_test$fraud)
+
 #bankSim_train$customer <- as.factor(bankSim_train$customer)
 bankSim_test$age <- as.factor(bankSim_test$age)
 bankSim_test$gender <- as.factor(bankSim_test$gender)
 bankSim_test$merchant <- as.factor(bankSim_test$merchant)
 bankSim_test$category <- as.factor(bankSim_test$category)
 bankSim_test$fraud <- ifelse(bankSim_test$fraud == 1, "fraud", "clean")
+bankSim_test$fraud <- as.factor(bankSim_test$fraud)
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+ctrl_bankSim <- trainControl(method = "repeatedcv",
+                             number = 10,
+                             repeats = 1,
+                             #allowParallel = TRUE,
+                             summaryFunction = twoClassSummary,
+                             classProbs = TRUE,
+                             verboseIter = TRUE)
+
+
 bankSim_orig_fit <- train(fraud ~ .,
                           data = bankSim_train,
                           method = "xgbTree",
@@ -103,21 +74,21 @@ bankSim_orig_fit <- train(fraud ~ .,
                           metric = "ROC",
                           trControl = ctrl_bankSim)
 
-stopCluster(cluster)
-registerDoSEQ()
 
+xgboost_results <- predict(bankSim_orig_fit, newdata = bankSim_test)
+confusionMatrix(xgboost_results, bankSim_test$fraud)
+
+trellis.par.set(caretTheme())
+plot(bankSim_orig_fit, metric = "ROC")
+
+bankSim_imp <- varImp(bankSim_orig_fit, scale = FALSE)
+plot(bankSim_imp)
 
 bankSim_test_roc <- function(model, data) {
   roc(data$fraud,
       predict(model, data, type = "prob")[, "fraud"])
 }
 
-bankSim_orig_fit %>%
-  bankSim_test_roc(data = bankSim_test) %>%
-  auc()
-
-
-# Handling class imbalance with weighted or sampling methods
 
 ################## COST SENSITIVE XGBOOST MODEL
 bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
@@ -126,8 +97,6 @@ bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
 
 ctrl_bankSim$seeds <- bankSim_orig_fit$control$seeds
 
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
 bankSim_weighted_fit <- train(fraud ~ .,
                               data = bankSim_train,
                               method = "xgbTree",
@@ -135,47 +104,74 @@ bankSim_weighted_fit <- train(fraud ~ .,
                               weights = bankSim_model_weights,
                               metric = "ROC",
                               trControl = ctrl_bankSim)
-stopCluster(cluster)
-registerDoSEQ()
+
+xgboost_results_weight <- predict(bankSim_weighted_fit, newdata = bankSim_test)
+confusionMatrix(xgboost_results_weight, bankSim_test$fraud)
+
+trellis.par.set(caretTheme())
+plot(bankSim_weighted_fit, metric = "ROC")
+
+bankSim_imp_weight <- varImp(bankSim_weighted_fit, scale = FALSE)
+plot(bankSim_imp_weight)
 
 ############### sampled-down model
 ctrl_bankSim$sampling <- "down"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+
 bankSim_down_fit <- train(fraud ~ .,
                           data = bankSim_train,
                           method = "xgbTree",
                           verbose = FALSE,
                           metric = "ROC",
                           trControl = ctrl_bankSim)
-stopCluster(cluster)
-registerDoSEQ()
+
+xgboost_results_down <- predict(bankSim_down_fit, newdata = bankSim_test)
+confusionMatrix(xgboost_results_down, bankSim_test$fraud)
+
+trellis.par.set(caretTheme())
+plot(bankSim_down_fit, metric = "ROC")
+
+bankSim_imp_down <- varImp(bankSim_down_fit, scale = FALSE)
+plot(bankSim_imp_down)
+
 ############# sampled-up
 ctrl_bankSim$sampling <- "up"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+
 bankSim_up_fit <- train(fraud ~ .,
                         data = bankSim_train,
                         method = "xgbTree",
                         verbose = FALSE,
                         metric = "ROC",
                         trControl = ctrl_bankSim)
-stopCluster(cluster)
-registerDoSEQ()
+
+xgboost_results_up <- predict(bankSim_up_fit, newdata = bankSim_test)
+confusionMatrix(xgboost_results_up, bankSim_test$fraud)
+
+trellis.par.set(caretTheme())
+plot(bankSim_up_fit, metric = "ROC")
+
+bankSim_imp_up <- varImp(bankSim_up_fit, scale = FALSE)
+plot(bankSim_imp_up)
+
 ############# SMOTE
 ctrl_bankSim$sampling <- "smote"
-cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
-registerDoParallel(cluster)
+
 bankSim_smote_fit <- train(fraud ~ .,
                            data = bankSim_train,
                            method = "xgbTree",
                            verbose = FALSE,
                            metric = "ROC",
                            trControl = ctrl_bankSim)
-stopCluster(cluster)
-registerDoSEQ()
 
+xgboost_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
+confusionMatrix(xgboost_results_smote, bankSim_test$fraud)
 
+trellis.par.set(caretTheme())
+plot(bankSim_smote_fit, metric = "ROC")
+
+bankSim_imp_smote <- varImp(bankSim_smote_fit, scale = FALSE)
+plot(bankSim_imp_smote)
+
+#######################################
 bankSim_model_list <- list(original = bankSim_orig_fit,
                            weighted = bankSim_weighted_fit,
                            down = bankSim_down_fit,
@@ -245,77 +241,4 @@ ggplot(aes(x = recall, y = precision, group = model), data = bankSim_results_df_
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(bankSim_test$fraud == "fraud")/nrow(bankSim_test),slope = 0, color = "gray", size = 1)
 
-
-bankSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$obs == "fraud"
-  index_class1 <- data$obs == "clean"
-  
-  the_curve <- pr.curve(data$fraud[index_class2],
-                        data$fraud[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
-                     classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
-
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
-                 method = "xgbTree",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(orig_fit$bestTune,
-          orig_pr$bestTune)
-
-
-################# Confusion matrices
-test_results_orig <- predict(bankSim_orig_fit, newdata = bankSim_test)
-confusionMatrix(test_results_orig, bankSim_test$fraud, positive = "fraud")
-
-test_results_weight <- predict(bankSim_weighted_fit, newdata = bankSim_test)
-confusionMatrix(test_results_weight, bankSim_test$fraud, positive = "fraud")
-
-test_results_down <- predict(bankSim_down_fit, newdata = bankSim_test)
-confusionMatrix(test_results_down, bankSim_test$fraud, positive = "fraud")
-
-test_results_up <- predict(bankSim_up_fit, newdata = bankSim_test)
-confusionMatrix(test_results_up, bankSim_test$fraud, positive = "fraud")
-
-test_results_smote <- predict(bankSim_smote_fit, newdata = bankSim_test)
-confusionMatrix(test_results_smote, bankSim_test$fraud, positive = "fraud")
-##############END #####################################
-##################################################################################
 

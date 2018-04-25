@@ -10,6 +10,7 @@ library(doParallel)
 library(parallel)
 library(plyr)
 library(kernlab)
+library(e1071)
 options(scipen=999)
 
 set.seed(48)
@@ -94,61 +95,6 @@ ucsd_svm <- train(Class ~ .,
 svm_results <- predict(ucsd_svm, newdata = ucsd_test)
 conf_matr_svm <- confusionMatrix(svm_results, ucsd_test$Class)
 conf_matr_svm
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15818   276
-# X2    71   202
-# 
-# Accuracy : 0.9788               
-# 95% CI : (0.9765, 0.981)      
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.0000000001049      
-# 
-# Kappa : 0.5279               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9955               
-# Specificity : 0.4226               
-# Pos Pred Value : 0.9829               
-# Neg Pred Value : 0.7399               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9665               
-# Detection Prevalence : 0.9833               
-# Balanced Accuracy : 0.7091               
-# 
-# 'Positive' Class : X1 
-
-svm_results_prob <- predict(ucsd_svm, newdata = ucsd_test, type = "prob")
-svm_results_probs <- ifelse(svm_results_prob$X2 > 0.1, "X2", "X1")
-conf_matr_svm2 <- confusionMatrix(svm_results_probs, ucsd_test$Class)
-conf_matr_svm2
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15326   156
-# X2   563   322
-# 
-# Accuracy : 0.9561             
-# 95% CI : (0.9528, 0.9592)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.4517             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9646             
-# Specificity : 0.6736             
-# Pos Pred Value : 0.9899             
-# Neg Pred Value : 0.3638             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9364             
-# Detection Prevalence : 0.9459             
-# Balanced Accuracy : 0.8191             
-# 
-# 'Positive' Class : X1       
 
 trellis.par.set(caretTheme())
 train_plot_svm <- plot(ucsd_svm, metric = "ROC")
@@ -162,13 +108,6 @@ ucsd_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-ucsd_svm %>%
-  ucsd_test_roc(data = ucsd_test) %>%
-  auc()
-# Area under the curve: 0.8872
-
-plot(roc(ucsd_test$Class, predict(ucsd_svm, ucsd_test,type = "prob")[,"X2"]))
-
 ############# Radial
 ucsd_svm_radial <- train(Class ~ .,
                          data = ucsd_train,
@@ -179,13 +118,7 @@ ucsd_svm_radial <- train(Class ~ .,
 
 
 
-############################### COST SENSITIVE RANDFOR MODEL
-# The penalization costs can be tinkered with
-ucsd_model_weights <- ifelse(ucsd_train$Class == "X1",
-                             (1/table(ucsd_train$Class)[1]) * 0.5,
-                             (1/table(ucsd_train$Class)[2]) * 0.5)
-
-ctrl_ucsd$seeds <- ucsd_svm$control$seeds
+############################### COST SENSITIVE SVM
 
 
 
@@ -193,7 +126,6 @@ ucsd_svm_weighted_fit <- train(Class ~ .,
                                data = ucsd_train,
                                method = "svmLinearWeights",
                                verbose = FALSE,
-                               #weights = ucsd_model_weights,
                                metric = "ROC", 
                                trControl = ctrl_ucsd)
 
@@ -203,37 +135,6 @@ ucsd_svm_weighted_fit <- train(Class ~ .,
 svm_results_weight <- predict(ucsd_svm_weighted_fit, newdata = ucsd_test)
 conf_matr_svm_weight <- confusionMatrix(svm_results_weight, ucsd_test$Class)
 conf_matr_svm_weight
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15818   276
-# X2    71   202
-# 
-# Accuracy : 0.9788               
-# 95% CI : (0.9765, 0.981)      
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.0000000001049      
-# 
-# Kappa : 0.5279               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9955               
-# Specificity : 0.4226               
-# Pos Pred Value : 0.9829               
-# Neg Pred Value : 0.7399               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9665               
-# Detection Prevalence : 0.9833               
-# Balanced Accuracy : 0.7091               
-# 
-# 'Positive' Class : X1  
-
-svm_results_prob_weight <- predict(ucsd_svm_weighted_fit, newdata = ucsd_test, type = "prob")
-svm_results_probs_weight <- ifelse(svm_results_prob_weight$X2 > 0.1, "X2", "X1")
-conf_matr_svm2_weight <- confusionMatrix(svm_results_probs_weight, ucsd_test$Class)
-conf_matr_svm2_weight
-# same as with no weights
 
 trellis.par.set(caretTheme())
 train_plot_svm_weight <- plot(ucsd_svm_weighted_fit, metric = "ROC")
@@ -251,6 +152,8 @@ ucsd_svm_radial_weights <- train(Class ~ .,
 
 
 ####################################### sampled-down model
+ctrl_ucsd$seeds <- ucsd_svm$control$seeds
+
 ctrl_ucsd$sampling <- "down"
 
 ucsd_svm_down_fit <- train(Class ~ .,
