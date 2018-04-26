@@ -3,10 +3,10 @@ title: "Financial Fraud Detection Using Machine Learning Techniques"
 author: "Yordan Ivanov"
 bibliography: references.bib
 output:
-  word_document: default
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
+    keep_tex: true
 fontsize: 12pt
 geometry: margin = 1.18in
 linkcolor: black
@@ -368,7 +368,7 @@ The F-measure falls to the category of combination metrics and its purpose is to
 
 #### ROC Curve Analysis
 
-The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it performs no better than simple random guessing. 
+The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perfor better than random guessing. 
 
 ![Well performing ROC curve example](figures/roc_curve_example.png){width = 60%}
 
@@ -384,19 +384,20 @@ The AUC metric illustrates the performance of a classification model averaged ov
 
 ## 5.2. Experimental Results
 
-We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz and ATI Radeon 7470M. The programming software that we used was R. 
+We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz or on the Kaggle Cloud Computing Service, where depending on the statistical model that was geing calculated, up to 32 cores and 17 GB RAM were utilized. The programming software that we used was R - R Studio on the local machine and R scripts on the cloud. 
 
-We will use 10-fold Cross-Validation in order to tune the model parameters and will use the ROC as an optimization criterion, as it is argued that it is a good indicator when dealing with imbalanced classes [@he2009learning]. The Accuracy metric will be used as little as possible to determine a classifier performance, as even if a model fails to classify a single observation from the minority class, the accuraccy will still be high (and close to 100% in some cases).  
+We will use 10-fold Cross-Validation in order to tune the model parameters and will use the ROC as an optimization criterion, as it is argued that it is a good indicator when dealing with imbalanced classes [@he2009learning]. The Accuracy metric will be used as little as possible to determine a classifier performance, as even if a model fails to classify a single observation from the minority class, the accuraccy will still be high (and close to 100% in some cases, due to sever class imbalance).  
 
 ### 5.2.1. UCSD
 
+As mentioned in **Section 4.1.1.**, we wil work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
+
+From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not much that we derive from our raw data and that can be observed from the graphics created to illustrate the distribution of the different features. The only interesting note that can be taken is that it seems the fraudulent class is usually associated with a transaction that has a lower amount. This can be seen in the boxplot figure:
+
+![](figures/ucsd/descriptive/boxplot_amount.png){width = 40%}
 
 
- - State if data-sampling techniques have made any real improvement - put the ROC, PR and AUC measures in appendix or in small table, graphs.
 
-- Get the best classifier from each model type and plot all of them - ROC, PR and AUC
-
-- Discuss result
 
 ### 5.2.2. Credit Card
 

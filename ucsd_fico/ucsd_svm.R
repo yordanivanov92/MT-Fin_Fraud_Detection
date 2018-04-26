@@ -39,7 +39,7 @@ ucsd_data <- ucsd_data %>%
   dplyr::summarise(freq = n()) %>%
   dplyr::filter(freq > 1) %>%
   dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
-  dplyr::select(-freq)
+  dplyr::select(-c(freq, custAttr1, zip1)) 
 
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
@@ -78,9 +78,7 @@ ctrl_ucsd <- trainControl(method = "repeatedcv",
                           #allowParallel = TRUE,
                           classProbs = TRUE,
                           verboseIter = TRUE
-                          )
-
-
+)
 
 ucsd_svm <- train(Class ~ .,
                   data = ucsd_train,
@@ -89,15 +87,9 @@ ucsd_svm <- train(Class ~ .,
                   metric = "ROC", 
                   trControl = ctrl_ucsd)
 
-
-
-######################################### Randfor PREDICTIONS
 svm_results <- predict(ucsd_svm, newdata = ucsd_test)
 conf_matr_svm <- confusionMatrix(svm_results, ucsd_test$Class)
 conf_matr_svm
-
-trellis.par.set(caretTheme())
-train_plot_svm <- plot(ucsd_svm, metric = "ROC")
 
 svm_imp <- varImp(ucsd_svm)
 plot(svm_imp)
@@ -116,12 +108,19 @@ ucsd_svm_radial <- train(Class ~ .,
                          metric = "ROC", 
                          trControl = ctrl_ucsd)
 
+svm_results_radial <- predict(ucsd_svm_radial, newdata = ucsd_test)
+conf_matr_svm_radial <- confusionMatrix(svm_results_radial, ucsd_test$Class)
+conf_matr_svm_radial
+
+trellis.par.set(caretTheme())
+train_plot_svm_radial <- plot(ucsd_svm_radial, metric = "ROC")
+train_plot_svm_radial
+
+svm_imp <- varImp(ucsd_svm_radial)
+plot(svm_imp)
 
 
 ############################### COST SENSITIVE SVM
-
-
-
 ucsd_svm_weighted_fit <- train(Class ~ .,
                                data = ucsd_train,
                                method = "svmLinearWeights",
@@ -130,14 +129,13 @@ ucsd_svm_weighted_fit <- train(Class ~ .,
                                trControl = ctrl_ucsd)
 
 
-
-
 svm_results_weight <- predict(ucsd_svm_weighted_fit, newdata = ucsd_test)
 conf_matr_svm_weight <- confusionMatrix(svm_results_weight, ucsd_test$Class)
 conf_matr_svm_weight
 
 trellis.par.set(caretTheme())
 train_plot_svm_weight <- plot(ucsd_svm_weighted_fit, metric = "ROC")
+train_plot_svm_weight
 
 svm_imp_weight <- varImp(ucsd_svm_weighted_fit, scale = FALSE)
 plot(svm_imp_weight)
@@ -150,6 +148,16 @@ ucsd_svm_radial_weights <- train(Class ~ .,
                                  metric = "ROC", 
                                  trControl = ctrl_ucsd)
 
+svm_results_radial_weight <- predict(ucsd_svm_radial_weights, newdata = ucsd_test)
+conf_matr_svm_weight_radial <- confusionMatrix(svm_results_radial_weight, ucsd_test$Class)
+conf_matr_svm_weight_radial
+
+trellis.par.set(caretTheme())
+train_plot_svm_weight_radial <- plot(ucsd_svm_radial_weights, metric = "ROC")
+train_plot_svm_weight_radial
+
+svm_imp_weight_radial <- varImp(ucsd_svm_radial_weights, scale = FALSE)
+plot(svm_imp_weight_radial)
 
 ####################################### sampled-down model
 ctrl_ucsd$seeds <- ucsd_svm$control$seeds
@@ -163,75 +171,15 @@ ucsd_svm_down_fit <- train(Class ~ .,
                            metric = "ROC",
                            trControl = ctrl_ucsd)
 
-
-
 svm_results_down <- predict(ucsd_svm_down_fit, newdata = ucsd_test)
 conf_matr_svm_down <- confusionMatrix(svm_results_down, ucsd_test$Class)
-conf_matr_svm_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 12189   106
-# X2  3700   372
-# 
-# Accuracy : 0.7675             
-# 95% CI : (0.7609, 0.7739)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1174             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.76713            
-# Specificity : 0.77824            
-# Pos Pred Value : 0.99138            
-# Neg Pred Value : 0.09136            
-# Prevalence : 0.97079            
-# Detection Rate : 0.74473            
-# Detection Prevalence : 0.75121            
-# Balanced Accuracy : 0.77269            
-# 
-# 'Positive' Class : X1 
-svm_results_prob_down <- predict(ucsd_svm_down_fit, newdata = ucsd_test, type = "prob")
-svm_results_probs_down <- ifelse(svm_results_prob_down$X2 > 0.1, "X2", "X1")
-conf_matr_svm2_down <- confusionMatrix(svm_results_probs_down, ucsd_test$Class)
-conf_matr_svm2_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1   714     2
-# X2 15175   476
-# 
-# Accuracy : 0.0727             
-# 95% CI : (0.0688, 0.0768)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0025             
-# Mcnemar's Test P-Value : <0.0000000000000002
-#                                              
-#             Sensitivity : 0.04494            
-#             Specificity : 0.99582            
-#          Pos Pred Value : 0.99721            
-#          Neg Pred Value : 0.03041            
-#              Prevalence : 0.97079            
-#          Detection Rate : 0.04362            
-#    Detection Prevalence : 0.04375            
-#       Balanced Accuracy : 0.52038            
-#                                              
-#        'Positive' Class : X1     
-
-trellis.par.set(caretTheme())
-train_plot_svm_down <- plot(ucsd_svm_down_fit, metric = "ROC")
+conf_matr_svm_down   
 
 svm_imp_down <- varImp(ucsd_svm_down_fit, scale = FALSE)
 plot(svm_imp_down)
 
 ############# sampled-up
 ctrl_ucsd$sampling <- "up"
-
 
 ucsd_svm_up_fit <- train(Class ~ .,
                          data = ucsd_train,
@@ -240,67 +188,9 @@ ucsd_svm_up_fit <- train(Class ~ .,
                          metric = "ROC",
                          trControl = ctrl_ucsd)
 
-
-
 svm_results_up <- predict(ucsd_svm_up_fit, newdata = ucsd_test)
 conf_matr_svm_up <- confusionMatrix(svm_results_up, ucsd_test$Class)
 conf_matr_svm_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15797   248
-# X2    92   230
-# 
-# Accuracy : 0.9792               
-# 95% CI : (0.9769, 0.9814)     
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.000000000009406    
-# 
-# Kappa : 0.5648               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9942               
-# Specificity : 0.4812               
-# Pos Pred Value : 0.9845               
-# Neg Pred Value : 0.7143               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9652               
-# Detection Prevalence : 0.9803               
-# Balanced Accuracy : 0.7377               
-# 
-# 'Positive' Class : X1  
-svm_results_prob_up <- predict(ucsd_svm_up_fit, newdata = ucsd_test, type = "prob")
-svm_results_probs_up <- ifelse(svm_results_prob_up$X2 > 0.1, "X2", "X1")
-conf_matr_svm2_up <- confusionMatrix(svm_results_probs_up, ucsd_test$Class)
-conf_matr_svm2_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15059   155
-# X2   830   323
-# 
-# Accuracy : 0.9398             
-# 95% CI : (0.9361, 0.9434)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.3701             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9478             
-# Specificity : 0.6757             
-# Pos Pred Value : 0.9898             
-# Neg Pred Value : 0.2801             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9201             
-# Detection Prevalence : 0.9296             
-# Balanced Accuracy : 0.8117             
-# 
-# 'Positive' Class : X1 
-trellis.par.set(caretTheme())
-train_plot_svm_up <- plot(ucsd_svm_up_fit, metric = "ROC")
 
 svm_imp_up <- varImp(ucsd_svm_up_fit, scale = FALSE)
 plot(svm_imp_up)
@@ -309,7 +199,6 @@ plot(svm_imp_up)
 ############# SMOTE
 ctrl_ucsd$sampling <- "smote"
 
-
 ucsd_svm_smote_fit <- train(Class ~ .,
                             data = ucsd_train,
                             method = "svmLinear",
@@ -317,68 +206,9 @@ ucsd_svm_smote_fit <- train(Class ~ .,
                             metric = "ROC",
                             trControl = ctrl_ucsd)
 
-
-
 svm_results_smote <- predict(ucsd_svm_smote_fit, newdata = ucsd_test)
 conf_matr_svm_smote <- confusionMatrix(svm_results_smote, ucsd_test$Class)
-conf_matr_svm_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 14998   214
-# X2   891   264
-# 
-# Accuracy : 0.9325             
-# 95% CI : (0.9285, 0.9363)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.2942             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9439             
-# Specificity : 0.5523             
-# Pos Pred Value : 0.9859             
-# Neg Pred Value : 0.2286             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9164             
-# Detection Prevalence : 0.9294             
-# Balanced Accuracy : 0.7481             
-# 
-# 'Positive' Class : X1    
-svm_results_prob_smote <- predict(ucsd_svm_smote_fit, newdata = ucsd_test, type = "prob")
-svm_results_probs_smote <- ifelse(svm_results_prob_smote$X2 > 0.1, "X2", "X1")
-conf_matr_svm2_smote <- confusionMatrix(svm_results_probs_smote, ucsd_test$Class)
-conf_matr_svm2_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1  4432    19
-# X2 11457   459
-# 
-# Accuracy : 0.2988             
-# 95% CI : (0.2918, 0.3059)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.019              
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.27894            
-# Specificity : 0.96025            
-# Pos Pred Value : 0.99573            
-# Neg Pred Value : 0.03852            
-# Prevalence : 0.97079            
-# Detection Rate : 0.27079            
-# Detection Prevalence : 0.27195            
-# Balanced Accuracy : 0.61959            
-# 
-# 'Positive' Class : X1   
-
-trellis.par.set(caretTheme())
-train_plot_svm_smote <- plot(ucsd_svm_smote_fit, metric = "ROC")
+conf_matr_svm_smote  
 
 svm_imp_smote <- varImp(ucsd_svm_smote_fit, scale = FALSE)
 plot(svm_imp_smote)
@@ -387,10 +217,12 @@ plot(svm_imp_smote)
 ####################################################################
 
 ucsd_svm_model_list <- list(original = ucsd_svm,
-                                weighted = ucsd_svm_weighted_fit,
-                                down = ucsd_svm_down_fit,
-                                up = ucsd_svm_up_fit,
-                                SMOTE = ucsd_svm_smote_fit)
+                            original_radial = ucsd_svm_radial,
+                            weighted_lin = ucsd_svm_weighted_fit,
+                            weighted_rad = ucsd_svm_radial_weights,
+                            down = ucsd_svm_down_fit,
+                            up = ucsd_svm_up_fit,
+                            SMOTE = ucsd_svm_smote_fit)
 
 
 ucsd_svm_model_list_roc <- ucsd_svm_model_list %>%
@@ -398,20 +230,6 @@ ucsd_svm_model_list_roc <- ucsd_svm_model_list %>%
 
 ucsd_svm_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.8872
-# 
-# $weighted
-# Area under the curve: 0.8872
-# 
-# $down
-# Area under the curve: 0.8596
-# 
-# $up
-# Area under the curve: 0.8841
-# 
-# $SMOTE
-# Area under the curve: 0.8505
 
 ucsd_svm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -426,7 +244,7 @@ for(the_roc in ucsd_svm_model_list_roc){
 
 ucsd_svm_results_df_roc <- bind_rows(ucsd_svm_results_list_roc)
 
-custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
+custom_col <- c("#000000", "red","#009E73", "purple","#0072B2", "#D55e00", "#CC79A7")
 
 ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_svm_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
@@ -453,21 +271,6 @@ ucsd_svm_model_list_pr <- ucsd_svm_model_list %>%
 # Precision recall Curve AUC calculation
 ucsd_svm_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.5387054
-# 
-# $weighted
-# [1] 0.5387054
-# 
-# $down
-# [1] 0.4238394
-# 
-# $up
-# [1] 0.4787437
-# 
-# $SMOTE
-# [1] 0.3949578
-
 
 ucsd_svm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -484,21 +287,4 @@ ucsd_svm_results_df_pr <- bind_rows(ucsd_svm_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_svm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(ucsd_test$type == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-ucsd_svmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
+  geom_abline(intercept = sum(ucsd_test$Class == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)

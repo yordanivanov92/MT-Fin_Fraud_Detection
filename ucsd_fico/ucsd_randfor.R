@@ -83,11 +83,11 @@ ctrl_ucsd <- trainControl(method = "repeatedcv",
 cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_randfor <- train(Class ~ .,
-                  data = ucsd_train,
-                  method = "rf",
-                  verbose = FALSE,
-                  metric = "ROC", 
-                  trControl = ctrl_ucsd)
+                      data = ucsd_train,
+                      method = "rf",
+                      verbose = FALSE,
+                      metric = "ROC", 
+                      trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
@@ -95,34 +95,10 @@ registerDoSEQ()
 randfor_results <- predict(ucsd_randfor, newdata = ucsd_test)
 conf_matr_randfor <- confusionMatrix(randfor_results, ucsd_test$Class)
 conf_matr_randfor
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15818   276
-# X2    71   202
-# 
-# Accuracy : 0.9788               
-# 95% CI : (0.9765, 0.981)      
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.0000000001049      
-# 
-# Kappa : 0.5279               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9955               
-# Specificity : 0.4226               
-# Pos Pred Value : 0.9829               
-# Neg Pred Value : 0.7399               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9665               
-# Detection Prevalence : 0.9833               
-# Balanced Accuracy : 0.7091               
-# 
-# 'Positive' Class : X1 
 
 trellis.par.set(caretTheme())
 train_plot_randfor <- plot(ucsd_randfor, metric = "ROC")
+train_plot_randfor
 
 randfor_imp <- varImp(ucsd_randfor)
 plot(randfor_imp)
@@ -132,14 +108,6 @@ ucsd_test_roc <- function(model, data) {
   roc(data$Class,
       predict(model, data, type = "prob")[, "X2"])
 }
-
-ucsd_randfor %>%
-  ucsd_test_roc(data = ucsd_test) %>%
-  auc()
-# Area under the curve: 0.8872
-
-plot(roc(ucsd_test$Class, predict(ucsd_randfor, ucsd_test,type = "prob")[,"X2"]))
-
 
 ############################### COST SENSITIVE RANDFOR MODEL
 # The penalization costs can be tinkered with
@@ -152,12 +120,12 @@ ctrl_ucsd$seeds <- ucsd_randfor$control$seeds
 cluster <- makeCluster(detectCores() - 2) 
 registerDoParallel(cluster)
 ucsd_randfor_weighted_fit <- train(Class ~ .,
-                               data = ucsd_train,
-                               method = "rf",
-                               verbose = FALSE,
-                               weights = ucsd_model_weights,
-                               metric = "ROC", 
-                               trControl = ctrl_ucsd)
+                                   data = ucsd_train,
+                                   method = "rf",
+                                   verbose = FALSE,
+                                   weights = ucsd_model_weights,
+                                   metric = "ROC", 
+                                   trControl = ctrl_ucsd)
 
 stopCluster(cluster)
 registerDoSEQ()
@@ -165,35 +133,10 @@ registerDoSEQ()
 randfor_results_weight <- predict(ucsd_randfor_weighted_fit, newdata = ucsd_test)
 conf_matr_randfor_weight <- confusionMatrix(randfor_results_weight, ucsd_test$Class)
 conf_matr_randfor_weight
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15818   276
-# X2    71   202
-# 
-# Accuracy : 0.9788               
-# 95% CI : (0.9765, 0.981)      
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.0000000001049      
-# 
-# Kappa : 0.5279               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9955               
-# Specificity : 0.4226               
-# Pos Pred Value : 0.9829               
-# Neg Pred Value : 0.7399               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9665               
-# Detection Prevalence : 0.9833               
-# Balanced Accuracy : 0.7091               
-# 
-# 'Positive' Class : X1  
-
 
 trellis.par.set(caretTheme())
 train_plot_randfor_weight <- plot(ucsd_randfor_weighted_fit, metric = "ROC")
+train_plot_randfor_weight
 
 randfor_imp_weight <- varImp(ucsd_randfor_weighted_fit, scale = FALSE)
 plot(randfor_imp_weight)
@@ -203,45 +146,21 @@ ctrl_ucsd$sampling <- "down"
 cluster <- makeCluster(detectCores() - 2)
 registerDoParallel(cluster)
 ucsd_randfor_down_fit <- train(Class ~ .,
-                           data = ucsd_train,
-                           method = "rf",
-                           verbose = FALSE,
-                           metric = "ROC",
-                           trControl = ctrl_ucsd)
+                               data = ucsd_train,
+                               method = "rf",
+                               verbose = FALSE,
+                               metric = "ROC",
+                               trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
 randfor_results_down <- predict(ucsd_randfor_down_fit, newdata = ucsd_test)
 conf_matr_randfor_down <- confusionMatrix(randfor_results_down, ucsd_test$Class)
 conf_matr_randfor_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 12189   106
-# X2  3700   372
-# 
-# Accuracy : 0.7675             
-# 95% CI : (0.7609, 0.7739)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1174             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.76713            
-# Specificity : 0.77824            
-# Pos Pred Value : 0.99138            
-# Neg Pred Value : 0.09136            
-# Prevalence : 0.97079            
-# Detection Rate : 0.74473            
-# Detection Prevalence : 0.75121            
-# Balanced Accuracy : 0.77269            
-# 
-# 'Positive' Class : X1 
 
 trellis.par.set(caretTheme())
 train_plot_randfor_down <- plot(ucsd_randfor_down_fit, metric = "ROC")
+train_plot_randfor_down
 
 randfor_imp_down <- varImp(ucsd_randfor_down_fit, scale = FALSE)
 plot(randfor_imp_down)
@@ -251,45 +170,21 @@ ctrl_ucsd$sampling <- "up"
 cluster <- makeCluster(detectCores() - 2) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_randfor_up_fit <- train(Class ~ .,
-                         data = ucsd_train,
-                         method = "rf",
-                         verbose = FALSE,
-                         metric = "ROC",
-                         trControl = ctrl_ucsd)
+                             data = ucsd_train,
+                             method = "rf",
+                             verbose = FALSE,
+                             metric = "ROC",
+                             trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
 randfor_results_up <- predict(ucsd_randfor_up_fit, newdata = ucsd_test)
 conf_matr_randfor_up <- confusionMatrix(randfor_results_up, ucsd_test$Class)
 conf_matr_randfor_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 15797   248
-# X2    92   230
-# 
-# Accuracy : 0.9792               
-# 95% CI : (0.9769, 0.9814)     
-# No Information Rate : 0.9708               
-# P-Value [Acc > NIR] : 0.000000000009406    
-# 
-# Kappa : 0.5648               
-# Mcnemar's Test P-Value : < 0.00000000000000022
-# 
-# Sensitivity : 0.9942               
-# Specificity : 0.4812               
-# Pos Pred Value : 0.9845               
-# Neg Pred Value : 0.7143               
-# Prevalence : 0.9708               
-# Detection Rate : 0.9652               
-# Detection Prevalence : 0.9803               
-# Balanced Accuracy : 0.7377               
-# 
-# 'Positive' Class : X1  
 
 trellis.par.set(caretTheme())
 train_plot_randfor_up <- plot(ucsd_randfor_up_fit, metric = "ROC")
+train_plot_randfor_up
 
 randfor_imp_up <- varImp(ucsd_randfor_up_fit, scale = FALSE)
 plot(randfor_imp_up)
@@ -300,57 +195,32 @@ ctrl_ucsd$sampling <- "smote"
 cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
 registerDoParallel(cluster)
 ucsd_randfor_smote_fit <- train(Class ~ .,
-                            data = ucsd_train,
-                            method = "rf",
-                            verbose = FALSE,
-                            metric = "ROC",
-                            trControl = ctrl_ucsd)
+                                data = ucsd_train,
+                                method = "rf",
+                                verbose = FALSE,
+                                metric = "ROC",
+                                trControl = ctrl_ucsd)
 stopCluster(cluster)
 registerDoSEQ()
 
 randfor_results_smote <- predict(ucsd_randfor_smote_fit, newdata = ucsd_test)
 conf_matr_randfor_smote <- confusionMatrix(randfor_results_smote, ucsd_test$Class)
 conf_matr_randfor_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 14998   214
-# X2   891   264
-# 
-# Accuracy : 0.9325             
-# 95% CI : (0.9285, 0.9363)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.2942             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9439             
-# Specificity : 0.5523             
-# Pos Pred Value : 0.9859             
-# Neg Pred Value : 0.2286             
-# Prevalence : 0.9708             
-# Detection Rate : 0.9164             
-# Detection Prevalence : 0.9294             
-# Balanced Accuracy : 0.7481             
-# 
-# 'Positive' Class : X1    
 
 trellis.par.set(caretTheme())
 train_plot_randfor_smote <- plot(ucsd_randfor_smote_fit, metric = "ROC")
+train_plot_randfor_smote
 
 randfor_imp_smote <- varImp(ucsd_randfor_smote_fit, scale = FALSE)
 plot(randfor_imp_smote)
 
 
 ####################################################################
-
 ucsd_randfor_model_list <- list(original = ucsd_randfor,
-                            weighted = ucsd_randfor_weighted_fit,
-                            down = ucsd_randfor_down_fit,
-                            up = ucsd_randfor_up_fit,
-                            SMOTE = ucsd_randfor_smote_fit)
+                                weighted = ucsd_randfor_weighted_fit,
+                                down = ucsd_randfor_down_fit,
+                                up = ucsd_randfor_up_fit,
+                                SMOTE = ucsd_randfor_smote_fit)
 
 
 ucsd_randfor_model_list_roc <- ucsd_randfor_model_list %>%
@@ -358,20 +228,6 @@ ucsd_randfor_model_list_roc <- ucsd_randfor_model_list %>%
 
 ucsd_randfor_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.8872
-# 
-# $weighted
-# Area under the curve: 0.8872
-# 
-# $down
-# Area under the curve: 0.8596
-# 
-# $up
-# Area under the curve: 0.8841
-# 
-# $SMOTE
-# Area under the curve: 0.8505
 
 ucsd_randfor_results_list_roc <- list(NA)
 num_mod <- 1
@@ -413,21 +269,6 @@ ucsd_randfor_model_list_pr <- ucsd_randfor_model_list %>%
 # Precision recall Curve AUC calculation
 ucsd_randfor_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.5387054
-# 
-# $weighted
-# [1] 0.5387054
-# 
-# $down
-# [1] 0.4238394
-# 
-# $up
-# [1] 0.4787437
-# 
-# $SMOTE
-# [1] 0.3949578
-
 
 ucsd_randfor_results_list_pr <- list(NA)
 num_mod <- 1
@@ -444,21 +285,4 @@ ucsd_randfor_results_df_pr <- bind_rows(ucsd_randfor_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_randfor_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(ucsd_test$type == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-ucsd_randforSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
+  geom_abline(intercept = sum(ucsd_test$Class == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)

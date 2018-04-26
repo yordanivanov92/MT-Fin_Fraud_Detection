@@ -130,7 +130,7 @@ ucsd_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-############################### COST SENSITIVE RANDFOR MODEL
+############################### COST SENSITIVE NNET MODEL
 # The penalization costs can be tinkered with
 ucsd_model_weights <- ifelse(ucsd_train$Class == "X1",
                              (1/table(ucsd_train$Class)[1]) * 0.5,
@@ -239,7 +239,6 @@ ucsd_nnet_model_list <- list(original = ucsd_nnet_sub,
                              up = ucsd_nnet_up_fit,
                              SMOTE = ucsd_nnet_smote_fit)
 
-
 ucsd_nnet_model_list_roc <- ucsd_nnet_model_list %>%
   map(ucsd_test_roc, data = ucsd_test)
 
@@ -287,21 +286,6 @@ ucsd_nnet_model_list_pr <- ucsd_nnet_model_list %>%
 # Precision recall Curve AUC calculation
 ucsd_nnet_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.5387054
-# 
-# $weighted
-# [1] 0.5387054
-# 
-# $down
-# [1] 0.4238394
-# 
-# $up
-# [1] 0.4787437
-# 
-# $SMOTE
-# [1] 0.3949578
-
 
 ucsd_nnet_results_list_pr <- list(NA)
 num_mod <- 1

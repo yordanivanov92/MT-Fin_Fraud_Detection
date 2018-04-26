@@ -1,4 +1,5 @@
 library(dplyr)
+library(data.table)
 library(caret)
 library(DMwR) #SMOTE
 library(purrr)
@@ -10,12 +11,11 @@ library(parallel)
 library(plyr)
 library(nnet)
 
-
-
 set.seed(48)
-bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
+bankSim <- fread(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
                     header = TRUE,
-                    sep = ",")
+                    sep = ",",
+                    stringsAsFactors = FALSE)
 
 plyr::count(bankSim, c("category", "fraud"))
 
@@ -31,6 +31,9 @@ bankSim <- bankSim %>%
   filter(category != "'es_food'") %>%
   filter(category != "'es_contents'") %>%
   filter(gender != "'U'")
+
+half_data <- sample.split(bankSim$fraud, SplitRatio = 0.6)
+bankSim_ = subset(bankSim, half_data == TRUE)
 
 ### Splitting the data into train and test sets
 split = sample.split(bankSim$fraud, SplitRatio = 0.6)

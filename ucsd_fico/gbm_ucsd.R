@@ -96,64 +96,10 @@ registerDoSEQ()
 gbm_results <- predict(ucsd_gbm, newdata = ucsd_test)
 conf_matr_gbm <- confusionMatrix(gbm_results, ucsd_test$Class)
 conf_matr_gbm
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 14346   291
-# X2  1543   187
-# 
-# Accuracy : 0.8879             
-# 95% CI : (0.883, 0.8927)    
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1295             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9029             
-# Specificity : 0.3912             
-# Pos Pred Value : 0.9801             
-# Neg Pred Value : 0.1081             
-# Prevalence : 0.9708             
-# Detection Rate : 0.8765             
-# Detection Prevalence : 0.8943             
-# Balanced Accuracy : 0.6471             
-# 
-# 'Positive' Class : X1       
-
-gbm_results_prob <- predict(ucsd_gbm, newdata = ucsd_test, type = "prob")
-gbm_results_probs <- ifelse(gbm_results_prob$X2 > 0.1, "X2", "X1")
-conf_matr_gbm2 <- confusionMatrix(gbm_results_probs, ucsd_test$Class)
-conf_matr_gbm2
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1  1735     9
-# X2 14154   469
-# 
-# Accuracy : 0.1347             
-# 95% CI : (0.1295, 0.14)     
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0059             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.10920            
-# Specificity : 0.98117            
-# Pos Pred Value : 0.99484            
-# Neg Pred Value : 0.03207            
-# Prevalence : 0.97079            
-# Detection Rate : 0.10601            
-# Detection Prevalence : 0.10656            
-# Balanced Accuracy : 0.54518            
-# 
-# 'Positive' Class : X1         
 
 trellis.par.set(caretTheme())
 train_plot_gbm <- plot(ucsd_gbm, metric = "ROC")
+train_plot_gbm
 
 gbm_imp <- varImp(ucsd_gbm)
 plot(gbm_imp)
@@ -164,16 +110,7 @@ ucsd_test_roc <- function(model, data) {
       predict(model, data, type = "prob")[, "X2"])
 }
 
-ucsd_gbm %>%
-  ucsd_test_roc(data = ucsd_test) %>%
-  auc()
-# Area under the curve: 0.7584
-
-plot(roc(ucsd_test$Class, predict(ucsd_gbm, ucsd_test,type = "prob")[,"X2"]))
-
-
-############################### COST SENSITIVE XGBOOST MODEL
-# The penalization costs can be tinkered with
+################### COST SENSITIVE GBM MODEL
 ucsd_model_weights <- ifelse(ucsd_train$Class == "X1",
                              (1/table(ucsd_train$Class)[1]) * 0.5,
                              (1/table(ucsd_train$Class)[2]) * 0.5)
@@ -196,39 +133,10 @@ registerDoSEQ()
 gbm_results_weight <- predict(ucsd_gbm_weighted_fit, newdata = ucsd_test)
 conf_matr_gbm_weight <- confusionMatrix(gbm_results_weight, ucsd_test$Class)
 conf_matr_gbm_weight
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 13115   249
-# X2  2774   229
-# 
-# Accuracy : 0.8153             
-# 95% CI : (0.8093, 0.8212)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0855             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.82541            
-# Specificity : 0.47908            
-# Pos Pred Value : 0.98137            
-# Neg Pred Value : 0.07626            
-# Prevalence : 0.97079            
-# Detection Rate : 0.80131            
-# Detection Prevalence : 0.81652            
-# Balanced Accuracy : 0.65225            
-# 
-# 'Positive' Class : X1  
-
-gbm_results_prob_weight <- predict(ucsd_gbm_weighted_fit, newdata = ucsd_test, type = "prob")
-gbm_results_probs_weight <- ifelse(gbm_results_prob_weight$X2 > 0.1, "X2", "X1")
-conf_matr_gbm2_weight <- confusionMatrix(gbm_results_probs_weight, ucsd_test$Class)
-conf_matr_gbm2_weight
 
 trellis.par.set(caretTheme())
 train_plot_gbm_weight <- plot(ucsd_gbm_weighted_fit, metric = "ROC")
+train_plot_gbm_weight
 
 gbm_imp_weight <- varImp(ucsd_gbm_weighted_fit, scale = FALSE)
 plot(gbm_imp_weight)
@@ -249,38 +157,10 @@ registerDoSEQ()
 gbm_results_down <- predict(ucsd_gbm_down_fit, newdata = ucsd_test)
 conf_matr_gbm_down <- confusionMatrix(gbm_results_down, ucsd_test$Class)
 conf_matr_gbm_down
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 10946   130
-# X2  4943   348
-# 
-# Accuracy : 0.69               
-# 95% CI : (0.6829, 0.6971)   
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.0709             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.68890            
-# Specificity : 0.72803            
-# Pos Pred Value : 0.98826            
-# Neg Pred Value : 0.06577            
-# Prevalence : 0.97079            
-# Detection Rate : 0.66878            
-# Detection Prevalence : 0.67673            
-# Balanced Accuracy : 0.70847            
-# 
-# 'Positive' Class : X1  
-gbm_results_prob_down <- predict(ucsd_gbm_down_fit, newdata = ucsd_test, type = "prob")
-gbm_results_probs_down <- ifelse(gbm_results_prob_down$X2 > 0.1, "X2", "X1")
-conf_matr_gbm2_down <- confusionMatrix(gbm_results_probs_down, ucsd_test$Class)
-conf_matr_gbm2_down
 
 trellis.par.set(caretTheme())
 train_plot_gbm_down <- plot(ucsd_gbm_down_fit, metric = "ROC")
+train_plot_gbm_down
 
 gbm_imp_down <- varImp(ucsd_gbm_down_fit, scale = FALSE)
 plot(gbm_imp_down)
@@ -301,38 +181,10 @@ registerDoSEQ()
 gbm_results_up <- predict(ucsd_gbm_up_fit, newdata = ucsd_test)
 conf_matr_gbm_up <- confusionMatrix(gbm_results_up, ucsd_test$Class)
 conf_matr_gbm_up
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 11961   125
-# X2  3928   353
-# 
-# Accuracy : 0.7524             
-# 95% CI : (0.7457, 0.759)    
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1011             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.75278            
-# Specificity : 0.73849            
-# Pos Pred Value : 0.98966            
-# Neg Pred Value : 0.08246            
-# Prevalence : 0.97079            
-# Detection Rate : 0.73080            
-# Detection Prevalence : 0.73844            
-# Balanced Accuracy : 0.74564            
-# 
-# 'Positive' Class : X1 
-gbm_results_prob_up <- predict(ucsd_gbm_up_fit, newdata = ucsd_test, type = "prob")
-gbm_results_probs_up <- ifelse(gbm_results_prob_up$X2 > 0.1, "X2", "X1")
-conf_matr_gbm2_up <- confusionMatrix(gbm_results_probs_up, ucsd_test$Class)
-conf_matr_gbm2_up
 
 trellis.par.set(caretTheme())
 train_plot_gbm_up <- plot(ucsd_gbm_up_fit, metric = "ROC")
+train_plot_gbm_up
 
 gbm_imp_up <- varImp(ucsd_gbm_up_fit, scale = FALSE)
 plot(gbm_imp_up)
@@ -354,38 +206,10 @@ registerDoSEQ()
 gbm_results_smote <- predict(ucsd_gbm_smote_fit, newdata = ucsd_test)
 conf_matr_gbm_smote <- confusionMatrix(gbm_results_smote, ucsd_test$Class)
 conf_matr_gbm_smote
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 14346   291
-# X2  1543   187
-# 
-# Accuracy : 0.8879             
-# 95% CI : (0.883, 0.8927)    
-# No Information Rate : 0.9708             
-# P-Value [Acc > NIR] : 1                  
-# 
-# Kappa : 0.1295             
-# Mcnemar's Test P-Value : <0.0000000000000002
-# 
-# Sensitivity : 0.9029             
-# Specificity : 0.3912             
-# Pos Pred Value : 0.9801             
-# Neg Pred Value : 0.1081             
-# Prevalence : 0.9708             
-# Detection Rate : 0.8765             
-# Detection Prevalence : 0.8943             
-# Balanced Accuracy : 0.6471             
-# 
-# 'Positive' Class : X1    
-gbm_results_prob_smote <- predict(ucsd_gbm_smote_fit, newdata = ucsd_test, type = "prob")
-gbm_results_probs_smote <- ifelse(gbm_results_prob_smote$X2 > 0.1, "X2", "X1")
-conf_matr_gbm2_smote <- confusionMatrix(gbm_results_probs_smote, ucsd_test$Class)
-conf_matr_gbm2_smote
 
 trellis.par.set(caretTheme())
 train_plot_gbm_smote <- plot(ucsd_gbm_smote_fit, metric = "ROC")
+train_plot_gbm_smote
 
 gbm_imp_smote <- varImp(ucsd_gbm_smote_fit, scale = FALSE)
 plot(gbm_imp_smote)
@@ -394,10 +218,10 @@ plot(gbm_imp_smote)
 ####################################################################
 
 ucsd_gbm_model_list <- list(original = ucsd_gbm,
-                                    weighted = ucsd_gbm_weighted_fit,
-                                    down = ucsd_gbm_down_fit,
-                                    up = ucsd_gbm_up_fit,
-                                    SMOTE = ucsd_gbm_smote_fit)
+                            weighted = ucsd_gbm_weighted_fit,
+                            down = ucsd_gbm_down_fit,
+                            up = ucsd_gbm_up_fit,
+                            SMOTE = ucsd_gbm_smote_fit)
 
 
 ucsd_gbm_model_list_roc <- ucsd_gbm_model_list %>%
@@ -405,20 +229,6 @@ ucsd_gbm_model_list_roc <- ucsd_gbm_model_list %>%
 
 ucsd_gbm_model_list_roc %>%
   map(auc)
-# $original
-# Area under the curve: 0.7584
-# 
-# $weighted
-# Area under the curve: 0.7279
-# 
-# $down
-# Area under the curve: 0.7764
-# 
-# $up
-# Area under the curve: 0.8044
-# 
-# $SMOTE
-# Area under the curve: 0.7584
 
 ucsd_gbm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -460,20 +270,6 @@ ucsd_gbm_model_list_pr <- ucsd_gbm_model_list %>%
 # Precision recall Curve AUC calculation
 ucsd_gbm_model_list_pr %>%
   map(function(the_mod) the_mod$auc.integral)
-# $original
-# [1] 0.1321036
-# 
-# $weighted
-# [1] 0.08574934
-# 
-# $down
-# [1] 0.1192452
-# 
-# $up
-# [1] 0.2112761
-# 
-# $SMOTE
-# [1] 0.1321036
 
 
 ucsd_gbm_results_list_pr <- list(NA)
@@ -491,21 +287,4 @@ ucsd_gbm_results_df_pr <- bind_rows(ucsd_gbm_results_list_pr)
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_gbm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(ucsd_test$type == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)
-
-#####################################################################################################
-ucsd_gbmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$Class == "X2"
-  index_class1 <- data$Class == "X1"
-  
-  the_curve <- pr.curve(data$X2[index_class2],
-                        data$X2[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
+  geom_abline(intercept = sum(ucsd_test$Class == "X2")/nrow(ucsd_test),slope = 0, color = "gray", size = 1)

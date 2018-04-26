@@ -9,7 +9,6 @@ library(caTools)
 library(doParallel)
 library(parallel)
 library(plyr)
-library(glm)
 options(scipen=999)
 
 set.seed(48)
@@ -94,8 +93,9 @@ glm_results <- predict(ucsd_glm, newdata = ucsd_test)
 conf_matr_glm <- confusionMatrix(glm_results, ucsd_test$Class)
 conf_matr_glm
 
-trellis.par.set(caretTheme())
+coefplot(ucsd_glm, intercept = FALSE, color = "black")
 
+trellis.par.set(caretTheme())
 glm_imp <- varImp(ucsd_glm)
 plot(glm_imp)
 
@@ -119,6 +119,8 @@ glm_results_down <- predict(ucsd_glm_down_fit, newdata = ucsd_test)
 conf_matr_glm_down <- confusionMatrix(glm_results_down, ucsd_test$Class)
 conf_matr_glm_down
 
+coefplot(ucsd_glm_down_fit, intercept = FALSE, color = "black")
+
 glm_imp_down <- varImp(ucsd_glm_down_fit, scale = FALSE)
 plot(glm_imp_down)
 
@@ -133,6 +135,8 @@ ucsd_glm_up_fit <- train(Class ~ .,
 glm_results_up <- predict(ucsd_glm_up_fit, newdata = ucsd_test)
 conf_matr_glm_up <- confusionMatrix(glm_results_up, ucsd_test$Class)
 conf_matr_glm_up
+
+coefplot(ucsd_glm_up_fit, intercept = FALSE, color = "black")
 
 glm_imp_up <- varImp(ucsd_glm_up_fit, scale = FALSE)
 plot(glm_imp_up)
@@ -150,12 +154,12 @@ glm_results_smote <- predict(ucsd_glm_smote_fit, newdata = ucsd_test)
 conf_matr_glm_smote <- confusionMatrix(glm_results_smote, ucsd_test$Class)
 conf_matr_glm_smote
 
+coefplot(ucsd_glm_smote_fit, intercept = FALSE, color = "black")
+
 glm_imp_smote <- varImp(ucsd_glm_smote_fit, scale = FALSE)
 plot(glm_imp_smote)
 
-
 ####################################################################
-
 ucsd_glm_model_list <- list(original = ucsd_glm,
                             down = ucsd_glm_down_fit,
                             up = ucsd_glm_up_fit,
@@ -188,7 +192,6 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_glm_results_df_roc) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
   theme_bw(base_size = 18)
-#ggsave("ucsd_logistic_rocs.png", width = 20, height = 20, units = "cm")
 
 ####  Construction the precision/recall graphic
 ucsd_glm_calc_auprc <- function(model, data) {

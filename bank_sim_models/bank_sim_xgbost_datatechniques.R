@@ -9,12 +9,14 @@ library(doParallel)
 library(parallel)
 library(plyr)
 library(xgboost)
+library(data.table)
 
 
 set.seed(48)
-bankSim <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
-                    header = TRUE,
-                    sep = ",")
+bankSim <- fread(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
+                 header = TRUE,
+                 sep = ",",
+                 stringsAsFactors = FALSE)
 
 plyr::count(bankSim, c("category", "fraud"))
 
@@ -32,6 +34,9 @@ bankSim <- bankSim %>%
   filter(gender != "'U'")
 
 ### Splitting the data into train and test sets
+less_data = sample.split(bankSim$fraud, SplitRatio = 0.6)
+bankSim = subset(bankSim, less_data == TRUE)
+
 split = sample.split(bankSim$fraud, SplitRatio = 0.6)
 
 bankSim_train = subset(bankSim, split == TRUE)
