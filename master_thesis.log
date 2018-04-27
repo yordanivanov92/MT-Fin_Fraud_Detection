@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  27 APR 2018 12:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  27 APR 2018 22:28
 entering extended mode
 **./master_thesis.tex
 (master_thesis.tex
@@ -1043,72 +1043,39 @@ File: figures/ucsd/descriptive/boxplot_amount.png Graphic file (type png)
 Package pdftex.def Info: figures/ucsd/descriptive/boxplot_amount.png  used on i
 nput line 1067.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
-[19]
-Overfull \hbox (133.55205pt too wide) in alignment at lines 1076--1082
- [] [] [] [] [] [] [] [] 
- []
+[19] [20 <./figures/ucsd/descriptive/boxplot_amount.png>]
+<figures/ucsd/ucsd_pr_roc.png, id=313, 1129.21875pt x 632.3625pt>
+File: figures/ucsd/ucsd_pr_roc.png Graphic file (type png)
+<use figures/ucsd/ucsd_pr_roc.png>
+Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1130.
 
-
-Overfull \hbox (133.55205pt too wide) in alignment at lines 1082--1087
- [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (133.55205pt too wide) in alignment at lines 1087--1101
- [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (73.98068pt too wide) in alignment at lines 1103--1109
- [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (73.98068pt too wide) in alignment at lines 1109--1114
- [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (73.98068pt too wide) in alignment at lines 1114--1128
- [] [] [] [] [] [] [] [] 
- []
-
-<figures/ucsd/ucsd_PR_ROC.png, id=306, 1279.78125pt x 632.3625pt>
-File: figures/ucsd/ucsd_PR_ROC.png Graphic file (type png)
-<use figures/ucsd/ucsd_PR_ROC.png>
-Package pdftex.def Info: figures/ucsd/ucsd_PR_ROC.png  used on input line 1142.
-
-(pdftex.def)             Requested size: 443.73166pt x 219.25565pt.
-
-Overfull \vbox (203.17729pt too high) has occurred while \output is active []
-
-[20 <./figures/ucsd/descriptive/boxplot_amount.png>] [21 <./figures/ucsd/ucsd_P
-R_ROC.png>] [22]
-Underfull \hbox (badness 10000) in paragraph at lines 1257--1260
+(pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
+[21 <./figures/ucsd/ucsd_pr_roc.png>] [22]
+Underfull \hbox (badness 10000) in paragraph at lines 1255--1258
 \T1/lmr/m/n/12 (+20) Publication / vwLUAssets / EY-[]Global-[]Forensic-[]Data-[
 ]Analytics-[]Survey-[]2014 / $FILE /
  []
 
-[23]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1398.
-[24]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1398.
+[23] [24]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1396.
+[25]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1396.
 (master_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1398.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1398.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1396.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1396.
 
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 6047F46642D0E1F0AE9B8D3C00C05B10;5907.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1398.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1396.
  ) 
 Here is how much of TeX's memory you used:
- 13056 strings out of 493305
- 190478 string characters out of 3138849
- 292356 words of memory out of 3000000
+ 13059 strings out of 493305
+ 190536 string characters out of 3138849
+ 291193 words of memory out of 3000000
  16117 multiletter control sequences out of 15000+200000
- 65114 words of font info for 111 fonts, out of 3000000 for 9000
+ 65243 words of font info for 112 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,6n,38p,438b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 32i,9n,38p,438b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
 iKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/e
 nc/dvips/lm/lm-mathex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ma
@@ -1126,9 +1093,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis.pdf (24 pages, 1522024 bytes).
+Output written on master_thesis.pdf (25 pages, 1502830 bytes).
 PDF statistics:
- 492 PDF objects out of 1000 (max. 8388607)
- 183 named destinations out of 1000 (max. 500000)
+ 496 PDF objects out of 1000 (max. 8388607)
+ 184 named destinations out of 1000 (max. 500000)
  10530 words of extra memory for PDF output out of 12000 (max. 10000000)
 

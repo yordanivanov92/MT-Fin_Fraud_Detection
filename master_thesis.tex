@@ -1050,7 +1050,7 @@ original dataset, RUS set, ROS set, SMOTE set and a weighted dataset.
 \hypertarget{ucsd}{%
 \subsubsection{5.2.1. UCSD}\label{ucsd}}
 
-As mentioned in \textbf{Section 4.1.1.}, we wil work with 40 918
+As mentioned in \emph{Section 4.1.1.}, we wil work with 40 918
 observations. As this is a real dataset and its features are mostly
 masked, this means that there is no real feature engineering that we can
 perform before applying any machine learning techniques.
@@ -1069,63 +1069,46 @@ transaction that has a lower amount. This can be seen in Figure 4.
 \end{figure}
 
 However, when we turn to the ML Techniques, patterns seem to arise and
-better predictions can be made. In Tables 3 and 4, we can observe ROC
-AUC and PR AUC of the different models that were fit on the various
-manipulated datasets.
+better predictions can be made. We first shortly present the 10-fold
+Cross-Validation results that were obtained from fitting the models on
+the dataset variations. In Tables 3 and 4, we can observe ROC AUC and PR
+AUC of the models that were used in this study.
 
-\begin{longtable}[]{@{}lrrrrrrr@{}}
-\caption{AUC Metric Model Variations}\tabularnewline
-\toprule
-type & original & original\_radial & weighted & weighted\_radial & down
-& up & SMOTE\tabularnewline
-\midrule
-\endfirsthead
-\toprule
-type & original & original\_radial & weighted & weighted\_radial & down
-& up & SMOTE\tabularnewline
-\midrule
-\endhead
-Random Forest & 0.8548012 & NA & 0.8548012 & NA & 0.8168893 & 0.8651387
-& 0.8356639\tabularnewline
-xGBoost & 0.8218285 & NA & 0.8227247 & NA & 0.8055749 & 0.8249255 &
-0.8031042\tabularnewline
-GBM & 0.7765399 & NA & 0.7739591 & NA & 0.7542527 & 0.7754709 &
-0.7446644\tabularnewline
-ANN & 0.7188902 & NA & 0.7133446 & NA & 0.6970364 & 0.7083888 &
-0.7015769\tabularnewline
-Log. Regression & 0.6902922 & NA & NA & NA & 0.6862027 & 0.6892931 &
-0.6896683\tabularnewline
-SVM & 0.6324302 & 0.731 & 0.6416904 & 0.732 & 0.6985871 & 0.6898714 &
-0.7131695\tabularnewline
-\bottomrule
-\end{longtable}
+\begin{table}
 
-\begin{longtable}[]{@{}lrrrrrrr@{}}
-\caption{PR Metric Model Variations}\tabularnewline
+\caption{\label{tab:ucsd_models_AUC}AUC Metric Model Variations}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
 \toprule
-type & original & original\_radial & weighted & weighted\_radial & down
-& up & SMOTE\tabularnewline
+type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-\endfirsthead
-\toprule
-type & original & original\_radial & weighted & weighted\_radial & down
-& up & SMOTE\tabularnewline
-\midrule
-\endhead
-Random Forest & 0.5152 & NA & 0.5152 & NA & 0.3515 & 0.4591 &
-0.4063\tabularnewline
-xGBoost & 0.4242 & NA & 0.4247 & NA & 0.2056 & 0.3886 &
-0.2906\tabularnewline
-GBM & 0.2832 & NA & 0.1774 & NA & 0.1419 & 0.1938 &
-0.1462\tabularnewline
-ANN & 0.0985 & NA & 0.0860 & NA & 0.0691 & 0.0960 &
-0.0750\tabularnewline
-Log. Regression & 0.0781 & NA & NA & NA & 0.0783 & 0.0735 &
-0.0682\tabularnewline
-SVM & 0.0575 & 0.1645 & 0.0597 & 0.1646 & 0.0712 & 0.0667 &
-0.0783\tabularnewline
+Random Forest & 0.8548012 & NA & 0.8548012 & NA & 0.8168893 & 0.8651387 & 0.8356639\\
+xGBoost & 0.8218285 & NA & 0.8227247 & NA & 0.8055749 & 0.8249255 & 0.8031042\\
+GBM & 0.7765399 & NA & 0.7739591 & NA & 0.7542527 & 0.7754709 & 0.7446644\\
+ANN & 0.7188902 & NA & 0.7133446 & NA & 0.6970364 & 0.7083888 & 0.7015769\\
+Log. Regression & 0.6902922 & NA & NA & NA & 0.6862027 & 0.6892931 & 0.6896683\\
+SVM & 0.6324302 & 0.730891 & 0.6416904 & 0.7320982 & 0.6985871 & 0.6898714 & 0.7131695\\
 \bottomrule
-\end{longtable}
+\end{tabular}}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:ucsd_model_PR}PR Metric Model Variations}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
+\midrule
+Random Forest & 0.5151509 & NA & 0.5151509 & NA & 0.3515450 & 0.4591128 & 0.4062699\\
+xGBoost & 0.4242364 & NA & 0.4247124 & NA & 0.2055611 & 0.3885884 & 0.2906456\\
+GBM & 0.2831942 & NA & 0.1773567 & NA & 0.1419057 & 0.1937535 & 0.1461725\\
+ANN & 0.0985339 & NA & 0.0860225 & NA & 0.0691229 & 0.0960196 & 0.0749699\\
+Log. Regression & 0.0780961 & NA & NA & NA & 0.0783426 & 0.0735142 & 0.0681947\\
+SVM & 0.0574525 & 0.164502 & 0.0597058 & 0.164611 & 0.0712216 & 0.0667245 & 0.0783384\\
+\bottomrule
+\end{tabular}}
+\end{table}
 
 It is quite evident from these two tables that the best performing model
 throughout each setting is Random Forests. Unsurprisingly it is followed
@@ -1133,13 +1116,18 @@ by the eXtreme Gradient Boosting, which also produces really good
 results. The SVM is also expectedly suffering, due to the severe class
 imbalance, which as mentioned in Section 3, leads to the support vector
 being pushed close to the majority class, thus ignoring the minority.
+The Logistic Regression performs relatively competitive and having a
+huge computational speed advantage means it is in no way irrelevant.
 
-In Figure \ldots{} we also visually show the differences between the
-different Machine Learning Techniques.
+In Figure 5 we also visually show the differences between the different
+Machine Learning Techniques. Here it is also quite evident that the
+Random Forest method shows superiority. Its ROC curve is higher than all
+the other at every point, while the Precision Recall curve is lower than
+the weighted xGBoost only in a very limited range.
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_PR_ROC.png}
+\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_pr_roc.png}
 \caption{ROC and PR Curves}
 \end{figure}
 
@@ -1154,6 +1142,16 @@ different Machine Learning Techniques.
 
 \hypertarget{further-improvements}{%
 \section{6. Further Improvements}\label{further-improvements}}
+
+We have given a big overview on the different Machine Learning
+Techniques that can be used for Financial Fraud Detection. However, in
+this paper we have not delved into the details for each individual
+algorithm and we have explored only a part of the tunning opportunities
+that each algorithm offers. For instance, the ANN models can be extended
+to include more than just a single hidden layer or another variation of
+it can be tested, i.e.~not the ``vanilla'' model. For GBM and xGBoost, a
+wider scope of tuning parameters can be used, which is of course
+associated with the need of greater computational power.
 
 \hypertarget{conclusion}{%
 \section{7. Conclusion}\label{conclusion}}

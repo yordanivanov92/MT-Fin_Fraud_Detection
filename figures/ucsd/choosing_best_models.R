@@ -1,5 +1,14 @@
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
+
+
+plot_legend <- function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
 
 #### Random Forest ####
 ucsd_auc_randfor$type <- "Random Forest"
@@ -94,10 +103,10 @@ sort(unique(ucsd_PR_svm), decreasing = TRUE)[1:3]
 #     0.164611        0.164502 0.07833837
 ## ROC VALUES
 ucsd_svm_weighted_rad_ROC <- ucsd_svm_results_df_roc[ucsd_svm_results_df_roc$model == "weighted_rad",]
-ucsd_svm_weighted_rad_ROC$model <- "SVM Cost-Sensitive Radial Kernel"
+ucsd_svm_weighted_rad_ROC$model <- "SVM Cost-Sensitive Radial"
 ## PR VALUES
 ucsd_svm_weighted_rad_PR <- ucsd_svm_results_df_pr[ucsd_svm_results_df_pr$model == "weighted_rad",]
-ucsd_svm_weighted_rad_PR$model <- "SVM Cost-Sensitive Radial Kernel"
+ucsd_svm_weighted_rad_PR$model <- "SVM Cost-Sensitive Radial"
 #### End SVM ####
 
 #### NNET ####
@@ -127,14 +136,19 @@ ucsd_ROC_all <- rbind(ucsd_randfor_original_ROC, ucsd_glm_original_ROC,
 
 custom_col <- c("#000000", "red","#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
-ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_ROC_all) +
-  geom_line(aes(color = model), size = 1) +
-  scale_color_manual(name = "ML Techniques", values = custom_col) +
-  geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
+roc_curve <- ggplot(aes(x = fpr, y = tpr, group = model), data = ucsd_ROC_all) +
+  geom_line(aes(color = model), size = 1.2) +
+  scale_color_manual(name = "",values = custom_col) +
+  geom_abline(intercept = 0, slope = 1, color = "gray", size = 1.2) +
   theme_bw(base_size = 18) + 
   ggtitle("ROC Curves") + 
-  theme(plot.title = element_text(lineheight=.8, size = 18),
-        legend.text=element_text(size=12)) +
+  theme(plot.title = element_text(lineheight = 1,size = 26),
+        legend.position="bottom",
+        legend.direction="vertical",
+        legend.text=element_text(size=30), 
+        legend.key = element_rect(size = 10),
+        legend.key.size = unit(2.5, 'lines')) +
+  guides(colour = guide_legend(override.aes = list(size=3),ncol=3)) +
   labs(x = "False Positive Rate",
        y = "True Positive Rate")
 
@@ -142,15 +156,25 @@ ucsd_PR_all <- rbind(ucsd_randfor_original_PR, ucsd_glm_original_PR,
                      ucsd_gbm_original_PR, ucsd_xgboost_weighted_PR,
                      ucsd_svm_weighted_rad_PR, ucsd_nnet_original_PR)
 
-ggplot(aes(x = recall, y = precision, group = model), data = ucsd_PR_all) +
-  geom_line(aes(color = model), size = 1) +
-  scale_color_manual(name = "ML Techniques",values = custom_col) +
+pr_curve <- ggplot(aes(x = recall, y = precision, group = model), data = ucsd_PR_all) +
+  geom_line(aes(color = model), size = 1.2) +
+  scale_color_manual(name = "",values = custom_col) +
   ggtitle("Precision-Recall") +
   theme_bw(base_size = 18) + 
   labs(x = "Precision",
        y = "Recall") +
-  theme(plot.title = element_text(lineheight=.8, size = 18),
-        legend.text=element_text(size=12))
+  guides(colour = guide_legend(override.aes = list(size=3)),
+         fill=guide_legend(ncol=3)) +
+  theme(plot.title = element_text(lineheight = 1,size = 26),
+        legend.direction="vertical")
+
+my_legend <- plot_legend(roc_curve)
+
+pr_roc_graph <- grid.arrange(arrangeGrob(roc_curve + theme(legend.position = "none"),
+                                         pr_curve + theme(legend.position = "none"),
+                                         nrow = 1),
+                             my_legend, nrow = 2, heights = c(20,5))
+####
 auc_table_all <- data.frame(sort(unique(ucsd_auc_randfor), decreasing = TRUE)[2],
                             sort(unique(ucsd_auc_glm), decreasing = TRUE)[1],
                             sort(unique(ucsd_auc_gbm), decreasing = TRUE)[1],

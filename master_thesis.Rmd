@@ -398,39 +398,46 @@ The different variations executed involve fitting the model with different data-
 
 ### 5.2.1. UCSD
 
-As mentioned in **Section 4.1.1.**, we wil work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
+As mentioned in *Section 4.1.1.*, we wil work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
 
 From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not much that we derive from our raw data and that can be observed from the graphics created to illustrate the distribution of the different features (See Appendix). The only interesting note that can be taken is that it seems the fraudulent class is usually associated with a transaction that has a lower amount. This can be seen in Figure 4.
 
 ![Boxplot of amount by class](figures/ucsd/descriptive/boxplot_amount.png){width=60%}
 
-However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations.In Tables 3 and 4, we can observe ROC AUC and PR AUC of the models that were fit. 
+However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations. In Tables 3 and 4, we can observe ROC AUC and PR AUC of the models that were used in this study. 
+
+
 
 ```{r ucsd_models_AUC, echo = FALSE}
 library(dplyr)
 library(knitr)
 library(kableExtra)
 load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
-kable(ucsd_auc_table, format = "pandoc", digits = 3, caption = "AUC Metric Model Variations")
+kable(ucsd_auc_table, format = "latex", caption = "AUC Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+
 ```
 
-
-
-```{r ucsd_models_PR, echo = FALSE}
+```{r ucsd_model_PR, echo = FALSE}
 library(dplyr)
 library(knitr)
 library(kableExtra)
 load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
-kable(ucsd_PR_table, format = "pandoc", digits = 4, caption = "PR Metric Model Variations") 
+kable(ucsd_PR_table, format = "latex", caption = "PR Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
 ```
 
-It is quite evident from these two tables that the best performing model throughout each setting is Random Forests. Unsurprisingly it is followed by the eXtreme Gradient Boosting, which also produces really good results. The SVM is also expectedly suffering, due to the severe class imbalance, which as mentioned in Section 3, leads to the support vector being pushed close to the majority class, thus ignoring the minority. 
+It is quite evident from these two tables that the best performing model throughout each setting is Random Forests. Unsurprisingly, it is followed by the eXtreme Gradient Boosting, which also produces really good results. The SVM is also expectedly suffering, due to the severe class imbalance, which as mentioned in Section 3, leads to the support vector being pushed close to the majority class, thus ignoring the minority. The Logistic Regression performs relatively competitive and having a huge computational speed advantage means it is in no way irrelevant. 
 
-In Figure ... we also visually show the differences between the different Machine Learning Techniques. 
+In Figure 5 we also visually show the differences between the different Machine Learning Techniques. Here it is also quite evident that the Random Forest method shows superiority. Its ROC curve is higher than all the other at every point, while the Precision Recall curve is lower than the weighted xGBoost only in a very limited range. 
 
-![ROC and PR Curves](figures/ucsd/ucsd_PR_ROC.png){width=100%}
+![ROC and PR Curves](figures/ucsd/ucsd_pr_roc.png){width=100%}
 
 ### 5.2.2. Credit Card
+
+
 
 ### 5.2.3. PaySim
 
