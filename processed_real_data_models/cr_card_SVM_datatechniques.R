@@ -21,9 +21,6 @@ credit_card_data <- read.csv(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesi
 credit_card_data <- credit_card_data[sample(nrow(credit_card_data), 50000),]
 # Fraud Rate
 prop.table(table(credit_card_data$Class))
-# Highly imbalanced dataset
-# 0           1 
-# 0.998272514 0.001727486
 
 # Removing the time step variable
 credit_card_data <- credit_card_data %>%
@@ -55,14 +52,14 @@ for (f in feature.names2) {
   }
 }
 
-set.seed(5)
 ctrl_cr_card <- trainControl(method = "repeatedcv",
                              number = 10,
-                             repeats = 3,
+                             repeats = 1,
                              summaryFunction = twoClassSummary,
                              classProbs = TRUE,
                              verboseIter = TRUE)
-set.seed(5)
+
+### Models Start
 cr_card_svm <- train(Class ~ .,
                      data = cr_card_train,
                      method = "svmLinear",
@@ -70,7 +67,13 @@ cr_card_svm <- train(Class ~ .,
                      verbose = FALSE,
                      metric = "ROC", 
                      trControl = ctrl_cr_card)
-set.seed(5)
+
+# Results Original
+svm_results <- predict(cr_card_svm, newdata = cr_card_test)
+conf_matr_svm <- confusionMatrix(svm_results, cr_card_test$Class)
+
+svm_imp <- varImp(cr_card_svm, scale = FALSE)
+plot(svm_imp)
 
 cr_card_svm_rad <- train(Class ~ .,
                          data = cr_card_train,
@@ -80,104 +83,61 @@ cr_card_svm_rad <- train(Class ~ .,
                          metric = "ROC", 
                          trControl = ctrl_cr_card)
 
-# Results Original
-svm_results <- predict(cr_card_svm, newdata = cr_card_test)
-conf_matr_svm <- confusionMatrix(svm_results, cr_card_test$Class)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 19961    28
-# X2     0    11
-
-
 svm_results_rad <- predict(cr_card_svm_rad, newdata = cr_card_test)
 conf_matr_svm_rad <- confusionMatrix(svm_results_rad, cr_card_test$Class) # radial kernel performing better
-#Radial kernel performing better, giving indicator that maybe the decision boundry is not linear
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 19957    14
-# X2     4    25
+
 
 trellis.par.set(caretTheme())
-train_plot_svm <- plot(cr_card_svm_rad, metric = "ROC")
+train_plot_svm_rad <- plot(cr_card_svm_rad, metric = "ROC")
+train_plot_svm_rad
 
-svm_imp <- varImp(cr_card_svm_rad, scale = FALSE)
-#svm_imp - variable importance is observed
-plot(svm_imp)
-
-
-cr_card_test_roc <- function(model, data) {
-  roc(data$Class,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
-auc_svm <- cr_card_svm %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
+svm_imp_rad <- varImp(cr_card_svm_rad, scale = FALSE)
+plot(svm_imp_rad)
 
 
-################## COST SENSITIVE XGBOOST MODEL
-# The penalization costs can be tinkered with
-cr_card_model_weights <- ifelse(cr_card_train$Class == "X1",
-                                (1/table(cr_card_train$Class)[1]) * 0.5,
-                                (1/table(cr_card_train$Class)[2]) * 0.5)
 
-#ctrl_cr_card$seeds <- cr_card_svm$control$seeds
-
-set.seed(5)
+################## COST SENSITIVE SVM MODEL
+ctrl_cr_card$seeds <- cr_card_svm_weighted_fit$control$seeds
 cr_card_svm_weighted_fit <- train(Class ~ .,
                                   data = cr_card_train,
                                   method = "svmLinearWeights",
                                   preProc = c("center", "scale"),
                                   verbose = FALSE,
-                                  weights = cr_card_model_weights,
                                   metric = "ROC", 
                                   trControl = ctrl_cr_card)
 
-ctrl_cr_card$seeds <- cr_card_svm_weighted_fit$control$seeds
-set.seed(5)
-cr_card_svm_weighted_fit1 <- train(Class ~ .,
+
+svm_weighted_results <- predict(cr_card_svm_weighted_fit, newdata = cr_card_test)
+conf_matr_weighted_svm <- confusionMatrix(svm_weighted_results, cr_card_test$Class)
+
+trellis.par.set(caretTheme())
+train_plot_weighted_svm <- plot(cr_card_svm_weighted_fit, metric = "ROC")
+train_plot_weighted_svm
+
+svm_weighted_imp <- varImp(cr_card_svm_weighted_fit, scale = FALSE)
+plot(svm_weighted_imp)
+
+
+cr_card_svm_weighted_rad_fit <- train(Class ~ .,
                                   data = cr_card_train,
-                                  method = "svmLinearWeights",
+                                  method = "svmRadialWeights",
                                   preProc = c("center", "scale"),
                                   verbose = FALSE,
                                   metric = "ROC", 
                                   trControl = ctrl_cr_card)
 
-# Results CS
-svm_weighted_results <- predict(cr_card_svm_weighted_fit, newdata = cr_card_test)
-conf_matr_weighted_svm <- confusionMatrix(svm_weighted_results, cr_card_test$Class)
+svm_weighted_results_rad <- predict(cr_card_svm_weighted_rad_fit, newdata = cr_card_test)
+conf_matr_weighted_svm_rad <- confusionMatrix(svm_weighted_results_rad, cr_card_test$Class)
 
-# no difference between the two weighted things
-svm_weighted_results1 <- predict(cr_card_svm_weighted_fit1, newdata = cr_card_test)
-conf_matr_weighted_svm1 <- confusionMatrix(svm_weighted_results1, cr_card_test$Class)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 19958     7
-# X2     3    32
-
-
-#higher roc values by the second model - without weights in the caret function
 trellis.par.set(caretTheme())
-train_plot_weighted_svm <- plot(cr_card_svm_weighted_fit, metric = "ROC")
+train_plot_weighted_svm_rad <- plot(cr_card_svm_weighted_rad_fit, metric = "ROC")
+train_plot_weighted_svm_rad
 
-svm_weighted_imp <- varImp(cr_card_svm_weighted_fit, scale = FALSE)
-plot(svm_weighted_imp)
-
-auc_svm_weighted <- cr_card_svm_weighted_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
+svm_weighted_imp_rad <- varImp(cr_card_svm_weighted_rad_fit, scale = FALSE)
+plot(svm_weighted_imp_rad)
 
 ############### sampled-down model
-ctrl_cr_card$seeds <- cr_card_svm$control$seeds
-
 ctrl_cr_card$sampling <- "down"
-
 cr_card_svm_down_fit <- train(Class ~ .,
                               data = cr_card_train,
                               method = "svmLinear",
@@ -191,16 +151,8 @@ cr_card_svm_down_fit <- train(Class ~ .,
 svm_down_results <- predict(cr_card_svm_down_fit, newdata = cr_card_test)
 conf_matr_down_svm <- confusionMatrix(svm_down_results, cr_card_test$Class)
 
-trellis.par.set(caretTheme())
-train_plot_down_svm <- plot(cr_card_svm_down_fit, metric = "ROC")
-
 svm_down_imp <- varImp(cr_card_svm_down_fit, scale = FALSE)
-#svm_imp - variable importance is observed
 plot(svm_down_imp)
-
-auc_svm_down <- cr_card_svm_down_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# sampled-up
 ctrl_cr_card$sampling <- "up"
@@ -218,16 +170,8 @@ cr_card_svm_up_fit <- train(Class ~ .,
 svm_up_results <- predict(cr_card_svm_up_fit, newdata = cr_card_test)
 conf_matr_up_svm <- confusionMatrix(svm_up_results, cr_card_test$Class)
 
-trellis.par.set(caretTheme())
-train_plot_up_svm <- plot(cr_card_svm_up_fit, metric = "ROC")
-
 svm_up_imp <- varImp(cr_card_svm_up_fit, scale = FALSE)
-#svm_imp - variable importance is observed
 plot(svm_up_imp)
-
-auc_svm_up <- cr_card_svm_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
 
 ############# SMOTE
 ctrl_cr_card$sampling <- "smote"
@@ -245,21 +189,19 @@ cr_card_svm_smote_fit <- train(Class ~ .,
 svm_up_results <- predict(cr_card_svm_up_fit, newdata = cr_card_test)
 conf_matr_up_svm <- confusionMatrix(svm_up_results, cr_card_test$Class)
 
-trellis.par.set(caretTheme())
-train_plot_up_svm <- plot(cr_card_svm_up_fit, metric = "ROC")
-
 svm_up_imp <- varImp(cr_card_svm_up_fit, scale = FALSE)
-#svm_imp - variable importance is observed
 plot(svm_up_imp)
 
-auc_svm_up <- cr_card_svm_up_fit %>%
-  cr_card_test_roc(data = cr_card_test) %>%
-  auc()
-
-
 ##############################################################
+cr_card_test_roc <- function(model, data) {
+  roc(data$Class,
+      predict(model, data, type = "prob")[, "X2"])
+}
+
 cr_card_svm_model_list <- list(original = cr_card_svm,
                                weighted = cr_card_svm_weighted_fit,
+                               original_rad = cr_card_svm_rad,
+                               weighted_rad = cr_card_svm_weighted_rad_fit,
                                down = cr_card_svm_down_fit,
                                up = cr_card_svm_up_fit,
                                SMOTE = cr_card_svm_smote_fit)
@@ -293,17 +235,16 @@ ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_svm_results_df_roc) 
 
 ####  Construction the precision/recall graphic
 cr_card_svm_calc_auprc <- function(model, data) {
-  index_class2 <- data$type == "X2"
-  index_class1 <- data$type == "X1"
+  index_class2 <- data$Class == "X2"
+  index_class1 <- data$Class == "X1"
   
   predictions <- predict(model, data, type = "prob")
   
-  pr.curve(predictions$type[index_class2],
-           predictions$type[index_class1],
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
            curve = TRUE)
 }
 
-#### ERROR HERE - FIX
 cr_card_svm_model_list_pr <- cr_card_svm_model_list %>%
   map(cr_card_svm_calc_auprc, data = cr_card_test)
 
@@ -327,64 +268,3 @@ ggplot(aes(x = recall, y = precision, group = model), data = cr_card_svm_results
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
   geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
-
-
-##### HAVE ANOTHER LOOK HERE - NOT ADAPTED
-cr_card_svmSim_auprcSummary <- function(data, lev = NULL, model = NULL){
-  
-  index_class2 <- data$obs == "X2"
-  index_class1 <- data$obs == "X1"
-  
-  the_curve <- pr.curve(data$type[index_class2],
-                        data$type[index_class1],
-                        curve = FALSE)
-  
-  out <- the_curve$auc.integral
-  names(out) <- "AUPRC"
-  
-  out
-  
-}
-
-#Re-initialize control function to remove smote and
-# include our new summary function
-
-ctrl <- trainControl(method = "repeatedcv",
-                     number = 10,
-                     repeats = 5,
-                     summaryFunction = auprcSummary,
-                     classProbs = TRUE,
-                     seeds = orig_fit$control$seeds)
-
-orig_pr <- train(Class ~ .,
-                 data = imbal_train,
-                 method = "svmLinear",
-                 verbose = FALSE,
-                 metric = "AUPRC",
-                 trControl = ctrl)
-
-# Get results for auprc on the test set
-
-orig_fit_test <- orig_fit %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-orig_pr_test <- orig_pr %>%
-  calc_auprc(data = imbal_test) %>%
-  (function(the_mod) the_mod$auc.integral)
-
-# The test errors are the same
-
-identical(orig_fit_test,
-          orig_pr_test)
-## [1] TRUE
-# Because both chose the same
-# hyperparameter combination
-
-identical(orig_fit$bestTune,
-          orig_pr$bestTune)
-
-
-
-
-
