@@ -41,17 +41,13 @@ ucsd_data <- ucsd_data %>%
   dplyr::summarise(freq = n()) %>%
   dplyr::filter(freq > 1) %>%
   dplyr::inner_join(ucsd_data, by = "custAttr1") %>%
-  dplyr::select(-freq)
+  dplyr::select(-c(freq, custAttr1, zip1))
 
 
 # Splitting into train and test datasets
 split = sample.split(ucsd_data$Class, SplitRatio = 0.6)
 ucsd_train <- subset(ucsd_data, split == TRUE)
 ucsd_test <- subset(ucsd_data, split == FALSE)
-# ucsd_train$zip1 <- as.factor(ucsd_train$zip1)
-# ucsd_test$zip1 <- as.factor(ucsd_test$zip1)
-# ucsd_train$custAttr1 <- as.factor(ucsd_train$custAttr1)
-# ucsd_test$custAttr1 <- as.factor(ucsd_test$custAttr1)
 
 feature.names=names(ucsd_train)
 for (f in feature.names) {
@@ -112,13 +108,6 @@ train_plot_xgboost
 
 xgboost_imp <- varImp(ucsd_xgboost, scale = FALSE)
 plot(xgboost_imp)
-
-# XGBOOST ROC and AUC
-ucsd_test_roc <- function(model, data) {
-  roc(data$Class,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
 
 ############################### COST SENSITIVE XGBOOST MODEL
 # The penalization costs can be tinkered with
@@ -228,18 +217,23 @@ plot(xgboost_imp_smote)
 
 ####################################################################
 
+ucsd_test_roc <- function(model, data) {
+  roc(data$Class,
+      predict(model, data, type = "prob")[, "X2"])
+}
+
 ucsd_xgboost_model_list <- list(original = ucsd_xgboost,
-                              weighted = ucsd_xgboost_weighted_fit,
-                              down = ucsd_xgboost_down_fit,
-                              up = ucsd_xgboost_up_fit,
-                              SMOTE = ucsd_xgboost_smote_fit)
+                                weighted = ucsd_xgboost_weighted_fit,
+                                down = ucsd_xgboost_down_fit,
+                                up = ucsd_xgboost_up_fit,
+                                SMOTE = ucsd_xgboost_smote_fit)
 
 
 ucsd_xgboost_model_list_roc <- ucsd_xgboost_model_list %>%
   map(ucsd_test_roc, data = ucsd_test)
 
-ucsd_xgboost_model_list_roc %>%
-  map(auc)
+ucsd_auc_xgboost <- as.data.frame(ucsd_xgboost_model_list_roc %>% map(auc))
+saveRDS(ucsd_auc_xgboost, file = paste0(getwd(),"/figures/ucsd/xgboost/ucsd_auc_xgboost.rds"))
 
 ucsd_xgboost_results_list_roc <- list(NA)
 num_mod <- 1
@@ -253,6 +247,8 @@ for(the_roc in ucsd_xgboost_model_list_roc){
 }
 
 ucsd_xgboost_results_df_roc <- bind_rows(ucsd_xgboost_results_list_roc)
+saveRDS(ucsd_xgboost_results_df_roc, 
+        file = paste0(getwd(),"/figures/ucsd/xgboost/ucsd_xgboost_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -278,8 +274,8 @@ ucsd_xgboost_model_list_pr <- ucsd_xgboost_model_list %>%
   map(ucsd_xgboost_calc_auprc, data = ucsd_test)
 
 # Precision recall Curve AUC calculation
-ucsd_xgboost_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+ucsd_PR_xgboost <- as.data.frame(ucsd_xgboost_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(ucsd_PR_xgboost, file = paste0(getwd(),"/figures/ucsd/xgboost/ucsd_PR_xgboost.rds"))
 
 ucsd_xgboost_results_list_pr <- list(NA)
 num_mod <- 1
@@ -292,6 +288,8 @@ for (the_pr in ucsd_xgboost_model_list_pr) {
 }
 
 ucsd_xgboost_results_df_pr <- bind_rows(ucsd_xgboost_results_list_pr)
+saveRDS(ucsd_xgboost_results_df_pr, 
+        file = paste0(getwd(),"/figures/ucsd/xgboost/ucsd_xgboost_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_xgboost_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

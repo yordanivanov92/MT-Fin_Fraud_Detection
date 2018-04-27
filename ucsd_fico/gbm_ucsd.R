@@ -104,12 +104,6 @@ train_plot_gbm
 gbm_imp <- varImp(ucsd_gbm)
 plot(gbm_imp)
 
-# XGBOOST ROC and AUC
-ucsd_test_roc <- function(model, data) {
-  roc(data$Class,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
 ################### COST SENSITIVE GBM MODEL
 ucsd_model_weights <- ifelse(ucsd_train$Class == "X1",
                              (1/table(ucsd_train$Class)[1]) * 0.5,
@@ -216,6 +210,11 @@ plot(gbm_imp_smote)
 
 
 ####################################################################
+# ROC and AUC
+ucsd_test_roc <- function(model, data) {
+  roc(data$Class,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 ucsd_gbm_model_list <- list(original = ucsd_gbm,
                             weighted = ucsd_gbm_weighted_fit,
@@ -227,8 +226,10 @@ ucsd_gbm_model_list <- list(original = ucsd_gbm,
 ucsd_gbm_model_list_roc <- ucsd_gbm_model_list %>%
   map(ucsd_test_roc, data = ucsd_test)
 
-ucsd_gbm_model_list_roc %>%
-  map(auc)
+ucsd_auc_gbm <- as.data.frame(ucsd_gbm_model_list_roc %>% map(auc))
+saveRDS(ucsd_auc_gbm, 
+        file = paste0(getwd(),"/figures/ucsd/gbm/ucsd_auc_gbm.rds"))
+
 
 ucsd_gbm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -242,6 +243,8 @@ for(the_roc in ucsd_gbm_model_list_roc){
 }
 
 ucsd_gbm_results_df_roc <- bind_rows(ucsd_gbm_results_list_roc)
+saveRDS(ucsd_gbm_results_df_roc, 
+        file = paste0(getwd(),"/figures/ucsd/gbm/ucsd_gbm_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -268,8 +271,9 @@ ucsd_gbm_model_list_pr <- ucsd_gbm_model_list %>%
   map(ucsd_gbm_calc_auprc, data = ucsd_test)
 
 # Precision recall Curve AUC calculation
-ucsd_gbm_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+ucsd_pr_gbm <- as.data.frame(ucsd_gbm_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(ucsd_pr_gbm, 
+        file = paste0(getwd(),"/figures/ucsd/gbm/ucsd_pr_gbm.rds"))
 
 
 ucsd_gbm_results_list_pr <- list(NA)
@@ -283,6 +287,9 @@ for (the_pr in ucsd_gbm_model_list_pr) {
 }
 
 ucsd_gbm_results_df_pr <- bind_rows(ucsd_gbm_results_list_pr)
+saveRDS(ucsd_gbm_results_df_pr, 
+        file = paste0(getwd(),"/figures/ucsd/gbm/ucsd_gbm_results_df_pr.rds"))
+
 
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_gbm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

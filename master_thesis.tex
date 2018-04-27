@@ -21,8 +21,7 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage[top=1in, bottom=1in, left=1.18in, right=1in]{geometry}
-\linespread{1.5}
+\usepackage[margin = 1.18in]{geometry}
 \usepackage{hyperref}
 \PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
 \hypersetup{unicode=true,
@@ -885,6 +884,16 @@ balance the dataset. In majority undersampling (RUS), the aim is the
 same, but it is achieved by randomly removing observations of the
 majority class.
 
+\hypertarget{weighted-dataset}{%
+\paragraph{Weighted Dataset}\label{weighted-dataset}}
+
+The technique for weighting your dataset is to closes thing to achieving
+a cost-sensitive learning model through manipulating the raw dataset.
+Class weights are chosen between the model is fit on the data and
+usually the minority class is given greater importance than the majority
+one, thus pays more ``attention'' when learning. \emph{FIND SOURCES FOR
+THIS}
+
 \hypertarget{smote}{%
 \paragraph{SMOTE}\label{smote}}
 
@@ -963,10 +972,14 @@ plotting them against each at different threshold settings. The FPR is
 defined as \(FPR=\frac{FP}{FP+TN}\). An example ROC curve can be seen in
 Figure 3. The better the line ``hugs'' the upper left corner of the ROC
 space, the better the trained classifier is. A model that produces a
-line that is close to the 45-degree separator means that it performs no
-better than simple random guessing.
+line that is close to the 45-degree separator means that it does not
+perfor better than random guessing.
 
-\includegraphics{figures/roc_curve_example.png}\{width = 60\%\}
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/roc_curve_example.png}
+\caption{Well performing ROC curve example}
+\end{figure}
 
 Moreover, when dealing with imbalanced classes, the ROC metric is a very
 suitable indicator of whether a model is a good fit. The first reason is
@@ -1018,21 +1031,117 @@ argued that it is a good indicator when dealing with imbalanced classes
 (He and Garcia 2009). The Accuracy metric will be used as little as
 possible to determine a classifier performance, as even if a model fails
 to classify a single observation from the minority class, the accuraccy
-will still be high (and close to 100\% in some cases).
+will still be high (and close to 100\% in some cases, due to sever class
+imbalance). Thus the ROC and AUC metrics will be utilized in order to
+gauge the performances and choose the optimal machine learning
+technique.
+
+As we apply six different machine learning techniques to each dataset
+and we have at least five variations of each technique, we will present
+in detail only the comparison between different models and not between
+each model variation. The model variation included in the final
+comparison will be the one that has exhibited the best performance. For
+details on model tuning and variable importance, see Appendix.
+
+The different variations executed involve fitting the model with
+different data-sampling techniques , i.e.~each model is fitted using the
+original dataset, RUS set, ROS set, SMOTE set and a weighted dataset.
 
 \hypertarget{ucsd}{%
 \subsubsection{5.2.1. UCSD}\label{ucsd}}
 
-\begin{itemize}
-\item
-  State if data-sampling techniques have made any real improvement - put
-  the ROC, PR and AUC measures in appendix or in small table, graphs.
-\item
-  Get the best classifier from each model type and plot all of them -
-  ROC, PR and AUC
-\item
-  Discuss result
-\end{itemize}
+As mentioned in \textbf{Section 4.1.1.}, we wil work with 40 918
+observations. As this is a real dataset and its features are mostly
+masked, this means that there is no real feature engineering that we can
+perform before applying any machine learning techniques.
+
+From the 40 918 observations, only 1 196 are fraudulent. Hence, there is
+not much that we derive from our raw data and that can be observed from
+the graphics created to illustrate the distribution of the different
+features (See Appendix). The only interesting note that can be taken is
+that it seems the fraudulent class is usually associated with a
+transaction that has a lower amount. This can be seen in Figure 4.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/descriptive/boxplot_amount.png}
+\caption{Boxplot of amount by class}
+\end{figure}
+
+However, when we turn to the ML Techniques, patterns seem to arise and
+better predictions can be made. In Tables 3 and 4, we can observe ROC
+AUC and PR AUC of the different models that were fit on the various
+manipulated datasets.
+
+\begin{longtable}[]{@{}lrrrrrrr@{}}
+\caption{AUC Metric Model Variations}\tabularnewline
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down
+& up & SMOTE\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down
+& up & SMOTE\tabularnewline
+\midrule
+\endhead
+Random Forest & 0.8548012 & NA & 0.8548012 & NA & 0.8168893 & 0.8651387
+& 0.8356639\tabularnewline
+xGBoost & 0.8218285 & NA & 0.8227247 & NA & 0.8055749 & 0.8249255 &
+0.8031042\tabularnewline
+GBM & 0.7765399 & NA & 0.7739591 & NA & 0.7542527 & 0.7754709 &
+0.7446644\tabularnewline
+ANN & 0.7188902 & NA & 0.7133446 & NA & 0.6970364 & 0.7083888 &
+0.7015769\tabularnewline
+Log. Regression & 0.6902922 & NA & NA & NA & 0.6862027 & 0.6892931 &
+0.6896683\tabularnewline
+SVM & 0.6324302 & 0.731 & 0.6416904 & 0.732 & 0.6985871 & 0.6898714 &
+0.7131695\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lrrrrrrr@{}}
+\caption{PR Metric Model Variations}\tabularnewline
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down
+& up & SMOTE\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down
+& up & SMOTE\tabularnewline
+\midrule
+\endhead
+Random Forest & 0.5152 & NA & 0.5152 & NA & 0.3515 & 0.4591 &
+0.4063\tabularnewline
+xGBoost & 0.4242 & NA & 0.4247 & NA & 0.2056 & 0.3886 &
+0.2906\tabularnewline
+GBM & 0.2832 & NA & 0.1774 & NA & 0.1419 & 0.1938 &
+0.1462\tabularnewline
+ANN & 0.0985 & NA & 0.0860 & NA & 0.0691 & 0.0960 &
+0.0750\tabularnewline
+Log. Regression & 0.0781 & NA & NA & NA & 0.0783 & 0.0735 &
+0.0682\tabularnewline
+SVM & 0.0575 & 0.1645 & 0.0597 & 0.1646 & 0.0712 & 0.0667 &
+0.0783\tabularnewline
+\bottomrule
+\end{longtable}
+
+It is quite evident from these two tables that the best performing model
+throughout each setting is Random Forests. Unsurprisingly it is followed
+by the eXtreme Gradient Boosting, which also produces really good
+results. The SVM is also expectedly suffering, due to the severe class
+imbalance, which as mentioned in Section 3, leads to the support vector
+being pushed close to the majority class, thus ignoring the minority.
+
+In Figure \ldots{} we also visually show the differences between the
+different Machine Learning Techniques.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_PR_ROC.png}
+\caption{ROC and PR Curves}
+\end{figure}
 
 \hypertarget{credit-card}{%
 \subsubsection{5.2.2. Credit Card}\label{credit-card}}

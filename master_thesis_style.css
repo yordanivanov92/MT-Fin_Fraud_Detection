@@ -1,6 +1,10 @@
 /* Whole document: */
 body{
-  font-family: Times New Roman;
   font-size: 12pt;
 }
 /* Headers */
+
+
+.verysmall .table{
+  font-size: 8px;
+}

@@ -94,12 +94,6 @@ conf_matr_svm
 svm_imp <- varImp(ucsd_svm)
 plot(svm_imp)
 
-# XGBOOST ROC and AUC
-ucsd_test_roc <- function(model, data) {
-  roc(data$Class,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
 ############# Radial
 ucsd_svm_radial <- train(Class ~ .,
                          data = ucsd_train,
@@ -215,6 +209,11 @@ plot(svm_imp_smote)
 
 
 ####################################################################
+# ROC and AUC
+ucsd_test_roc <- function(model, data) {
+  roc(data$Class,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 ucsd_svm_model_list <- list(original = ucsd_svm,
                             original_radial = ucsd_svm_radial,
@@ -228,8 +227,8 @@ ucsd_svm_model_list <- list(original = ucsd_svm,
 ucsd_svm_model_list_roc <- ucsd_svm_model_list %>%
   map(ucsd_test_roc, data = ucsd_test)
 
-ucsd_svm_model_list_roc %>%
-  map(auc)
+ucsd_auc_svm <- as.data.frame(ucsd_svm_model_list_roc %>% map(auc))
+saveRDS(ucsd_auc_svm, file = paste0(getwd(),"/figures/ucsd/svm/ucsd_auc_svm.rds"))
 
 ucsd_svm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -243,6 +242,8 @@ for(the_roc in ucsd_svm_model_list_roc){
 }
 
 ucsd_svm_results_df_roc <- bind_rows(ucsd_svm_results_list_roc)
+saveRDS(ucsd_svm_results_df_roc, 
+        file = paste0(getwd(),"/figures/ucsd/svm/ucsd_svm_results_df_roc.rds"))
 
 custom_col <- c("#000000", "red","#009E73", "purple","#0072B2", "#D55e00", "#CC79A7")
 
@@ -269,8 +270,9 @@ ucsd_svm_model_list_pr <- ucsd_svm_model_list %>%
   map(ucsd_svm_calc_auprc, data = ucsd_test)
 
 # Precision recall Curve AUC calculation
-ucsd_svm_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+ucsd_PR_svm <- as.data.frame(ucsd_svm_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(ucsd_PR_svm, file = paste0(getwd(),"/figures/ucsd/svm/ucsd_PR_svm.rds"))
+
 
 ucsd_svm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -283,6 +285,9 @@ for (the_pr in ucsd_svm_model_list_pr) {
 }
 
 ucsd_svm_results_df_pr <- bind_rows(ucsd_svm_results_list_pr)
+saveRDS(ucsd_svm_results_df_pr, 
+        file = paste0(getwd(),"/figures/ucsd/svm/ucsd_svm_results_df_pr.rds"))
+
 
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_svm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

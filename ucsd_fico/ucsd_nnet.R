@@ -124,12 +124,6 @@ train_plot_nnet
 nnet_imp <- varImp(ucsd_nnet)
 plot(nnet_imp)
 
-# XGBOOST ROC and AUC
-ucsd_test_roc <- function(model, data) {
-  roc(data$Class,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
 ############################### COST SENSITIVE NNET MODEL
 # The penalization costs can be tinkered with
 ucsd_model_weights <- ifelse(ucsd_train$Class == "X1",
@@ -232,6 +226,11 @@ plot(nnet_imp_smote)
 
 
 ####################################################################
+# ROC and AUC
+ucsd_test_roc <- function(model, data) {
+  roc(data$Class,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 ucsd_nnet_model_list <- list(original = ucsd_nnet_sub,
                              weighted = ucsd_nnet_weighted_fit,
@@ -242,9 +241,9 @@ ucsd_nnet_model_list <- list(original = ucsd_nnet_sub,
 ucsd_nnet_model_list_roc <- ucsd_nnet_model_list %>%
   map(ucsd_test_roc, data = ucsd_test)
 
-ucsd_nnet_model_list_roc %>%
-  map(auc)
-
+ucsd_auc_nnet <- as.data.frame(ucsd_nnet_model_list_roc %>% map(auc))
+saveRDS(ucsd_auc_nnet, 
+        file = paste0(getwd(),"/figures/ucsd/nnet/ucsd_auc_nnet.rds"))
 
 ucsd_nnet_results_list_roc <- list(NA)
 num_mod <- 1
@@ -258,6 +257,8 @@ for(the_roc in ucsd_nnet_model_list_roc){
 }
 
 ucsd_nnet_results_df_roc <- bind_rows(ucsd_nnet_results_list_roc)
+saveRDS(ucsd_nnet_results_df_roc, 
+        file = paste0(getwd(),"/figures/ucsd/nnet/ucsd_nnet_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -284,8 +285,10 @@ ucsd_nnet_model_list_pr <- ucsd_nnet_model_list %>%
   map(ucsd_nnet_calc_auprc, data = ucsd_test)
 
 # Precision recall Curve AUC calculation
-ucsd_nnet_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+ucsd_PR_nnet <- as.data.frame(ucsd_nnet_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(ucsd_PR_nnet, 
+        file = paste0(getwd(),"/figures/ucsd/nnet/ucsd_PR_nnet.rds"))
+
 
 ucsd_nnet_results_list_pr <- list(NA)
 num_mod <- 1
@@ -298,6 +301,9 @@ for (the_pr in ucsd_nnet_model_list_pr) {
 }
 
 ucsd_nnet_results_df_pr <- bind_rows(ucsd_nnet_results_list_pr)
+saveRDS(ucsd_nnet_results_df_pr, 
+        file = paste0(getwd(),"/figures/ucsd/nnet/ucsd_nnet_results_df_pr.rds"))
+
 
 ggplot(aes(x = recall, y = precision, group = model), data = ucsd_nnet_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
