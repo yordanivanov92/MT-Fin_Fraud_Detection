@@ -21,6 +21,7 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\linespread{1.5}
 \usepackage[margin = 1.18in]{geometry}
 \usepackage{hyperref}
 \PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
@@ -789,7 +790,9 @@ column represents.
 
 The number of frauds is just 492, which means only 0.172\% of all
 transactions are positively labeled, indicatin very severe class
-imbalance.
+imbalance. However, we will work with 100 000 randomly selected
+observations, as to decrease the computation time. The fraudulent
+observation still represent only 0.187\% of all transactions.
 
 \hypertarget{simulated-datasets}{%
 \subsubsection{4.1.2. Simulated Datasets}\label{simulated-datasets}}
@@ -1071,12 +1074,12 @@ transaction that has a lower amount. This can be seen in Figure 4.
 However, when we turn to the ML Techniques, patterns seem to arise and
 better predictions can be made. We first shortly present the 10-fold
 Cross-Validation results that were obtained from fitting the models on
-the dataset variations. In Tables 3 and 4, we can observe ROC AUC and PR
-AUC of the models that were used in this study.
+the dataset variations. In Tables 3 and 4, we can observe ROC AUC and
+Precision-Recall AUC of the models that were used in this study.
 
 \begin{table}
 
-\caption{\label{tab:ucsd_models_AUC}AUC Metric Model Variations}
+\caption{\label{tab:ucsd_models_AUC}UCSD: AUC Metric Model Variations}
 \centering
 \resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
 \toprule
@@ -1094,7 +1097,7 @@ SVM & 0.6324302 & 0.730891 & 0.6416904 & 0.7320982 & 0.6985871 & 0.6898714 & 0.7
 
 \begin{table}
 
-\caption{\label{tab:ucsd_model_PR}PR Metric Model Variations}
+\caption{\label{tab:ucsd_model_PR}UCSD: PR Metric Model Variations}
 \centering
 \resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
 \toprule
@@ -1111,13 +1114,14 @@ SVM & 0.0574525 & 0.164502 & 0.0597058 & 0.164611 & 0.0712216 & 0.0667245 & 0.07
 \end{table}
 
 It is quite evident from these two tables that the best performing model
-throughout each setting is Random Forests. Unsurprisingly it is followed
-by the eXtreme Gradient Boosting, which also produces really good
-results. The SVM is also expectedly suffering, due to the severe class
-imbalance, which as mentioned in Section 3, leads to the support vector
-being pushed close to the majority class, thus ignoring the minority.
-The Logistic Regression performs relatively competitive and having a
-huge computational speed advantage means it is in no way irrelevant.
+throughout each setting is Random Forests. Unsurprisingly, it is
+followed by the eXtreme Gradient Boosting, which also produces really
+good results. The SVM is also expectedly suffering, due to the severe
+class imbalance, which as mentioned in Section 3, leads to the support
+vector being pushed close to the majority class, thus ignoring the
+minority. The Logistic Regression performs relatively competitive and
+having a huge computational speed advantage means it is in no way
+irrelevant.
 
 In Figure 5 we also visually show the differences between the different
 Machine Learning Techniques. Here it is also quite evident that the
@@ -1128,11 +1132,94 @@ the weighted xGBoost only in a very limited range.
 \begin{figure}
 \centering
 \includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_pr_roc.png}
-\caption{ROC and PR Curves}
+\caption{UCSD: ROC and PR Curves}
 \end{figure}
 
 \hypertarget{credit-card}{%
 \subsubsection{5.2.2. Credit Card}\label{credit-card}}
+
+As discussed in \emph{Section 4.1.2.}, we wil work with a subset of 100
+000 bservations. Due to the fact that this a real-world dataset and has
+PCA performed on it in order to hide any private information, we can not
+perform any feature engineering or informative descriptive data
+analysis.
+
+One of the few things that we can observe by exploring our data is that
+the fraud class has fewer observation that are associated with very
+large amounts. That can be seen in Figure \ldots{}, where we show a
+boxplot of all transaction with amount less than 2000 in order to better
+illustrate the beforementioned statement.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/descriptive/cr_card_fraud_amount_boxplot.png}
+\caption{Boxplot of amount by class in Credit Card Dataset}
+\end{figure}
+
+However, when applying the ML Techniques discussed in \emph{Section 3},
+we are better able to use our data for analysing and prediction. In
+Tables 5 and 6, we can see the ROC AUC and Precision-Recall AUC of the
+different models and the different data-sampling techniques. The fitting
+framework is once again 10-fold Cross-Validation.
+
+\begin{table}
+
+\caption{\label{tab:cr_card_models_AUC}Credit Card: AUC Metric Model Variations}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
+\midrule
+Random Forest & 0.9543801 & NA & 0.9543801 & NA & 0.9682755 & 0.9542050 & 0.9638472\\
+xGBoost & 0.9692195 & NA & 0.9668218 & NA & 0.9456119 & 0.9771028 & 0.9673158\\
+GBM & 0.5805464 & NA & 0.9744766 & NA & 0.9703028 & 0.9690840 & 0.9659266\\
+ANN & 0.9639963 & NA & 0.9737695 & NA & 0.9708280 & 0.9554879 & 0.9567426\\
+Log. Regression & 0.9443036 & NA & NA & NA & 0.8141654 & 0.8967922 & 0.9088207\\
+SVM & 0.9181649 & 0.9592933 & 0.9247987 & 0.9627719 & 0.9181649 & 0.9181649 & 0.9181649\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cr_card_model_PR}Credit Card: PR Metric Model Variations}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
+\midrule
+Random Forest & 0.8330339 & NA & 0.8330339 & NA & 0.7927356 & 0.8527693 & 0.8110314\\
+xGBoost & 0.8336317 & NA & 0.8068010 & NA & 0.5619452 & 0.7535501 & 0.7895484\\
+GBM & 0.4362846 & NA & 0.8202291 & NA & 0.4189344 & 0.8358836 & 0.5228063\\
+ANN & 0.7773746 & NA & 0.7618862 & NA & 0.3955604 & 0.5590176 & 0.6677604\\
+Log. Regression & 0.7584590 & NA & NA & NA & 0.0089959 & 0.7249762 & 0.0375165\\
+SVM & 0.7810338 & 0.7322844 & 0.7719868 & 0.7437641 & 0.7810338 & 0.7810338 & 0.7810338\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+From the two tables we can observe that all models perform relatively
+similar. However, Random Forest and xGBoost are one step above the rest,
+in both the ROC AUC and Precision-Recall AUC metrics. The SVM also
+manages to predict better than expected, despite dealing with sever
+class imbalance. Nonetheless, it's Non Cost-Sensitive variant is still
+the worst performing model. On this dataset we can see how the inclusion
+of different costs in the SVM algorithm for the different class
+classification manages to improve performance. Both cost-sensitive
+variants, using linear or radial kernel, outperform the ``vanilla'' SVM.
+
+In Figure 7, both left and right, we can see the red, green and
+sometimes pink line, representing RF, xGBoost and GBM respectively, are
+slightly above all others. One all these three models have in common, is
+that they are based on the principle of decision trees. They do employ
+different fitting algorithm, bagging and boosting, but still perform on
+a similar high level.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr.png}
+\caption{Credit Card: ROC and PR Curves}
+\end{figure}
 
 \hypertarget{paysim-1}{%
 \subsubsection{5.2.3. PaySim}\label{paysim-1}}

@@ -9,6 +9,7 @@ library(caTools)
 library(doParallel)
 library(parallel)
 library(plyr)
+library(coefplot)
 options(scipen=999)
 
 set.seed(48)

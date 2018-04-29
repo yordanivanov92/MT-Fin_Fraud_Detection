@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  27 APR 2018 22:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  28 APR 2018 20:40
 entering extended mode
 **./master_thesis.tex
 (master_thesis.tex
@@ -1033,7 +1033,7 @@ lmm/m/it/12 ; :::; p    \OT1/lmr/m/n/12 (5)
 <figures/roc_curve_example.png, id=280, 572.1375pt x 492.33937pt>
 File: figures/roc_curve_example.png Graphic file (type png)
 <use figures/roc_curve_example.png>
-Package pdftex.def Info: figures/roc_curve_example.png  used on input line 980.
+Package pdftex.def Info: figures/roc_curve_example.png  used on input line 982.
 
 (pdftex.def)             Requested size: 266.2507pt x 229.11572pt.
 [17] [18 <./figures/roc_curve_example.png>]
@@ -1041,38 +1041,54 @@ Package pdftex.def Info: figures/roc_curve_example.png  used on input line 980.
 File: figures/ucsd/descriptive/boxplot_amount.png Graphic file (type png)
 <use figures/ucsd/descriptive/boxplot_amount.png>
 Package pdftex.def Info: figures/ucsd/descriptive/boxplot_amount.png  used on i
-nput line 1067.
+nput line 1069.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
 [19] [20 <./figures/ucsd/descriptive/boxplot_amount.png>]
 <figures/ucsd/ucsd_pr_roc.png, id=313, 1129.21875pt x 632.3625pt>
 File: figures/ucsd/ucsd_pr_roc.png Graphic file (type png)
 <use figures/ucsd/ucsd_pr_roc.png>
-Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1130.
+Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1133.
 
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
-[21 <./figures/ucsd/ucsd_pr_roc.png>] [22]
-Underfull \hbox (badness 10000) in paragraph at lines 1255--1258
+[21 <./figures/ucsd/ucsd_pr_roc.png>]
+<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=322, 632.3625p
+t x 632.3625pt>
+File: figures/credit/descriptive/cr_card_fraud_amount_boxplot.png Graphic file 
+(type png)
+<use figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>
+Package pdftex.def Info: figures/credit/descriptive/cr_card_fraud_amount_boxplo
+t.png  used on input line 1154.
+(pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
+[22 <./figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>]
+<figures/credit/cr_card_roc_pr.png, id=330, 1129.21875pt x 632.3625pt>
+File: figures/credit/cr_card_roc_pr.png Graphic file (type png)
+<use figures/credit/cr_card_roc_pr.png>
+Package pdftex.def Info: figures/credit/cr_card_roc_pr.png  used on input line 
+1219.
+(pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
+[23 <./figures/credit/cr_card_roc_pr.png>] [24]
+Underfull \hbox (badness 10000) in paragraph at lines 1341--1344
 \T1/lmr/m/n/12 (+20) Publication / vwLUAssets / EY-[]Global-[]Forensic-[]Data-[
 ]Analytics-[]Survey-[]2014 / $FILE /
  []
 
-[23] [24]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1396.
-[25]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1396.
+[25] [26]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1482.
+[27]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1482.
 (master_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1396.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1396.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1482.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1482.
 
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 6047F46642D0E1F0AE9B8D3C00C05B10;5907.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1396.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1482.
  ) 
 Here is how much of TeX's memory you used:
- 13059 strings out of 493305
- 190536 string characters out of 3138849
- 291193 words of memory out of 3000000
- 16117 multiletter control sequences out of 15000+200000
+ 13075 strings out of 493305
+ 191040 string characters out of 3138849
+ 291328 words of memory out of 3000000
+ 16127 multiletter control sequences out of 15000+200000
  65243 words of font info for 112 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  32i,9n,38p,438b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1093,9 +1109,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis.pdf (25 pages, 1502830 bytes).
+Output written on master_thesis.pdf (27 pages, 1539895 bytes).
 PDF statistics:
- 496 PDF objects out of 1000 (max. 8388607)
- 184 named destinations out of 1000 (max. 500000)
- 10530 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 513 PDF objects out of 1000 (max. 8388607)
+ 190 named destinations out of 1000 (max. 500000)
+ 10540 words of extra memory for PDF output out of 12000 (max. 10000000)
 

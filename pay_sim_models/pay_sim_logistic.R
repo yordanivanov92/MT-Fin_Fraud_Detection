@@ -9,14 +9,14 @@ library(caTools)
 library(doParallel)
 library(parallel)
 library(plyr)
-library(randomForest)
+library(coefplot)
 options(scipen=999)
 
 set.seed(48)
 paySim <- fread("C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/pay_sim_synthetic/PS_20174392719_1491204439457_log.csv",
                 header = TRUE,
                 sep = ",")
-paySim_small <- paySim[sample(nrow(paySim), 100000), ] 
+paySim_small <- paySim[sample(nrow(paySim), 1000000), ] 
 
 # Fraud Rate
 prop.table(table(paySim_small$isFraud))
@@ -103,13 +103,6 @@ paySim_test$isFraud <- as.factor(paySim_test$isFraud)
 paySim_test$type<-as.factor(paySim_test$type)
 paySim_test <- paySim_test[, -c("step")]
 
-ctrl_paySim <- trainControl(method = "repeatedcv",
-                            number = 10,
-                            repeats = 2,
-                            summaryFunction = twoClassSummary,
-                            classProbs = TRUE,
-                            verboseIter = TRUE)
-
 feature.names=names(paySim_train)
 for (f in feature.names) {
   if (class(paySim_train[[f]])=="factor") {
@@ -129,48 +122,226 @@ for (f in feature.names2) {
 
 rm(analysis_data_big)
 
+ctrl_paySim <- trainControl(method = "repeatedcv",
+                            number = 10,
+                            repeats = 1,
+                            summaryFunction = twoClassSummary,
+                            classProbs = TRUE,
+                            verboseIter = TRUE)
 
-paySim_log <- train(isFraud ~ .,
-                   data = paySim_train,
-                   method = "glm",
-                   metric = "ROC", 
-                   trControl = ctrl_paySim)
+paySim_single <- glm(isFraud ~., family = binomial, data = paySim_train)
+paySim_single_biasreduce <- brglm(isFraud ~., family = binomial, data = paySim_train)
 
 
+modelInfo <- list(label = "Bias Reduced GLM",
+                  library = c("brglm"),
+                  type = "Classification",
+                  loop = NULL,
+                  parameters = data.frame(parameter = "parameter",
+                                          class = "character",
+                                          label = "parameter"),
+                  grid = function(x, y, len = NULL, search = "grid") data.frame(parameter = "none"),
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                    dat <- if(is.data.frame(x)) x else as.data.frame(x)
+                    dat$.outcome <- y
+                    if(length(levels(y)) > 2) stop("brglm models can only use 2-class outcomes")
+                    theDots <- list(...)
+                    if(!any(names(theDots) == "family"))
+                    {
+                      theDots$family <- if(is.factor(y)) binomial() else gaussian()
+                    }
+                    ## pass in any model weights
+                    if(!is.null(wts)) theDots$weights <- wts
+                    
+                    modelArgs <- c(list(formula = as.formula(".outcome ~ ."), data = dat), theDots)
+                    
+                    out <- do.call("brglm", modelArgs)
+                    ## When we use do.call(), the call infformation can contain a ton of
+                    ## information. Inlcuding the contenst of the data. We eliminate it.
+                    out$call <- NULL
+                    out
+                  },
+                  predict = function(modelFit, newdata, submodels = NULL) {
+                    if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
+                    if(modelFit$problemType == "Classification") {
+                      probs <-  predict(modelFit, newdata, type = "response")
+                      out <- ifelse(probs < .5,
+                                    modelFit$obsLevel[1],
+                                    modelFit$obsLevel[2])
+                    } else {
+                      out <- predict(modelFit, newdata, type = "response")
+                    }
+                    out
+                  },
+                  prob = function(modelFit, newdata, submodels = NULL){
+                    if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
+                    out <- predict(modelFit, newdata, type = "response")
+                    out <- cbind(1-out, out)
+                    ## glm models the second factor level, we treat the first as the
+                    ## event of interest. See Details in ?glm
+                    dimnames(out)[[2]] <-  modelFit$obsLevels
+                    out
+                  },
+                  varImp = function(object, ...) {
+                    values <- summary(object)$coef
+                    varImps <-  abs(values[-1, grep("value$", colnames(values)), drop = FALSE])
+                    vimp <- data.frame(varImps)
+                    colnames(vimp) <- "Overall"
+                    if(!is.null(names(varImps))) rownames(vimp) <- names(varImps)
+                    vimp
+                  },
+                  predictors = function(x, ...) predictors(x$terms),
+                  levels = function(x) if(any(names(x) == "obsLevels")) x$obsLevels else NULL,
+                  tags = c("Bias Reduced Logistic Regression"),
+                  sort = function(x) x)
+
+paySim_glm <- train(isFraud ~ .,
+                    data = paySim_train,
+                    method = "glm",
+                    metric = "ROC", 
+                    trControl = ctrl_paySim)
+
+glm_results <- predict(paySim_glm, newdata = paySim_test)
+confusionMatrix(glm_results, paySim_test$isFraud)
+
+coefplot(paySim_glm, intercept = FALSE, color = "black")
+
+trellis.par.set(caretTheme())
+glm_imp <- varImp(paySim_glm, scale = FALSE)
+plot(glm_imp)
+
+############### sampled-down model
+ctrl_paySim$seeds <- paySim_glm$control$seeds
+
+ctrl_paySim$sampling <- "down"
+
+paySim_glm_down_fit <- train(isFraud ~ .,
+                             data = paySim_train,
+                             method = "glm",
+                             metric = "ROC",
+                             trControl = ctrl_paySim)
+
+### Sampled-down fit
+glm_down_results <- predict(paySim_glm_down_fit, newdata = paySim_test)
+confusionMatrix(glm_down_results, paySim_test$isFraud)
+
+coefplot(paySim_glm_down_fit, intercept = FALSE, color = "black")
+
+glm_down_imp <- varImp(paySim_glm_down_fit, scale = FALSE)
+plot(glm_down_imp)
+
+############# sampled-up
+ctrl_paySim$sampling <- "up"
+
+paySim_glm_up_fit <- train(isFraud ~ .,
+                           data = paySim_train,
+                           method = "glm",
+                           metric = "ROC",
+                           trControl = ctrl_paySim)
+
+
+### Sampled-up fit
+glm_up_results <- predict(paySim_glm_up_fit, newdata = paySim_test)
+confusionMatrix(glm_up_results, paySim_test$isFraud)
+
+coefplot(paySim_glm_up_fit, intercept = FALSE, color = "black")
+
+glm_up_imp <- varImp(paySim_glm_up_fit, scale = FALSE)
+plot(glm_up_imp)
+
+############# SMOTE
+ctrl_paySim$sampling <- "smote"
+
+paySim_glm_smote_fit <- train(isFraud ~ .,
+                              data = paySim_train,
+                              method = "plr",
+                              metric = "ROC",
+                              trControl = ctrl_paySim)
+
+
+### Smote fit
+glm_smote_results <- predict(paySim_glm_smote_fit, newdata = paySim_test)
+confusionMatrix(glm_smote_results, paySim_test$isFraud)
+
+coefplot(paySim_glm_smote_fit, intercept = FALSE, color = "black")
+
+glm_smote_imp <- varImp(paySim_glm_smote_fit, scale = FALSE)
+plot(glm_smote_imp)
+
+####################################################
 paySim_test_roc <- function(model, data) {
   roc(data$isFraud,
       predict(model, data, type = "prob")[, "X2"])
 }
 
-paySim_log %>%
-  paySim_test_roc(data = paySim_test) %>%
-  auc()
-# Area under the curve: 0.7592
-### Original Fit
-log_results <- predict(paySim_log, newdata = paySim_test)
-confusionMatrix(log_results, paySim_test$isFraud)
-# Confusion Matrix and Statistics
-# 
-# Reference
-# Prediction    X1    X2
-# X1 17264    24
-# X2    28    26
-# 
-# Accuracy : 0.997           
-# 95% CI : (0.9961, 0.9978)
-# No Information Rate : 0.9971          
-# P-Value [Acc > NIR] : 0.6460          
-# 
-# Kappa : 0.4985          
-# Mcnemar's Test P-Value : 0.6774          
-#                                           
-#             Sensitivity : 0.9984          
-#             Specificity : 0.5200          
-#          Pos Pred Value : 0.9986          
-#          Neg Pred Value : 0.4815          
-#              Prevalence : 0.9971          
-#          Detection Rate : 0.9955          
-#    Detection Prevalence : 0.9969          
-#       Balanced Accuracy : 0.7592          
-#                                           
-#        'Positive' Class : X1 
+paySim_glm_model_list <- list(original = paySim_glm,
+                              weighted = paySim_glm_weighted_fit,
+                              down = paySim_glm_down_fit,
+                              up = paySim_glm_up_fit,
+                              SMOTE = paySim_glm_smote_fit)
+
+
+paySim_glm_model_list_roc <- paySim_glm_model_list %>%
+  map(paySim_test_roc, data = paySim_test)
+
+paySim_glm_model_list_roc %>%
+  map(auc)
+
+paySim_glm_results_list_roc <- list(NA)
+num_mod <- 1
+
+for(the_roc in paySim_glm_model_list_roc){
+  paySim_glm_results_list_roc[[num_mod]] <-
+    data_frame(tpr = the_roc$sensitivities,
+               fpr = 1 - the_roc$specificities,
+               model = names(paySim_glm_model_list)[num_mod])
+  num_mod <- num_mod + 1
+}
+
+paySim_glm_results_df_roc <- bind_rows(paySim_glm_results_list_roc)
+
+custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
+
+ggplot(aes(x = fpr, y = tpr, group = model), data = paySim_glm_results_df_roc) +
+  geom_line(aes(color = model), size = 1) +
+  scale_color_manual(values = custom_col) +
+  geom_abline(intercept = 0, slope = 1, color = "gray", size = 1) +
+  theme_bw(base_size = 18)
+
+
+####  Construction the precision/recall graphic
+paySim_glm_calc_auprc <- function(model, data) {
+  index_class2 <- data$isFraud == "X2"
+  index_class1 <- data$isFraud == "X1"
+  
+  predictions <- predict(model, data, type = "prob")
+  
+  pr.curve(predictions$X2[index_class2],
+           predictions$X2[index_class1],
+           curve = TRUE)
+}
+
+paySim_glm_model_list_pr <- paySim_glm_model_list %>%
+  map(paySim_glm_calc_auprc, data = paySim_test)
+
+# Precision recall Curve AUC calculation
+paySim_glm_model_list_pr %>%
+  map(function(the_mod) the_mod$auc.integral)
+
+paySim_glm_results_list_pr <- list(NA)
+num_mod <- 1
+for (the_pr in paySim_glm_model_list_pr) {
+  paySim_glm_results_list_pr[[num_mod]] <-
+    data_frame(recall = the_pr$curve[, 1],
+               precision = the_pr$curve[, 2],
+               model = names(paySim_glm_model_list_pr)[num_mod])
+  num_mod <- num_mod + 1
+}
+
+paySim_glm_results_df_pr <- bind_rows(paySim_glm_results_list_pr)
+
+ggplot(aes(x = recall, y = precision, group = model), data = paySim_glm_results_df_pr) +
+  geom_line(aes(color = model), size = 1) +
+  scale_color_manual(values = custom_col) +
+  geom_abline(intercept = sum(paySim_test$Class == "X2")/nrow(paySim_test),slope = 0, color = "gray", size = 1)
+

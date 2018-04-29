@@ -298,7 +298,7 @@ The dataset was released by the Université Libre de Bruxelles (ULB) Machine Lea
 
 The number of transactions included are 284 807 with 30 features characterizing each one. The only two labeled features are Time and Amount, while all 28 others are numericals resulting from the PCA. We do not do any feature engineering, as there is no information on what each column represents.
 
-The number of frauds is just 492, which means only 0.172% of all transactions are positively labeled, indicatin very severe class imbalance. 
+The number of frauds is just 492, which means only 0.172% of all transactions are positively labeled, indicatin very severe class imbalance. However, we will work with 100 000 randomly selected observations, as to decrease the computation time. The fraudulent observation still represent only 0.187% of all transactions.  
 
 ### 4.1.2. Simulated Datasets
 
@@ -404,8 +404,7 @@ From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not muc
 
 ![Boxplot of amount by class](figures/ucsd/descriptive/boxplot_amount.png){width=60%}
 
-However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations. In Tables 3 and 4, we can observe ROC AUC and PR AUC of the models that were used in this study. 
-
+However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations. In Tables 3 and 4, we can observe ROC AUC and Precision-Recall AUC of the models that were used in this study. 
 
 
 ```{r ucsd_models_AUC, echo = FALSE}
@@ -413,7 +412,7 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
-kable(ucsd_auc_table, format = "latex", caption = "AUC Metric Model Variations",
+kable(ucsd_auc_table, format = "latex", caption = "UCSD: AUC Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
 
@@ -424,7 +423,7 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
-kable(ucsd_PR_table, format = "latex", caption = "PR Metric Model Variations",
+kable(ucsd_PR_table, format = "latex", caption = "UCSD: PR Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
 ```
@@ -433,11 +432,44 @@ It is quite evident from these two tables that the best performing model through
 
 In Figure 5 we also visually show the differences between the different Machine Learning Techniques. Here it is also quite evident that the Random Forest method shows superiority. Its ROC curve is higher than all the other at every point, while the Precision Recall curve is lower than the weighted xGBoost only in a very limited range. 
 
-![ROC and PR Curves](figures/ucsd/ucsd_pr_roc.png){width=100%}
+![UCSD: ROC and PR Curves](figures/ucsd/ucsd_pr_roc.png){width=100%}
 
 ### 5.2.2. Credit Card
 
+As discussed in *Section 4.1.2.*, we wil work with a subset of 100 000 bservations. Due to the fact that this a real-world dataset and has PCA performed on it in order to hide any private information, we can not perform any feature engineering or informative descriptive data analysis. 
 
+One of the few things that we can observe by exploring our data is that the fraud class has fewer observation that are associated with very large amounts. That can be seen in Figure ..., where we show a boxplot of all transaction with amount less than 2000 in order to better illustrate the beforementioned statement. 
+
+![Boxplot of amount by class in Credit Card Dataset](figures/credit/descriptive/cr_card_fraud_amount_boxplot.png){width=60%}
+
+However, when applying the ML Techniques discussed in *Section 3*, we are better able to use our data for analysing and prediction. In Tables 5 and 6, we can see the ROC AUC and Precision-Recall AUC of the different models and the different data-sampling techniques. The fitting framework is once again 10-fold Cross-Validation. 
+
+```{r cr_card_models_AUC, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card.RData"))
+kable(cr_card_auc_table, format = "latex", caption = "Credit Card: AUC Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+
+```
+
+```{r cr_card_model_PR, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card.RData"))
+kable(cr_card_PR_table, format = "latex", caption = "Credit Card: PR Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+```
+
+From the two tables we can observe that all models perform relatively similar. However, Random Forest and xGBoost are one step above the rest, in both the ROC AUC and Precision-Recall AUC metrics. The SVM also manages to predict better than expected, despite dealing with sever class imbalance. Nonetheless, it's Non Cost-Sensitive variant is still the worst performing model. On this dataset we can see how the inclusion of different costs in the SVM algorithm for the different class classification manages to improve performance. Both cost-sensitive variants, using linear or radial kernel, outperform the "vanilla" SVM. 
+
+In Figure 7, both left and right, we can see the red, green and sometimes pink line, representing RF, xGBoost and GBM respectively, are slightly above all others. One all these three models have in common, is that they are based on the principle of decision trees. They do employ different fitting algorithm, bagging and boosting, but still perform on a similar high level. 
+
+![Credit Card: ROC and PR Curves](figures/credit/cr_card_roc_pr.png){width=100%}
 
 ### 5.2.3. PaySim
 

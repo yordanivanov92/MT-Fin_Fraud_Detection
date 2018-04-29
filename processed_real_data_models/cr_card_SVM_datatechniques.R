@@ -117,7 +117,6 @@ train_plot_weighted_svm
 svm_weighted_imp <- varImp(cr_card_svm_weighted_fit, scale = FALSE)
 plot(svm_weighted_imp)
 
-
 cr_card_svm_weighted_rad_fit <- train(Class ~ .,
                                   data = cr_card_train,
                                   method = "svmRadialWeights",
@@ -199,17 +198,19 @@ cr_card_test_roc <- function(model, data) {
 }
 
 cr_card_svm_model_list <- list(original = cr_card_svm,
-                               weighted = cr_card_svm_weighted_fit,
                                original_rad = cr_card_svm_rad,
+                               weighted = cr_card_svm_weighted_fit,
                                weighted_rad = cr_card_svm_weighted_rad_fit,
                                down = cr_card_svm_down_fit,
                                up = cr_card_svm_up_fit,
                                SMOTE = cr_card_svm_smote_fit)
+
 cr_card_svm_model_list_roc <- cr_card_svm_model_list %>%
   map(cr_card_test_roc, data = cr_card_test)
 
-cr_card_svm_model_list_roc %>%
-  map(auc)
+cr_card_auc_svm <- as.data.frame(cr_card_svm_model_list_roc %>% map(auc))
+saveRDS(cr_card_auc_svm, 
+        file = paste0(getwd(),"/figures/credit/svm/cr_card_auc_svm.rds"))
 
 cr_card_svm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -223,8 +224,10 @@ for(the_roc in cr_card_svm_model_list_roc){
 }
 
 cr_card_svm_results_df_roc <- bind_rows(cr_card_svm_results_list_roc)
+saveRDS(cr_card_svm_results_df_roc, 
+        file = paste0(getwd(),"/figures/credit/svm/cr_card_svm_results_df_roc.rds"))
 
-custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
+custom_col <- c("#000000", "red","#009E73", "purple","#0072B2", "#D55e00", "#CC79A7")
 
 ggplot(aes(x = fpr, y = tpr, group = model), data = cr_card_svm_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
@@ -249,8 +252,9 @@ cr_card_svm_model_list_pr <- cr_card_svm_model_list %>%
   map(cr_card_svm_calc_auprc, data = cr_card_test)
 
 
-cr_card_svm_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+cr_card_PR_svm <- as.data.frame(cr_card_svm_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(cr_card_PR_svm, 
+        file = paste0(getwd(),"/figures/credit/svm/cr_card_PR_svm.rds"))
 
 cr_card_svm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -263,8 +267,10 @@ for (the_pr in cr_card_svm_model_list_pr) {
 }
 
 cr_card_svm_results_df_pr <- bind_rows(cr_card_svm_results_list_pr)
+saveRDS(cr_card_svm_results_df_pr, 
+        file = paste0(getwd(),"/figures/credit/svm/cr_card_svm_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = cr_card_svm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
   scale_color_manual(values = custom_col) +
-  geom_abline(intercept = sum(cr_card_test$type == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
+  geom_abline(intercept = sum(cr_card_test$Class == "X2")/nrow(cr_card_test),slope = 0, color = "gray", size = 1)
