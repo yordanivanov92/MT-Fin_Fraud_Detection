@@ -129,7 +129,6 @@ ctrl_paySim <- trainControl(method = "repeatedcv",
                             classProbs = TRUE,
                             verboseIter = TRUE)
 
-
 paySim_xgb <- train(isFraud ~ .,
                     data = paySim_train,
                     method = "xgbTree",
@@ -137,8 +136,6 @@ paySim_xgb <- train(isFraud ~ .,
                     metric = "ROC", 
                     trControl = ctrl_paySim)
 
-
-# Area under the curve: 1
 ### Original Fit
 xgb_results <- predict(paySim_xgb, newdata = paySim_test)
 confusionMatrix(xgb_results, paySim_test$isFraud)
@@ -149,13 +146,7 @@ plot(paySim_xgb, metric = "ROC")
 xgb_imp <- varImp(paySim_xgb, scale = FALSE)
 plot(xgb_imp)
 
-
-paySim_test_roc <- function(model, data) {
-  roc(data$isFraud,
-      predict(model, data, type = "prob")[, "X2"])
-}
 ################## COST SENSITIVE XGB MODEL
-# The penalization costs can be tinkered with
 paySim_model_weights <- ifelse(paySim_train$isFraud == "X1",
                                (1/table(paySim_train$isFraud)[1]) * 0.5,
                                (1/table(paySim_train$isFraud)[2]) * 0.5)
@@ -243,6 +234,10 @@ xgb_smote_imp <- varImp(paySim_xgb_smote_fit, scale = FALSE)
 plot(xgb_smote_imp)
 
 ####################################################
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 paySim_xgb_model_list <- list(original = paySim_xgb,
                               weighted = paySim_xgb_weighted_fit,
@@ -254,8 +249,9 @@ paySim_xgb_model_list <- list(original = paySim_xgb,
 paySim_xgb_model_list_roc <- paySim_xgb_model_list %>%
   map(paySim_test_roc, data = paySim_test)
 
-paySim_xgb_model_list_roc %>%
-  map(auc)
+paySim_auc_xgboost <- as.data.frame(paySim_xgb_model_list_roc %>% map(auc))
+saveRDS(paySim_auc_xgboost, 
+        file = paste0(getwd(),"/figures/paysim/xgboost/paySim_auc_xgboost.rds"))
 
 paySim_xgb_results_list_roc <- list(NA)
 num_mod <- 1
@@ -269,6 +265,8 @@ for(the_roc in paySim_xgb_model_list_roc){
 }
 
 paySim_xgb_results_df_roc <- bind_rows(paySim_xgb_results_list_roc)
+saveRDS(paySim_xgb_results_df_roc, 
+        file = paste0(getwd(),"/figures/paysim/xgboost/paySim_xgb_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -295,8 +293,9 @@ paySim_xgb_model_list_pr <- paySim_xgb_model_list %>%
   map(paySim_xgb_calc_auprc, data = paySim_test)
 
 # Precision recall Curve AUC calculation
-paySim_xgb_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+paySim_PR_xgboost <- as.data.frame(paySim_xgb_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(paySim_PR_xgboost, 
+        file = paste0(getwd(),"/figures/paysim/xgboost/paySim_PR_xgboost.rds"))
 
 paySim_xgb_results_list_pr <- list(NA)
 num_mod <- 1
@@ -309,6 +308,8 @@ for (the_pr in paySim_xgb_model_list_pr) {
 }
 
 paySim_xgb_results_df_pr <- bind_rows(paySim_xgb_results_list_pr)
+saveRDS(paySim_xgb_results_df_pr, 
+        file = paste0(getwd(),"/figures/paysim/xgboost/paySim_xgb_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_xgb_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

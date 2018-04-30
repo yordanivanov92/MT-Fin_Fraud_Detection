@@ -436,7 +436,7 @@ In Figure 5 we also visually show the differences between the different Machine 
 
 ### 5.2.2. Credit Card
 
-As discussed in *Section 4.1.2.*, we wil work with a subset of 100 000 bservations. Due to the fact that this a real-world dataset and has PCA performed on it in order to hide any private information, we can not perform any feature engineering or informative descriptive data analysis. 
+As discussed in *Section 4.1.1.*, we wil work with a subset of 100 000 bservations. Due to the fact that this a real-world dataset and has PCA performed on it in order to hide any private information, we can not perform any feature engineering or informative descriptive data analysis. 
 
 One of the few things that we can observe by exploring our data is that the fraud class has fewer observation that are associated with very large amounts. That can be seen in Figure ..., where we show a boxplot of all transaction with amount less than 2000 in order to better illustrate the beforementioned statement. 
 
@@ -472,6 +472,29 @@ In Figure 7, both left and right, we can see the red, green and sometimes pink l
 ![Credit Card: ROC and PR Curves](figures/credit/cr_card_roc_pr.png){width=100%}
 
 ### 5.2.3. PaySim
+
+As we have examined in *Section 4.1.2.*, the features contained in the PaySim are not masked and thus some descriptive data analysis can be made. Moreover, as mentioned, we have created two more features, which are based on the ones already existing in the PaySim file - 
+
+```{r paySim_models_AUC, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_paySim.RData"))
+kable(paySim_auc_table, format = "latex", caption = "PaySim: AUC Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+
+```
+
+```{r paySim_model_PR, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_paySim.RData"))
+kable(paySim_PR_table, format = "latex", caption = "PaySim: PR Metric Model Variations",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+```
 
 ### 5.2.4. BankSim
 

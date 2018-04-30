@@ -1,5 +1,3 @@
-# SVM PROBABLY DOESN'T WORK WITH PARALLEL COMPUTING
-
 library(data.table)
 library(dplyr)
 library(caret)
@@ -12,6 +10,7 @@ library(doParallel)
 library(parallel)
 library(plyr)
 library(e1071)
+library(kernlab)
 options(scipen=999)
 
 set.seed(48)
@@ -139,17 +138,10 @@ paySim_svm <- train(isFraud ~ .,
                     metric = "ROC", 
                     trControl = ctrl_paySim)
 
-paySim_test_roc <- function(model, data) {
-  roc(data$isFraud,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
 svm_results <- predict(paySim_svm, newdata = paySim_test)
 confusionMatrix(svm_results, paySim_test$isFraud)
- 
-trellis.par.set(caretTheme())
-plot(paySim_svm, metric = "ROC")
 
+trellis.par.set(caretTheme()) 
 svm_imp <- varImp(paySim_svm, scale = FALSE)
 plot(svm_imp)
 
@@ -169,10 +161,8 @@ plot(paySim_svm_radial, metric = "ROC")
 
 svm_rad_imp <- varImp(paySim_svm_radial, scale = FALSE)
 plot(svm_rad_imp)
-# The Radial kernel is obviously inferior to the Linear Version
 
 ################## COST SENSITIVE SVM MODEL
-
 paySim_svm_weighted_fit <- train(isFraud ~ .,
                                  data = paySim_train,
                                  method = "svmLinearWeights",
@@ -223,10 +213,6 @@ paySim_svm_down_fit <- train(isFraud ~ .,
 svm_results_down <- predict(paySim_svm_down_fit, newdata = paySim_test)
 confusionMatrix(svm_results_down, paySim_test$isFraud)
 
-
-trellis.par.set(caretTheme())
-plot(paySim_down_svm, metric = "ROC")
-
 svm_down_imp <- varImp(paySim_svm_down_fit, scale = FALSE)
 #svm_imp - variable importance is observed
 plot(svm_down_imp)
@@ -245,9 +231,6 @@ paySim_svm_up_fit <- train(isFraud ~ .,
 svm_results_up <- predict(paySim_svm_up_fit, newdata = paySim_test)
 confusionMatrix(svm_results_up, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_up_svm, metric = "ROC")
-
 svm_up_imp <- varImp(paySim_svm_up_fit, scale = FALSE)
 #svm_imp - variable importance is observed
 plot(svm_up_imp)
@@ -265,25 +248,29 @@ paySim_svm_smote_fit <- train(isFraud ~ .,
 svm_results_smote <- predict(paySim_svm_smote_fit, newdata = paySim_test)
 confusionMatrix(svm_results_smote, paySim_test$isFraud)
 
-trellis.par.set(caretTheme())
-plot(paySim_smote_svm, metric = "ROC")
-
 svm_smote_imp <- varImp(paySim_svm_smote_fit, scale = FALSE)
 #svm_imp - variable importance is observed
 plot(svm_smote_imp)
 
 #####################################################################
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
+
 paySim_svm_model_list <- list(original = paySim_svm,
                               radial = paySim_svm_radial,
                               weighted = paySim_svm_weighted_fit,
+                              weighted_rad = paySim_svm_weighted_fit_radial,
                               down = paySim_svm_down_fit,
                               up = paySim_svm_up_fit,
                               SMOTE = paySim_svm_smote_fit)
 paySim_svm_model_list_roc <- paySim_svm_model_list %>%
   map(paySim_test_roc, data = paySim_test)
 
-paySim_svm_model_list_roc %>%
-  map(auc)
+paySim_auc_svm <- as.data.frame(paySim_svm_model_list_roc %>% map(auc))
+saveRDS(paySim_auc_svm, 
+        file = paste0(getwd(),"/figures/paysim/svm/paySim_auc_svm.rds"))
 
 paySim_svm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -297,8 +284,10 @@ for(the_roc in paySim_svm_model_list_roc){
 }
 
 paySim_svm_results_df_roc <- bind_rows(paySim_svm_results_list_roc)
+saveRDS(paySim_svm_results_df_roc, 
+        file = paste0(getwd(),"/figures/paysim/svm/paySim_svm_results_df_roc.rds"))
 
-custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7", "#E939C0")
+custom_col <- c("#000000", "red","#009E73", "purple","#0072B2", "#D55e00", "#CC79A7")
 
 ggplot(aes(x = fpr, y = tpr, group = model), data = paySim_svm_results_df_roc) +
   geom_line(aes(color = model), size = 1) +
@@ -323,8 +312,9 @@ paySim_svm_model_list_pr <- paySim_svm_model_list %>%
   map(paySim_svm_calc_auprc, data = paySim_test)
 
 
-paySim_svm_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+paySim_PR_svm <- as.data.frame(paySim_svm_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(paySim_PR_svm, 
+        file = paste0(getwd(),"/figures/paysim/svm/paySim_PR_svm.rds"))
 
 paySim_svm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -337,6 +327,8 @@ for (the_pr in paySim_svm_model_list_pr) {
 }
 
 paySim_svm_results_df_pr <- bind_rows(paySim_svm_results_list_pr)
+saveRDS(paySim_svm_results_df_pr, 
+        file = paste0(getwd(),"/figures/paysim/svm/paySim_svm_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_svm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

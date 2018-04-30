@@ -142,13 +142,6 @@ paySim_nnet <- train(isFraud ~ .,
                     tuneGrid = nnet_grid,
                     trControl = ctrl_paySim)
 
-
-paySim_test_roc <- function(model, data) {
-  roc(data$isFraud,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
-
 ### Original Fit
 nnet_results <- predict(paySim_nnet, newdata = paySim_test)
 confusionMatrix(nnet_results, paySim_test$isFraud)
@@ -268,6 +261,10 @@ nnet_smote_imp <- varImp(paySim_nnet_smote_fit, scale = FALSE)
 plot(nnet_smote_imp)
 
 ####################################################
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 paySim_nnet_model_list <- list(original = paySim_nnet,
                               weighted = paySim_nnet_weighted_fit,
@@ -279,8 +276,9 @@ paySim_nnet_model_list <- list(original = paySim_nnet,
 paySim_nnet_model_list_roc <- paySim_nnet_model_list %>%
   map(paySim_test_roc, data = paySim_test)
 
-paySim_nnet_model_list_roc %>%
-  map(auc)
+paySim_auc_nnet <- as.data.frame(paySim_nnet_model_list_roc %>% map(auc))
+saveRDS(paySim_auc_nnet, 
+        file = paste0(getwd(),"/figures/paysim/nnet/paySim_auc_nnet.rds"))
 
 paySim_nnet_results_list_roc <- list(NA)
 num_mod <- 1
@@ -294,6 +292,8 @@ for(the_roc in paySim_nnet_model_list_roc){
 }
 
 paySim_nnet_results_df_roc <- bind_rows(paySim_nnet_results_list_roc)
+saveRDS(paySim_nnet_results_df_roc, 
+        file = paste0(getwd(),"/figures/paysim/nnet/paySim_nnet_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -320,9 +320,9 @@ paySim_nnet_model_list_pr <- paySim_nnet_model_list %>%
   map(paySim_nnet_calc_auprc, data = paySim_test)
 
 # Precision recall Curve AUC calculation
-paySim_nnet_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
-
+paySim_PR_nnet <- as.data.frame(paySim_nnet_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(paySim_PR_nnet, 
+        file = paste0(getwd(),"/figures/paysim/nnet/paySim_PR_nnet.rds"))
 
 paySim_nnet_results_list_pr <- list(NA)
 num_mod <- 1
@@ -335,6 +335,8 @@ for (the_pr in paySim_nnet_model_list_pr) {
 }
 
 paySim_nnet_results_df_pr <- bind_rows(paySim_nnet_results_list_pr)
+saveRDS(paySim_nnet_results_df_pr, 
+        file = paste0(getwd(),"/figures/paysim/nnet/paySim_nnet_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_nnet_results_df_pr) +
   geom_line(aes(color = model), size = 1) +

@@ -141,12 +141,6 @@ paySim_gbm <- train(isFraud ~ .,
 stopCluster(cluster)
 registerDoSEQ()
 
-paySim_test_roc <- function(model, data) {
-  roc(data$isFraud,
-      predict(model, data, type = "prob")[, "X2"])
-}
-
-
 ### Original Fit
 gbm_results <- predict(paySim_gbm, newdata = paySim_test)
 confusionMatrix(gbm_results, paySim_test$isFraud)
@@ -257,6 +251,10 @@ gbm_smote_imp <- varImp(paySim_gbm_smote_fit, scale = FALSE)
 plot(gbm_smote_imp)
 
 ####################################################
+paySim_test_roc <- function(model, data) {
+  roc(data$isFraud,
+      predict(model, data, type = "prob")[, "X2"])
+}
 
 paySim_gbm_model_list <- list(original = paySim_gbm,
                               weighted = paySim_gbm_weighted_fit,
@@ -268,8 +266,9 @@ paySim_gbm_model_list <- list(original = paySim_gbm,
 paySim_gbm_model_list_roc <- paySim_gbm_model_list %>%
   map(paySim_test_roc, data = paySim_test)
 
-paySim_gbm_model_list_roc %>%
-  map(auc)
+paySim_auc_gbm <- as.data.frame(paySim_gbm_model_list_roc %>% map(auc))
+saveRDS(paySim_auc_gbm, 
+        file = paste0(getwd(),"/figures/paysim/gbm/paySim_auc_gbm.rds"))
 
 paySim_gbm_results_list_roc <- list(NA)
 num_mod <- 1
@@ -283,6 +282,8 @@ for(the_roc in paySim_gbm_model_list_roc){
 }
 
 paySim_gbm_results_df_roc <- bind_rows(paySim_gbm_results_list_roc)
+saveRDS(paySim_gbm_results_df_roc, 
+        file = paste0(getwd(),"/figures/paysim/gbm/paySim_gbm_results_df_roc.rds"))
 
 custom_col <- c("#000000", "#009E73", "#0072B2", "#D55e00", "#CC79A7")
 
@@ -309,8 +310,9 @@ paySim_gbm_model_list_pr <- paySim_gbm_model_list %>%
   map(paySim_gbm_calc_auprc, data = paySim_test)
 
 # Precision recall Curve AUC calculation
-paySim_gbm_model_list_pr %>%
-  map(function(the_mod) the_mod$auc.integral)
+paySim_PR_gbm <- as.data.frame(paySim_gbm_model_list_pr %>% map(function(the_mod) the_mod$auc.integral))
+saveRDS(paySim_PR_gbm, 
+        file = paste0(getwd(),"/figures/paysim/gbm/paySim_PR_gbm.rds"))
 
 paySim_gbm_results_list_pr <- list(NA)
 num_mod <- 1
@@ -323,6 +325,8 @@ for (the_pr in paySim_gbm_model_list_pr) {
 }
 
 paySim_gbm_results_df_pr <- bind_rows(paySim_gbm_results_list_pr)
+saveRDS(paySim_gbm_results_df_pr, 
+        file = paste0(getwd(),"/figures/paysim/gbm/paySim_gbm_results_df_pr.rds"))
 
 ggplot(aes(x = recall, y = precision, group = model), data = paySim_gbm_results_df_pr) +
   geom_line(aes(color = model), size = 1) +
