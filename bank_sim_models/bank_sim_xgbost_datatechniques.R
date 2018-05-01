@@ -11,7 +11,6 @@ library(plyr)
 library(xgboost)
 library(data.table)
 
-
 set.seed(48)
 bankSim <- fread(file = "C:/Users/Yordan Ivanov/Desktop/Master Thesis Project/data/bank_sim_synthetic/bs140513_032310.csv",
                  header = TRUE,
@@ -88,12 +87,6 @@ plot(bankSim_orig_fit, metric = "ROC")
 
 bankSim_imp <- varImp(bankSim_orig_fit, scale = FALSE)
 plot(bankSim_imp)
-
-bankSim_test_roc <- function(model, data) {
-  roc(data$fraud,
-      predict(model, data, type = "prob")[, "fraud"])
-}
-
 
 ################## COST SENSITIVE XGBOOST MODEL
 bankSim_model_weights <- ifelse(bankSim_train$fraud == "clean",
@@ -177,6 +170,12 @@ bankSim_imp_smote <- varImp(bankSim_smote_fit, scale = FALSE)
 plot(bankSim_imp_smote)
 
 #######################################
+bankSim_test_roc <- function(model, data) {
+  roc(data$fraud,
+      predict(model, data, type = "prob")[, "fraud"])
+}
+
+
 bankSim_model_list <- list(original = bankSim_orig_fit,
                            weighted = bankSim_weighted_fit,
                            down = bankSim_down_fit,

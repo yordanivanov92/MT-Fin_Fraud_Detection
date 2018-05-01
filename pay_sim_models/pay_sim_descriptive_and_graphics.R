@@ -1,15 +1,21 @@
 library(data.table)
-library(dplyr)
-library(caret)
 library(DMwR) #SMOTE
-library(purrr)
-library(pROC)
-library(PRROC)
-library(caTools)
 library(plyr)
 library(GGally)
 library(plotly)
 library(reshape2)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+
+
+plot_legend <- function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
 options(scipen=999)
 
 set.seed(48)
@@ -27,23 +33,22 @@ prop.table(table(paySim_small$isFraud))
 # 0.99874 0.00126 
 
 # Where does fraud occur -> only in CASH_OUT AND TRANSFER type of payments
-plyr::count(paySim_small, c("type", "isFraud"))
-#       type isFraud  freq
-# 1  CASH_IN       0 10887
-# 2 CASH_OUT       0 17405
-# 3 CASH_OUT       1    37
-# 4    DEBIT       0   353
-# 5  PAYMENT       0 17085
-# 6 TRANSFER       0  4207
-# 7 TRANSFER       1    26
+fraud_type <- as.data.frame(plyr::count(paySim_small, c("type", "isFraud")))
+fraud_type
 
 #Checking fraud by amount
 ggplot(paySim_small, aes(x = isFraud, y = amount, group = isFraud)) +
-  geom_boxplot()
+  geom_boxplot() +
+  scale_x_discrete(breaks = c(0,1),
+                   labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18)
 # Fraud looks like it has a higher average amount
 
-ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = isFraud, y = amount, group = isFraud, fill = isFraud)) +
-  geom_boxplot()
+ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = isFraud, y = amount, group = isFraud, group = isFraud)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c(0,1),
+                   labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18)
 # The previous observation is confirmed when we remove the amounts over 2 million
 
 ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = as.factor(isFraud), y = amount, group = isFraud)) +
@@ -52,9 +57,9 @@ ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = as.factor(isFraud)
 # on CASH_OUT and TRANSFERS
 
 # Filtering only those payments which have amounts less than 2 000 000
-paySim_small1 <- paySim_small[paySim_small$amount < 2000000, ]
-paySim_small1$isFraud <- as.factor(paySim_small1$isFraud)
-ggpairs(paySim_small1, columns = c("amount", "oldbalanceOrg", "oldbalanceDest", "isFraud"), mapping = aes(color = isFraud))
+#paySim_small1 <- paySim_small[paySim_small$amount < 2000000, ]
+#paySim_small1$isFraud <- as.factor(paySim_small1$isFraud)
+#ggpairs(paySim_small1, columns = c("amount", "oldbalanceOrg", "oldbalanceDest", "isFraud"), mapping = aes(color = isFraud))
 # [1,1] - distribution is more right skewed for non-fraud (i.e. non-fraud is more dense at the small amounts)
 # [1,2] - positive correlation between both oldBalanceOrg$isFraud = 0 & = 1 and amount
 # [1,3] - positive correlation between oldBalanceDest$isFraud = 0 and amount; negative one when it's 1
@@ -62,7 +67,7 @@ ggpairs(paySim_small1, columns = c("amount", "oldbalanceOrg", "oldbalanceDest", 
 # [1,4] - Amount when fraud is higher
 # [2,1] and [2,2] - in oldBalanceOrg again we see that the distribuiton is more righ-skewed for non fraud
 
-ggpairs(paySim_small1, columns = c("amount", "type", "isFraud"), mapping = aes(color = isFraud))
+#ggpairs(paySim_small1, columns = c("amount", "type", "isFraud"), mapping = aes(color = isFraud))
 
 fraud_transfer <- paySim_small[which((paySim_small$type == "TRANSFER") & (paySim_small$isFraud == 1)), ]
 fraud_cashout <- paySim_small[which((paySim_small$type == "CASH_OUT") & (paySim_small$isFraud == 1)), ]
@@ -201,44 +206,65 @@ analysis_data_small$errorBalanceOrig <- analysis_data_small$newbalanceOrig + ana
 analysis_data_small$errorBalanceDest <- analysis_data_small$oldbalanceDest + analysis_data_small$amount - analysis_data_small$newbalanceDest
 
 
-# ggplot(analysis_data_big, aes(x = isFraud, y = step, color = type)) +
-#   geom_jitter()
-
 ggplot(analysis_data_small, aes(x = isFraud, y = step, color = type)) +
-  geom_jitter()
+  geom_jitter() +
+  scale_x_discrete(breaks = c(0,1),
+                   labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18)
 # No pattern seen
 
-ggplot(analysis_data_small, aes(x = isFraud, y = amount, color = type)) +
-  geom_jitter()
+jitter1 <- ggplot(analysis_data_small, aes(x = isFraud, y = amount, color = type)) +
+  geom_jitter() +
+  scale_x_continuous(breaks = c(0,1),
+                     labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18) + 
+  ggtitle("Amount vs Fraud Jitter Plot")
 # No pattern seen
 
-ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceDest), color = type)) +
-  geom_jitter()
+jitter2 <- ggplot(analysis_data_small, aes(x = isFraud, y = errorBalanceDest, color = type)) +
+  geom_jitter() +
+  scale_x_continuous(breaks = c(0,1),
+                     labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18) +
+  ggtitle("errorBalanceDest vs Fraud Jitter Plot")
 # errorBalanceDest associated with fraud in TRANSFER? CASH_OUT error dominantly zero when fraud
 # positive errorBalanceDest when the fraud is in TRANSFER
 # zero errorBalanceDest when the fraud is in CASH_OUT
 
-ggplot(analysis_data_small, aes(x = isFraud, y = (errorBalanceOrig), color = type)) +
-  geom_jitter()
+jitter3 <- ggplot(analysis_data_small, aes(x = isFraud, y = errorBalanceOrig, color = type)) +
+  geom_jitter() +
+  scale_x_continuous(breaks = c(0,1),
+                     labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18) + 
+  ggtitle("errorBalanceOrig vs Fraud Jitter Plot")
+
+boxplot1 <- ggplot(paySim_small[paySim_small$amount < 2000000, ], aes(x = isFraud, y = amount, group = isFraud, group = isFraud)) +
+  geom_boxplot() +
+  scale_x_continuous(breaks = c(0,1),
+                   labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 18) +
+  ggtitle("Amount (below 2 Mil.) vs Fraud Boxplot")
+
+
+my_legend <- plot_legend(jitter1)
+
+pr_roc_graph <- grid.arrange(arrangeGrob(boxplot1 + theme(legend.position = "none"),
+                                         jitter1 + theme(legend.position = "none"),
+                                         jitter2 + theme(legend.position = "none"),
+                                         jitter3 + theme(legend.position = "none"),
+                                         nrow = 2),
+                             my_legend, nrow = 2, heights = c(20 ,3))
+
+
+########################################################################
 # error stays at zero even at fraud
 analysis_data_small$isFraud <- as.factor(analysis_data_small$isFraud)
 plot_ly(analysis_data_small, 
         x = ~errorBalanceDest,
         y = ~errorBalanceOrig,
-        z = ~step,
+        z = ~amount,
         color = ~isFraud,
-        colors = c('yellow', "black"),
+        colors = c('#F8766D', "#00BFC4"),
         type = "scatter3d")
 
-
-# converting to binary operators
-analysis_data_small$type <- ifelse(analysis_data_small$type == "TRANSFER", 0, 1)
-
-small_heatmap_nonfraud <- melt(cor(analysis_data_small[which(analysis_data_small$isFraud == 0), -c("step", "isFraud")]))
-small_heatmap_fraud <- melt(cor(analysis_data_small[which(analysis_data_small$isFraud == 1), -c("step", "isFraud")]))
-
-ggplot(small_heatmap_nonfraud, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile()
-
-ggplot(small_heatmap_fraud, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile()
+################################################

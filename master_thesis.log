@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  28 APR 2018 20:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  30 APR 2018 21:51
 entering extended mode
 **./master_thesis.tex
 (master_thesis.tex
@@ -1015,14 +1015,17 @@ File: figures/fraud_hierarchy.png Graphic file (type png)
 <use figures/fraud_hierarchy.png>
 Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 182.
 (pdftex.def)             Requested size: 310.62325pt x 211.7686pt.
-[2] [3 <./figures/fraud_hierarchy.png (PNG copy)>] [4] [5]
-<figures/nnet.png, id=181, 376.40625pt x 397.485pt>
+[2]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 241.
+[3 <./figures/fraud_hierarchy.png (PNG copy)>] [4] [5]
+<figures/nnet.png, id=183, 376.40625pt x 397.485pt>
 File: figures/nnet.png Graphic file (type png)
 <use figures/nnet.png>
-Package pdftex.def Info: figures/nnet.png  used on input line 387.
+Package pdftex.def Info: figures/nnet.png  used on input line 383.
 (pdftex.def)             Requested size: 266.26242pt x 281.17311pt.
 [6] [7 <./figures/nnet.png>]
-Overfull \hbox (9.48466pt too wide) detected at line 454
+Overfull \hbox (9.48466pt too wide) detected at line 450
 []\OMS/lmsy/m/n/12 f[] []   [] [] [] []g  \OML/lmm/m/it/12 s:t:   [] [] \OT1/lm
 r/m/n/12 = 0\OML/lmm/m/it/12 ;   \OT1/lmr/m/n/12 0 \OMS/lmsy/m/n/12  \OML/lmm/
 m/it/12 [] \OMS/lmsy/m/n/12  \OML/lmm/m/it/12 C;   i \OT1/lmr/m/n/12 = 1\OML/
@@ -1030,68 +1033,91 @@ lmm/m/it/12 ; :::; p    \OT1/lmr/m/n/12 (5)
  []
 
 [8] [9] [10] [11] [12] [13] [14] [15] [16]
-<figures/roc_curve_example.png, id=280, 572.1375pt x 492.33937pt>
+<figures/roc_curve_example.png, id=281, 572.1375pt x 492.33937pt>
 File: figures/roc_curve_example.png Graphic file (type png)
 <use figures/roc_curve_example.png>
-Package pdftex.def Info: figures/roc_curve_example.png  used on input line 982.
+Package pdftex.def Info: figures/roc_curve_example.png  used on input line 979.
 
 (pdftex.def)             Requested size: 266.2507pt x 229.11572pt.
 [17] [18 <./figures/roc_curve_example.png>]
-<figures/ucsd/descriptive/boxplot_amount.png, id=298, 632.3625pt x 632.3625pt>
+<figures/ucsd/descriptive/boxplot_amount.png, id=299, 632.3625pt x 632.3625pt>
 File: figures/ucsd/descriptive/boxplot_amount.png Graphic file (type png)
 <use figures/ucsd/descriptive/boxplot_amount.png>
 Package pdftex.def Info: figures/ucsd/descriptive/boxplot_amount.png  used on i
-nput line 1069.
+nput line 1066.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
 [19] [20 <./figures/ucsd/descriptive/boxplot_amount.png>]
-<figures/ucsd/ucsd_pr_roc.png, id=313, 1129.21875pt x 632.3625pt>
+<figures/ucsd/ucsd_pr_roc.png, id=314, 1129.21875pt x 632.3625pt>
 File: figures/ucsd/ucsd_pr_roc.png Graphic file (type png)
 <use figures/ucsd/ucsd_pr_roc.png>
-Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1133.
+Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1130.
 
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
 [21 <./figures/ucsd/ucsd_pr_roc.png>]
-<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=322, 632.3625p
+<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=323, 632.3625p
 t x 632.3625pt>
 File: figures/credit/descriptive/cr_card_fraud_amount_boxplot.png Graphic file 
 (type png)
 <use figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>
 Package pdftex.def Info: figures/credit/descriptive/cr_card_fraud_amount_boxplo
-t.png  used on input line 1154.
+t.png  used on input line 1151.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
 [22 <./figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>]
-<figures/credit/cr_card_roc_pr.png, id=330, 1129.21875pt x 632.3625pt>
+<figures/credit/cr_card_roc_pr.png, id=331, 1129.21875pt x 632.3625pt>
 File: figures/credit/cr_card_roc_pr.png Graphic file (type png)
 <use figures/credit/cr_card_roc_pr.png>
 Package pdftex.def Info: figures/credit/cr_card_roc_pr.png  used on input line 
-1219.
+1216.
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
-[23 <./figures/credit/cr_card_roc_pr.png>] [24]
-Underfull \hbox (badness 10000) in paragraph at lines 1341--1344
+[23 <./figures/credit/cr_card_roc_pr.png>]
+<figures/paySim/descriptive/four_plots.png, id=340, 978.65625pt x 632.3625pt>
+File: figures/paySim/descriptive/four_plots.png Graphic file (type png)
+<use figures/paySim/descriptive/four_plots.png>
+Package pdftex.def Info: figures/paySim/descriptive/four_plots.png  used on inp
+ut line 1255.
+(pdftex.def)             Requested size: 399.3701pt x 258.05452pt.
+[24 <./figures/paySim/descriptive/four_plots.png>]
+<figures/paySim/descriptive/threedimensionalplot.png, id=348, 480.29437pt x 405
+.01312pt>
+File: figures/paySim/descriptive/threedimensionalplot.png Graphic file (type pn
+g)
+<use figures/paySim/descriptive/threedimensionalplot.png>
+Package pdftex.def Info: figures/paySim/descriptive/threedimensionalplot.png  u
+sed on input line 1275.
+(pdftex.def)             Requested size: 399.36975pt x 336.77261pt.
+[25 <./figures/paySim/descriptive/threedimensionalplot.png>]
+<figures/paySim/paySim_pr_roc.png, id=357, 1129.21875pt x 632.3625pt>
+File: figures/paySim/paySim_pr_roc.png Graphic file (type png)
+<use figures/paySim/paySim_pr_roc.png>
+Package pdftex.def Info: figures/paySim/paySim_pr_roc.png  used on input line 1
+340.
+(pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
+[26] [27 <./figures/paySim/paySim_pr_roc.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 1459--1462
 \T1/lmr/m/n/12 (+20) Publication / vwLUAssets / EY-[]Global-[]Forensic-[]Data-[
 ]Analytics-[]Survey-[]2014 / $FILE /
  []
 
-[25] [26]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1482.
-[27]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1482.
+[28] [29]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1600.
+[30]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1600.
 (master_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1482.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1482.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1600.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1600.
 
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
 (rerunfilecheck)             Checksum: 6047F46642D0E1F0AE9B8D3C00C05B10;5907.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1482.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1600.
  ) 
 Here is how much of TeX's memory you used:
- 13075 strings out of 493305
- 191040 string characters out of 3138849
- 291328 words of memory out of 3000000
- 16127 multiletter control sequences out of 15000+200000
- 65243 words of font info for 112 fonts, out of 3000000 for 9000
+ 13120 strings out of 493305
+ 192054 string characters out of 3138849
+ 292519 words of memory out of 3000000
+ 16158 multiletter control sequences out of 15000+200000
+ 75034 words of font info for 118 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,9n,38p,438b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 32i,12n,38p,438b,498s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
 iKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/e
 nc/dvips/lm/lm-mathex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ma
@@ -1109,9 +1135,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis.pdf (27 pages, 1539895 bytes).
+Output written on master_thesis.pdf (30 pages, 1635154 bytes).
 PDF statistics:
- 513 PDF objects out of 1000 (max. 8388607)
- 190 named destinations out of 1000 (max. 500000)
- 10540 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 542 PDF objects out of 1000 (max. 8388607)
+ 199 named destinations out of 1000 (max. 500000)
+ 10555 words of extra memory for PDF output out of 12000 (max. 10000000)
 
