@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 ```
 
-# Variable Description
+**Variable Description**
 
 $N$ - number of observations
 
@@ -85,9 +85,13 @@ $F$ - number of nodes in neural network hidden layer
 
 # 1.Introduction
 
-Financial fraud is an immense problem, resulting not only in billion dollar losses each year, but also in long-term damage to corporate reputation [@bhattacharyya2011data; @fich2007financial]. It is undoubtedly among the biggest risks that business establishments face today [@chaudhary2012credit]. According to the 2014 ACFE report, business organizations are suffering around 5% revenue losses only due to economic crime and fraud. Furthermore, financial fraud, and especially credit card fraud, can be used to finance organized crime, illegal drug trade groups or sometimes terrorist fractions [@everett2003credit; @mcalearney2008ignore]. Thus, detecting financial fraud has become more crucial than ever and the methods to do so need constant innovation. 
+Financial fraud is an immense problem, resulting not only in billion dollar losses each year, but also in long-term damage to corporate reputation [@bhattacharyya2011data; @fich2007financial]. It is undoubtedly among the biggest risks that business establishments face today [@chaudhary2012credit]. According to the 2014 ACFE report, business organizations are suffering around 5% revenue losses only due to economic crime and fraud. Furthermore, financial fraud, and especially credit card fraud, can be used to finance organized crime, illegal drug trade groups or sometimes terrorist fractions [@everett2003credit; @mcalearney2008ignore]. Thus, detecting fraudulent activities has become more crucial than ever and the methods to do so need constant innovation. 
 
-The methods that have shown the most success ,in terms of fraud detection, fall into the category of machine learning techniques [@ngai2011application; @bhardwaj2016financial]. Machine learning (ML) is a field that is in close relationship with other disciplines such as statistics, pattern recognition and data mining [@christopher2016pattern]. ML focuses on the problem of learning, that can be phrased as the problem of gathering knowledge through experience [@dal2015adaptive].
+The methods that have shown the most success ,in terms of financial fraud detection (FFD), fall into the category of machine learning techniques [@ngai2011application; @bhardwaj2016financial]. Machine learning (ML) is a field that is in close relationship with other disciplines such as statistics, pattern recognition and data mining [@christopher2016pattern]. ML focuses on the problem of learning, that can be phrased as the problem of gathering knowledge through experience [@dal2015adaptive]. The process can generally be defined as observing an event, formulating a hypthesis and then make predictions, or shorter - extracting knowledge from data [@michalski2013machine]. The advantages of ML consist of learning complex fraudulent configurations, working with large datasets, model complex distributions and predict unseen fraud types. All these strengths make them good frameworks for detecting financial fraud. 
+
+Nonetheless, there are challenges when it comes to FFD. One of the biggest obstacles lies within the fact that fraudulent observation more often than represent just a small fraction of all transactions, i.e. the problem of imbalanced classes [@dal2014learned]. Unfortunately, most ML models are not developed to explicitly deal with this type of data [@he2009learning]. Another difficulty that has halted the evolution of FFD techniques is the lack of publicly available data [@lopez2014social]. Thus, in this paper we attempt to counter both of these problems.
+
+The objective of this paper is to give an extensive overview of different ML techniques to battle with the problem of FFD, work with three different publicly available datasets and in the end discuss which methods show the strongest performances. The ML techniques that are to be evaluated are Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression. Moreover, each model performance will be tested on variations of the three original datasets, as different data-sampling will be applied in attempt to minimize the effect of the class imbalance. 
 
 The remainder of the paper is organised as follows. In *Section 2* a background on financial fraud and e-commerce is provided. In the subsequent section, a description of the six major machine learning that are to be used is given. In *Section 4*, the three datasets that will be analyzed are presented and the problem of imbalanced classes is reviewed. The next section is used to discuss the results obtained from fitting the different machine learning techniques. *Section 6* briefly reviews what are the next steps for extending the scope of this research. The final section includes an analysis of the findings that this paper has produced. 
 
@@ -533,11 +537,27 @@ Both plots on Figure 10 look quite impressive, as most lines are "hugging" the u
 
 ![PaySim: ROC and PR Curves](figures/paySim/paySim_pr_roc.png){width=100%}
 
+## 5.3. Summary
+
+We have thoroughly examined the performance of six ML techniques, Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression, for financial fraud detection. Two real-world datasets and one synthetically generated were used for the evaluations. Moreover, data-sampling techniques aimed at tackling the imbalanced class problem were performed. 
+
+It is quite evident from Figures 5, 7 and 10 that obtaining good classifier performance on the real world datasets has been a harder task than doing it on the synthetically generated one. This finding is not surprising, as the PaySim is a simulation and can not perfectly generate human behaviour [@lopez2014social]. We can also observe from those three figures that the three decision tree based ML techniques, Random Forest, GBM and xGBoost, show superior performance. The good results that they produce is due to the ensemble of the decision tree model and the bagging or boosting frameworks. 
+
+The ANN and Logistic Regression have produced conflicting results overall. In the real-world dataset cases both methods failed to impress, but when fit one the simulated data, their performance improved drastically. The reason behind this improvement is mainly that in the PaySim instance, the class separation was linear, while in the the other two it was non-linear. However, the ANN performance coulde certainly be improved if modifications are introduced. 
+
+The SVM method, as expected, does not manage to produce high-quality results most of the time. However, in Tables 3, 4, 5, 6, 8 and 9 we can see that when working with the Different Error Cost SVM model, as described in *Section 3.2.3.*, the performance metrics are higher than the normal SVM without any modification or data-sampling technique. 
+
 # 6. Further Improvements
 
-We have given a big overview on the different Machine Learning Techniques that can be used for Financial Fraud Detection. However, in this paper we have not delved into the details for each individual algorithm and we have explored only a part of the tunning opportunities that each algorithm offers. For instance, the ANN models can be extended to include more than just a single hidden layer or another variation of it can be tested, i.e. not the "vanilla" model. For GBM and xGBoost, a wider scope of tuning parameters can be used, which is of course associated with the need of greater computational power. 
+We have given a big overview on the different ML Techniques that can be used for the problem of FFD. However, in this paper we have not delved into the details for each individual algorithm and we have explored only a part of the tunning opportunities that each of these method offers. For instance, the ANN models can be extended to include more than just a single hidden layer or another variation of it can be tested, i.e. not the "vanilla" model. For GBM and xGBoost, a wider scope of tuning parameters can be used, which is of course associated with the need of greater computational power. Moreover, we have not developed a system that can be directly applied in a real-world scenario, where one can observe a constant data flow and detection is needed in real-time [@dal2015adaptive].
 
 # 7. Conclusion
+
+We currently live in times where transactions in the cyberspace are constantly rising [@fletcher2007challenges]. As discussed, loss due to fraud amounts for around 5% of the firm's yearly revenue. Globally, if applied to the 2013 GDP, the losses could be up to $3.7 trillion [@buanuarescu2015detecting]. Thus, anti-fraud mechanisms are becoming more and more important. 
+
+This need to to detect financial fraud in big data sets drives the need of applying various statistical learning methods in order to successively do so. However, due to the lack of publicly available datasets containing transactions, the research community has not had the chance to extensively test different techniques for battling fraud. With this paper, we attempt to give an overview on how different machine learning models fare when used to detect financial fraud. 
+
+We employ the ROC, Precision-Recall and AUC metrics when evaluating the performance of the models. As discussed in *Section 5.1.*, these measures are chosen over Accuracy, as the latter is highly unsuitable when working with dataset that have imbalanced classes. 
 
 # 8. References
 

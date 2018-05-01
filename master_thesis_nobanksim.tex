@@ -110,8 +110,7 @@
 \listoftables
 \clearpage
 
-\hypertarget{variable-description}{%
-\section{Variable Description}\label{variable-description}}
+\textbf{Variable Description}
 
 \(N\) - number of observations
 
@@ -177,6 +176,42 @@ illegal drug trade groups or sometimes terrorist fractions (Everett
 2003; McAlearney and Breach 2008). Thus, detecting financial fraud has
 become more crucial than ever and the methods to do so need constant
 innovation.
+
+The methods that have shown the most success ,in terms of financial
+fraud detection (FFD), fall into the category of machine learning
+techniques (Ngai et al. 2011; Bhardwaj and Gupta 2016). Machine learning
+(ML) is a field that is in close relationship with other disciplines
+such as statistics, pattern recognition and data mining (Christopher
+2016). ML focuses on the problem of learning, that can be phrased as the
+problem of gathering knowledge through experience (Dal Pozzolo and
+Bontempi 2015). The process can generally be defined as observing an
+event, formulating a hypthesis and then make predictions, or shorter -
+extracting knowledge from data (Michalski, Carbonell, and Mitchell
+2013). The advantages of ML consist of learning complex fraudulent
+configurations, working with large datasets, model complex distributions
+and predict unseen fraud types. All these strengths make them good
+frameworks for detecting financial fraud.
+
+Nonetheless, there are challenges when it comes to FFD. One of the
+biggest obstacles lies within the fact that fraudulent observation more
+often than represent just a small fraction of all transactions, i.e.~the
+problem of imbalanced classes (Dal Pozzolo et al. 2014). Unfortunately,
+most ML models are not developed to explicitly deal with this type of
+data (He and Garcia 2009). Another difficulty that has halted the
+evolution of FFD techniques is the lack of publicly available data
+(Lopez-Rojas and Axelsson 2014). Thus, in this paper we attempt to
+counter both of these problems.
+
+The objective of this paper is to give an extensive overview of
+different ML techniques to battle with the problem of FFD, work with
+three different publicly available datasets and in the end discuss which
+methods show the strongest performances. The ML techniques that are to
+be evaluated are Artificial Neural Networks, Support Vector Machines,
+Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and
+Logistic Regression. Moreover, each model performance will be tested on
+variations of the three original datasets, as different data-sampling
+will be applied in attempt to minimize the effect of the class
+imbalance.
 
 The remainder of the paper is organised as follows. In \emph{Section 2}
 a background on financial fraud and e-commerce is provided. In the
@@ -1354,21 +1389,79 @@ Precision-Recall cases respectively.
 \caption{PaySim: ROC and PR Curves}
 \end{figure}
 
+\hypertarget{summary}{%
+\subsection{5.3. Summary}\label{summary}}
+
+We have thoroughly examined the performance of six ML techniques,
+Artificial Neural Networks, Support Vector Machines, Gradient Boosting
+Machines, eXtreme Gradient Boosting, Random Forest and Logistic
+Regression, for financial fraud detection. Two real-world datasets and
+one synthetically generated were used for the evaluations. Moreover,
+data-sampling techniques aimed at tackling the imbalanced class problem
+were performed.
+
+It is quite evident from Figures 5, 7 and 10 that obtaining good
+classifier performance on the real world datasets has been a harder task
+than doing it on the synthetically generated one. This finding is not
+surprising, as the PaySim is a simulation and can not perfectly generate
+human behaviour (Lopez-Rojas and Axelsson 2014). We can also observe
+from those three figures that the three decision tree based ML
+techniques, Random Forest, GBM and xGBoost, show superior performance.
+The good results that they produce is due to the ensemble of the
+decision tree model and the bagging or boosting frameworks.
+
+The ANN and Logistic Regression have produced conflicting results
+overall. In the real-world dataset cases both methods failed to impress,
+but when fit one the simulated data, their performance improved
+drastically. The reason behind this improvement is mainly that in the
+PaySim instance, the class separation was linear, while in the the other
+two it was non-linear. However, the ANN performance coulde certainly be
+improved if modifications are introduced.
+
+The SVM method, as expected, does not manage to produce high-quality
+results most of the time. However, in Tables 3, 4, 5, 6, 8 and 9 we can
+see that when working with the Different Error Cost SVM model, as
+described in \emph{Section 3.2.3.}, the performance metrics are higher
+than the normal SVM without any modification or data-sampling technique.
+
 \hypertarget{further-improvements}{%
 \section{6. Further Improvements}\label{further-improvements}}
 
-We have given a big overview on the different Machine Learning
-Techniques that can be used for Financial Fraud Detection. However, in
-this paper we have not delved into the details for each individual
-algorithm and we have explored only a part of the tunning opportunities
-that each algorithm offers. For instance, the ANN models can be extended
-to include more than just a single hidden layer or another variation of
-it can be tested, i.e.~not the ``vanilla'' model. For GBM and xGBoost, a
-wider scope of tuning parameters can be used, which is of course
-associated with the need of greater computational power.
+We have given a big overview on the different ML Techniques that can be
+used for the problem of FFD. However, in this paper we have not delved
+into the details for each individual algorithm and we have explored only
+a part of the tunning opportunities that each of these method offers.
+For instance, the ANN models can be extended to include more than just a
+single hidden layer or another variation of it can be tested, i.e.~not
+the ``vanilla'' model. For GBM and xGBoost, a wider scope of tuning
+parameters can be used, which is of course associated with the need of
+greater computational power. Moreover, we have not developed a system
+that can be directly applied in a real-world scenario, where one can
+observe a constant data flow and detection is needed in real-time (Dal
+Pozzolo and Bontempi 2015).
 
 \hypertarget{conclusion}{%
 \section{7. Conclusion}\label{conclusion}}
+
+We currently live in times where transactions in the cyberspace are
+constantly rising (Fletcher 2007). As discussed, loss due to fraud
+amounts for around 5\% of the firm's yearly revenue. Globally, if
+applied to the 2013 GDP, the losses could be up to \$3.7 trillion
+(Bănărescu 2015). Thus, anti-fraud mechanisms are becoming more and more
+important.
+
+This need to to detect financial fraud in big data sets drives the need
+of applying various statistical learning methods in order to
+successively do so. However, due to the lack of publicly available
+datasets containing transactions, the research community has not had the
+chance to extensively test different techniques for battling fraud. With
+this paper, we attempt to give an overview on how different machine
+learning models fare when used to detect financial fraud.
+
+We employ the ROC, Precision-Recall and AUC metrics when evaluating the
+performance of the models. As discussed in \emph{Section 5.1.}, these
+measures are chosen over Accuracy, as the latter is highly unsuitable
+when working with dataset that have imbalanced classes.
 
 \hypertarget{references}{%
 \section*{8. References}\label{references}}
@@ -1434,6 +1527,10 @@ Chen, Tianqi, and Carlos Guestrin. 2016. ``Xgboost: A Scalable Tree
 Boosting System.'' In \emph{Proceedings of the 22nd Acm Sigkdd
 International Conference on Knowledge Discovery and Data Mining},
 785--94. ACM.
+
+\leavevmode\hypertarget{ref-christopher2016pattern}{}%
+Christopher, M Bishop. 2016. \emph{PATTERN Recognition and Machine
+Learning.} Springer-Verlag New York.
 
 \leavevmode\hypertarget{ref-cortes1995support}{}%
 Cortes, Corinna, and Vladimir Vapnik. 1995. ``Support-Vector Networks.''
@@ -1563,6 +1660,11 @@ Weep.'' \emph{CIO, August} 7.
 Meyer, David, Friedrich Leisch, and Kurt Hornik. 2003. ``The Support
 Vector Machine Under Test.'' \emph{Neurocomputing} 55 (1-2).
 Elsevier:169--86.
+
+\leavevmode\hypertarget{ref-michalski2013machine}{}%
+Michalski, Ryszard S, Jaime G Carbonell, and Tom M Mitchell. 2013.
+\emph{Machine Learning: An Artificial Intelligence Approach}. Springer
+Science \& Business Media.
 
 \leavevmode\hypertarget{ref-natekin2013gradient}{}%
 Natekin, Alexey, and Alois Knoll. 2013. ``Gradient Boosting Machines, a
