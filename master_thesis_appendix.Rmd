@@ -11,9 +11,9 @@ fontsize: 12pt
 geometry: margin = 1.5in
 ---
 
-# 9. Appendix
+# Appendix
 
-## 9.1 Neural Networks
+## A.1. Neural Networks
 
 ### Back-propagation with single hidden layer
 
@@ -37,14 +37,14 @@ $$\alpha_{fl}^{(r+1)}\leftarrow\alpha_{fl}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\par
 
 where $\gamma_r$ represents the learning rate. 
 
-## 9.2 SVM
+## A.2. SVM
 
 ### Karush-Kuhn-Tucker (KKT) conditions
 
 $$\alpha_i(y_i(w\cdot\phi(x_i)+b)-1+\xi_i)=0,\;\;\;i=1,...,p$$
 $$(C-\alpha_i)\xi_i=0,\;\;\;i=1,...,p$$
 
-## 9.3. GBM vs XGBoost
+## A.3. GBM vs XGBoost
 
 ### Structure learning and the gradient vs Newton algorithms
 
@@ -72,39 +72,9 @@ In gradient tree boosting the terminal node weights are determined by separate l
 
 $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$
 
-$\;$
+\clearpage
 
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-$\;$
-
-## 9.4 Figures
+## A.4 Figures
 
 ![k-fold CV with k=5](figures/crossval.png){width=90%}
 
