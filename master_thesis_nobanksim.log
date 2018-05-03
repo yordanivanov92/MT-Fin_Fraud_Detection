@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  2 MAY 2018 10:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  2 MAY 2018 18:05
 entering extended mode
 **./master_thesis_nobanksim.tex
 (master_thesis_nobanksim.tex
@@ -1030,7 +1030,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ] [7] [1
 
 ] [2]
-<figures/fraud_hierarchy.png, id=267, 532.23843pt x 362.85562pt>
+<figures/fraud_hierarchy.png, id=314, 532.23843pt x 362.85562pt>
 File: figures/fraud_hierarchy.png Graphic file (type png)
 <use figures/fraud_hierarchy.png>
 Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 267.
@@ -1039,7 +1039,7 @@ Package pdftex.def Info: figures/fraud_hierarchy.png  used on input line 267.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 316.
 [5] [6] [7] [8]
-<figures/nnet.png, id=308, 376.40625pt x 397.485pt>
+<figures/nnet.png, id=355, 376.40625pt x 397.485pt>
 File: figures/nnet.png Graphic file (type png)
 <use figures/nnet.png>
 Package pdftex.def Info: figures/nnet.png  used on input line 459.
@@ -1053,94 +1053,104 @@ lmm/m/it/12 ; :::; p    \OT1/lmr/m/n/12 (5)
  []
 
 [11] [12] [13] [14]
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 652.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 650.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\lm\ts1lmr.fd"
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [15] [16] [17] [18] [19] [20] [21] [22] [23]
-<figures/roc_curve_example.png, id=417, 572.1375pt x 492.33937pt>
+<figures/roc_curve_example.png, id=464, 572.1375pt x 492.33937pt>
 File: figures/roc_curve_example.png Graphic file (type png)
 <use figures/roc_curve_example.png>
-Package pdftex.def Info: figures/roc_curve_example.png  used on input line 1039
+Package pdftex.def Info: figures/roc_curve_example.png  used on input line 1037
 .
 (pdftex.def)             Requested size: 266.2507pt x 229.11572pt.
 [24] [25 <./figures/roc_curve_example.png>] [26]
-<figures/ucsd/descriptive/boxplot_amount.png, id=439, 632.3625pt x 632.3625pt>
+<figures/ucsd/descriptive/boxplot_amount.png, id=486, 632.3625pt x 632.3625pt>
 File: figures/ucsd/descriptive/boxplot_amount.png Graphic file (type png)
 <use figures/ucsd/descriptive/boxplot_amount.png>
 Package pdftex.def Info: figures/ucsd/descriptive/boxplot_amount.png  used on i
-nput line 1129.
+nput line 1127.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
 [27] [28 <./figures/ucsd/descriptive/boxplot_amount.png>]
-<figures/ucsd/ucsd_pr_roc.png, id=450, 1129.21875pt x 632.3625pt>
+<figures/ucsd/ucsd_pr_roc.png, id=497, 1129.21875pt x 632.3625pt>
 File: figures/ucsd/ucsd_pr_roc.png Graphic file (type png)
 <use figures/ucsd/ucsd_pr_roc.png>
-Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1193.
+Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1191.
 
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
 [29 <./figures/ucsd/ucsd_pr_roc.png>]
-<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=457, 632.3625p
+<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=504, 632.3625p
 t x 632.3625pt>
 File: figures/credit/descriptive/cr_card_fraud_amount_boxplot.png Graphic file 
 (type png)
 <use figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>
 Package pdftex.def Info: figures/credit/descriptive/cr_card_fraud_amount_boxplo
-t.png  used on input line 1214.
+t.png  used on input line 1212.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
 [30 <./figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>]
-<figures/credit/cr_card_roc_pr.png, id=464, 1129.21875pt x 632.3625pt>
+<figures/credit/cr_card_roc_pr.png, id=511, 1129.21875pt x 632.3625pt>
 File: figures/credit/cr_card_roc_pr.png Graphic file (type png)
 <use figures/credit/cr_card_roc_pr.png>
 Package pdftex.def Info: figures/credit/cr_card_roc_pr.png  used on input line 
-1279.
+1277.
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
 [31]
-<figures/paySim/descriptive/four_plots.png, id=470, 978.65625pt x 632.3625pt>
+<figures/paySim/descriptive/four_plots.png, id=517, 978.65625pt x 632.3625pt>
 File: figures/paySim/descriptive/four_plots.png Graphic file (type png)
 <use figures/paySim/descriptive/four_plots.png>
 Package pdftex.def Info: figures/paySim/descriptive/four_plots.png  used on inp
-ut line 1318.
+ut line 1316.
 (pdftex.def)             Requested size: 399.3701pt x 258.05452pt.
 [32 <./figures/credit/cr_card_roc_pr.png>]
-<figures/paySim/descriptive/threedimensionalplot.png, id=476, 480.29437pt x 405
+<figures/paySim/descriptive/threedimensionalplot.png, id=523, 480.29437pt x 405
 .01312pt>
 File: figures/paySim/descriptive/threedimensionalplot.png Graphic file (type pn
 g)
 <use figures/paySim/descriptive/threedimensionalplot.png>
 Package pdftex.def Info: figures/paySim/descriptive/threedimensionalplot.png  u
-sed on input line 1338.
+sed on input line 1336.
 (pdftex.def)             Requested size: 310.6193pt x 261.93288pt.
 [33 <./figures/paySim/descriptive/four_plots.png>] [34 <./figures/paySim/descri
 ptive/threedimensionalplot.png>]
-<figures/paySim/paySim_pr_roc.png, id=488, 1129.21875pt x 632.3625pt>
+<figures/paySim/paySim_pr_roc.png, id=535, 1129.21875pt x 632.3625pt>
 File: figures/paySim/paySim_pr_roc.png Graphic file (type png)
 <use figures/paySim/paySim_pr_roc.png>
 Package pdftex.def Info: figures/paySim/paySim_pr_roc.png  used on input line 1
-403.
+401.
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
 [35 <./figures/paySim/paySim_pr_roc.png>] [36] [37] [38] [39
 
-] [40] [41] [42] [43]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1774.
-[44]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1774.
+] [40] [41]
+<figures/crossval.png, id=577, 586.44093pt x 286.82156pt>
+File: figures/crossval.png Graphic file (type png)
+<use figures/crossval.png>
+Package pdftex.def Info: figures/crossval.png  used on input line 1602.
+(pdftex.def)             Requested size: 399.35619pt x 195.32054pt.
+[42
+
+ <./figures/crossval.png>] [43
+
+] [44] [45] [46] [47]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1873.
+[48]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1873.
 (master_thesis_nobanksim.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1774.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1774.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1873.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1873.
 
 Package rerunfilecheck Info: File `master_thesis_nobanksim.out' has not changed
 .
-(rerunfilecheck)             Checksum: 7D4CB8629BF208F859358FA068384B5D;6319.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1774.
+(rerunfilecheck)             Checksum: B6233DD12FA31B7044F7542CBBEC16A9;7992.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1873.
  ) 
 Here is how much of TeX's memory you used:
- 13139 strings out of 493305
- 193072 string characters out of 3138849
- 292871 words of memory out of 3000000
- 16190 multiletter control sequences out of 15000+200000
+ 13184 strings out of 493305
+ 193878 string characters out of 3138849
+ 293326 words of memory out of 3000000
+ 16212 multiletter control sequences out of 15000+200000
  72312 words of font info for 90 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,12n,38p,448b,464s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 32i,12n,38p,448b,458s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
 iKTeX 2.9/fonts/enc/dvips/lm/lm-ts1.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/
 dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathe
@@ -1158,9 +1168,9 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis_nobanksim.pdf (51 pages, 1664040 bytes).
+Output written on master_thesis_nobanksim.pdf (55 pages, 1689300 bytes).
 PDF statistics:
- 706 PDF objects out of 1000 (max. 8388607)
- 229 named destinations out of 1000 (max. 500000)
- 10571 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 783 PDF objects out of 1000 (max. 8388607)
+ 252 named destinations out of 1000 (max. 500000)
+ 10648 words of extra memory for PDF output out of 12000 (max. 10000000)
 

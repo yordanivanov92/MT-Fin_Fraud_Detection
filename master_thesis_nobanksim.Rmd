@@ -159,7 +159,7 @@ Slightly surprising is that almost no research about the performance of boosting
 
 # 3. Methodology
 
-Classification is one of the most widely used model framework used for the application of machine learning techniques in terms of FFD [@ngai2011application]. Some of the most common classification techniques include logistic regression, neural networks, support vector machine and decision trees and their variations.
+Classification is one of the most widely used model frameworks when it comes to application of machine learning techniques in terms of FFD [@ngai2011application]. Some of the most common classification techniques include logistic regression, neural networks, support vector machine and decision trees and their variations.
 
 ## 3.1. Preliminaries
 
@@ -180,7 +180,7 @@ The number of independent variables is indexed by *p*. After manipulating (1), w
 
 ### 3.2.2. Neural Networks
 
-Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only a single hidden layer, but this can be extended to include more [friedman2001elements]. However, that is beyond the scope of this paper. 
+Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only a single hidden layer. The model can be extended to include more layers [@friedman2001elements], but it is beyond the scope of this paper. 
 
 A feed-forward neural network with one hidden layer can be seen in Figure 1. It has $g$ outputs nodes, which in our case would be $g=2$, as we are dealing with two-class classification problem. Each output node would give us the probability of an observation belonging to a specific class. 
 
@@ -196,7 +196,7 @@ where $T=(T_1,T_2)$, $Z=(Z_1,Z_2,...,Z_F)$ and $g_g(T)=\frac{e^{T_g}}{\sum_{f=1}
 
 ### 3.2.3. Support Vector Machines
 
-Support Vector Machines, developed by Vapnik et. al. [@cortes1995support], have become a popular machine learning method that has seen its implementation rise in various domains that require the use of classification models [@batuwita2013class]. Among the factors for its success is the fact that the SVMs are linear classifiers, which work in a high-dimensional feature that represents a non-linear mapping of the input space of the problem being dealt with [@bhattacharyya2011data]. Working in a high-dimensional feature space has its benefits - often, the problem of non-linear classification in the original input space is transformed to a linear classification task in the high-dimensional feature space. 
+Support Vector Machines, developed by Vapnik et. al. [@cortes1995support], have become a popular machine learning method that has seen its implementation rise in various domains that require the use of classification models [@batuwita2013class]. Among the factors for its success is the fact that the SVMs are linear classifiers, which work in a high-dimensional feature space representing a non-linear mapping of the input space of the problem being dealt with [@bhattacharyya2011data]. Working in a high-dimensional feature space has its benefits - often, the problem of non-linear classification in the original input space is transformed to a linear classification task in the high-dimensional feature space. 
 
 The goal of the SVM classifier consists of finding the optimal separating hyperplane, which manages to effectively separate the observations from the data into two classes. As mentioned above, the observations are initially transformed by a nonlinear mapping function $\Phi$. Thus, we can write a possible separating hyperplane that resides in the transformed higher dimensional feature space:
 
@@ -237,11 +237,11 @@ $$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x_{jk})^2), \;\; 
 
 ### 3.2.4. Tree-Based Methods
 
-Tree-based methods involve segmentation of the feature space into a set of regions and then fitting a simple model to each one. Even though are not too complex conceptually, they are still a very powerful method [@friedman2001elements]. Firstly, we will give a short overview of a standard classification decision tree (DT) before moving on the methods used in this study. 
+Tree-based methods involve segmentation of the feature space into a set of regions and then fitting a simple model to each one. Despite not being too complex conceptually, they are still very powerful methods [@friedman2001elements]. Firstly, we will give a short overview of a standard classification decision tree (DT) before moving on the methods used in this study. 
 
-Let us call the set of non-overlapping regions $R_1,R_2,...,R_M$ that are used to divide the feature space. The forms of those regions are high-dimensional rectangles - for simplicity and interpretability. The aim for DT would be to find the boxes that minimize the error term, which in the case of classification can be represented in several ways - misclassification error, Gini index or cross-entropy. However, it is very computationally taxing to consider every feasible partition of the feature space into $M$ boxes. Thus, the recursive binary splitting method is used, which is a top-down, greedy approach - it starts at the top of the tree and then it splits the feature space, making the best split possible, without looking forward. The algorithm is further described in the Appendix. 
+Let us call the set of non-overlapping regions $R_1,R_2,...,R_M$ that are used to divide the feature space. The forms of those regions are high-dimensional rectangles - for simplicity and interpretability. The aim for DT would be to find the boxes that minimize the error term, which in the case of classification can be represented in several ways - misclassification error, Gini index or cross-entropy. However, it is very computationally taxing to consider every feasible partition of the feature space into $M$ boxes. Thus, the recursive binary splitting method is used, which is a top-down, greedy approach - it starts at the top of the tree and then it splits the feature space, making the best split possible, without looking forward. 
 
-However, the beforementioned algorithm can sometimes lead to over-fitting and producing very ineffecient prediction results. Thus, the tree pruning technique is applied - first a large tree is grown, then it is "pruned" and a smaller version is obtain. The procedure leads to reduction in variance at the cost of some bias. Usually the cost complexity pruning algorithm is used in practice - a more thorough description is included in the Appendix. 
+However, the beforementioned algorithm can sometimes lead to over-fitting and producing very ineffecient prediction results. Thus, the tree pruning technique is applied - first a large tree is grown, then it is "pruned" and a smaller version is obtain. The procedure leads to reduction in variance at the cost of some bias. Usually the cost complexity pruning algorithm is used in practice. 
 
 The regular classification DT has high interpretability, but it sometimes lacks sufficient prediction power - they are often unstable and can be too sensitive to training data [@bhattacharyya2011data]. This leads us to variations of the classic classification DT. 
 
@@ -566,6 +566,74 @@ We employ the ROC, Precision-Recall and AUC metrics when evaluating the performa
 The experimental part has shown that the machine learning methods based on decision trees and either bagging or boosting, perform best. The former corresponds to the Random Forest methods, while the latter to the GBM and xGBoost frameworks. They have all shown superior performance when compared to the other algorithms tested in the paper - Artifical Neural Networks, SVM and Logistic Regression. The results are a consequence of the bagging and boosting algorithms' implicit characteristics of better handling non-linearity. 
 
 However, as mentioned in *Section 6* there are many other possibilities to extend this research and improve the performances of the classifiers. Using more real-world data, which does not have it's features masked, would lead to better understanding of which techniques can actually help business organizations the most in their attempts to minimize fraud losses. Nonetheless, this paper has the potential to assist future researchers by giving them an overview of how some of the most used machine learning techniques perform when given the problem of financial fraud detection.
+
+\clearpage
+# Appendix
+
+## A.1. Neural Networks
+
+### Back-propagation with single hidden layer
+
+Denote set of weights with $\theta$ and use cross-entropy error as measure of fit:
+
+$$R(\theta)=\sum_{i=1}^{N}R_i =-\sum_{i=1}^{N}\sum_{g=1}^{G}y_{ig}\log{f_g(x_i)}$$
+with a classifier $G(x)=\arg\max_{g}f_g(x)$. Compute the partial derivatives of $R_i$ w.r.t. $\beta_{qf}$ and $\alpha_{fl}$:
+
+$$\frac{\partial R_i}{\partial \beta_{qf}}=\sum_{g=1}^{G}y_{ig}\frac{\frac{\partial}{\beta_{gqf}}[\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))]}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}$$
+$$=\frac{(\sum_{g=1,g\neq q}^{G}y_{ig}-y_{iq})\exp(g_{q}^{'}(\beta_q^Tz_i))z_fi}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}=\delta_{qi}z_{fi}$$
+where $\delta_{qi}=\frac{\partial R_i}{\partial (\beta_{qf} z_{fi})}$. When considering $\alpha_{fl}$:
+$$\frac{\partial R_i}{\partial \alpha_{fl}}=\sum_{g=1}^{G}\frac{\partial R_i}{\partial (\beta_{gf}z_{fi})}\frac{\partial (\beta_{gf}z_{fi})}{\partial z_{fi})}\frac{\partial z_{fi}}{\partial \alpha_{fl}}$$
+$$= (\sum_{g=1}^{G}\delta_{qi}\beta_{gf})\sigma^{'}(\alpha_{f}^{T}x)=\frac{\partial R_i}{\partial (\alpha_{fl}x_{li})}$$
+which is the backpropagation equation.
+
+
+The gradient descent at step $r+1$ is:
+
+$$\beta_{gf}^{(r+1)}\leftarrow\beta_{gf}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \beta_{gf}^{(r)}}$$
+$$\alpha_{fl}^{(r+1)}\leftarrow\alpha_{fl}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \alpha_{fl}^{(r)}}$$
+
+where $\gamma_r$ represents the learning rate. 
+
+## A.2. SVM
+
+### Karush-Kuhn-Tucker (KKT) conditions
+
+$$\alpha_i(y_i(w\cdot\phi(x_i)+b)-1+\xi_i)=0,\;\;\;i=1,...,p$$
+$$(C-\alpha_i)\xi_i=0,\;\;\;i=1,...,p$$
+
+## A.3. GBM vs XGBoost
+
+### Structure learning and the gradient vs Newton algorithms
+
+On each iteration, the optimiziation criterias, concerning tree structure learning, of the Newton tree boosting and the Gradient tree boosting differ. 
+
+When talking about Gradient tree boosting, we are interested in the learning of the tree, that exhibits the highest correlation with the negative gradient of the current empirical risk. The tree model is fit using:
+
+$$\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}[z_{m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k)]^2$$
+
+Newton tree boosting uses a different approach - the algorithm is learning the tree, that fits the second-order Taylor expansion of the loss function best. The tree model here is fit using:
+
+$$\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}h_m[\frac{z_m}{h_m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k]^2$$
+
+The difference is that in the case of Newton boosting, the model is fit to the negative gradient, scaled by the Hessian, using weighted least-squares regression. The Hessian is given by $h_m = \frac{\partial{\Psi(y_{i},f(\mathbf{x}_i))}^{2}}{\partial^{2}{f(\mathbf{x}_i)}}\rvert_{f(\mathbf{x}_i)=\widehat{f}(\mathbf{x}_i)}$.
+
+### Node weight learning
+
+The differences again come from the different boosting approaches. 
+
+In the Newton tree boosting, the terminal node weight is being determined by the criterion that is used to determine the tree structure - terminal node weights are same as the node weights learnt when searching for the tree structure:
+
+$$\rho_{km}=\frac{G_{km}}{H_{km}}=\frac{\sum_{x_i\in S_k}z_m(x_i)}{\sum_{x_i\in S_k}h_m(x_i)}$$
+
+In gradient tree boosting the terminal node weights are determined by separate line searches in each terminal node:
+
+$$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$
+
+\clearpage
+
+## A.4 Figures
+
+![k-fold CV with k=5](figures/crossval.png){width=90%}
 
 \clearpage
 

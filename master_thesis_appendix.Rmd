@@ -78,5 +78,3 @@ $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_
 
 ![k-fold CV with k=5](figures/crossval.png){width=90%}
 
-![Something else](figures/nnet.png){width=60%}
-

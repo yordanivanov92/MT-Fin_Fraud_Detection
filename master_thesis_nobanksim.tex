@@ -380,7 +380,7 @@ However, the results produced by the methods have been mixed, mainly
 because the FFD problem poses an imbalanced class challenge (Chaudhary
 and Mallick 2012; Bhattacharyya et al. 2011). Nonetheless, it has been
 shown that through changes in the foundations of the SVM method, in
-order to transform to model into a cost-sensitive one, better
+order to transform the model into a cost-sensitive one, better
 performance can be achieved on problems with imbalanced data (He and
 Garcia 2009).
 
@@ -394,10 +394,10 @@ their performances against the other, more established, frameworks.
 \hypertarget{methodology}{%
 \section{3. Methodology}\label{methodology}}
 
-Classification is one of the most widely used model framework used for
-the application of machine learning techniques in terms of FFD (Ngai et
-al. 2011). Some of the most common classification techniques include
-logistic regression, neural networks, support vector machine and
+Classification is one of the most widely used model frameworks when it
+comes to application of machine learning techniques in terms of FFD
+(Ngai et al. 2011). Some of the most common classification techniques
+include logistic regression, neural networks, support vector machine and
 decision trees and their variations.
 
 \hypertarget{preliminaries}{%
@@ -444,9 +444,9 @@ underperform when there are multiple or non-linear decision boundaries.
 
 Neural Networks is a term that currently describes a wide array of
 different algorithms. However, we will be using the ``vanilla'' version,
-which contains only a single hidden layer, but this can be extended to
-include more {[}friedman2001elements{]}. However, that is beyond the
-scope of this paper.
+which contains only a single hidden layer. The model can be extended to
+include more layers (J. Friedman, Hastie, and Tibshirani 2001), but it
+is beyond the scope of this paper.
 
 A feed-forward neural network with one hidden layer can be seen in
 Figure 1. It has \(g\) outputs nodes, which in our case would be
@@ -486,7 +486,7 @@ Support Vector Machines, developed by Vapnik et. al. (Cortes and Vapnik
 implementation rise in various domains that require the use of
 classification models (Batuwita and Palade 2013). Among the factors for
 its success is the fact that the SVMs are linear classifiers, which work
-in a high-dimensional feature that represents a non-linear mapping of
+in a high-dimensional feature space representing a non-linear mapping of
 the input space of the problem being dealt with (Bhattacharyya et al.
 2011). Working in a high-dimensional feature space has its benefits -
 often, the problem of non-linear classification in the original input
@@ -593,8 +593,8 @@ representations:
 \subsubsection{3.2.4. Tree-Based Methods}\label{tree-based-methods}}
 
 Tree-based methods involve segmentation of the feature space into a set
-of regions and then fitting a simple model to each one. Even though are
-not too complex conceptually, they are still a very powerful method (J.
+of regions and then fitting a simple model to each one. Despite not
+being too complex conceptually, they are still very powerful methods (J.
 Friedman, Hastie, and Tibshirani 2001). Firstly, we will give a short
 overview of a standard classification decision tree (DT) before moving
 on the methods used in this study.
@@ -609,16 +609,14 @@ very computationally taxing to consider every feasible partition of the
 feature space into \(M\) boxes. Thus, the recursive binary splitting
 method is used, which is a top-down, greedy approach - it starts at the
 top of the tree and then it splits the feature space, making the best
-split possible, without looking forward. The algorithm is further
-described in the Appendix.
+split possible, without looking forward.
 
 However, the beforementioned algorithm can sometimes lead to
 over-fitting and producing very ineffecient prediction results. Thus,
 the tree pruning technique is applied - first a large tree is grown,
 then it is ``pruned'' and a smaller version is obtain. The procedure
 leads to reduction in variance at the cost of some bias. Usually the
-cost complexity pruning algorithm is used in practice - a more thorough
-description is included in the Appendix.
+cost complexity pruning algorithm is used in practice.
 
 The regular classification DT has high interpretability, but it
 sometimes lacks sufficient prediction power - they are often unstable
@@ -1503,6 +1501,107 @@ minimize fraud losses. Nonetheless, this paper has the potential to
 assist future researchers by giving them an overview of how some of the
 most used machine learning techniques perform when given the problem of
 financial fraud detection.
+
+\clearpage
+
+\hypertarget{appendix}{%
+\section{Appendix}\label{appendix}}
+
+\hypertarget{a.1.-neural-networks}{%
+\subsection{A.1. Neural Networks}\label{a.1.-neural-networks}}
+
+\hypertarget{back-propagation-with-single-hidden-layer}{%
+\subsubsection{Back-propagation with single hidden
+layer}\label{back-propagation-with-single-hidden-layer}}
+
+Denote set of weights with \(\theta\) and use cross-entropy error as
+measure of fit:
+
+\[R(\theta)=\sum_{i=1}^{N}R_i =-\sum_{i=1}^{N}\sum_{g=1}^{G}y_{ig}\log{f_g(x_i)}\]
+with a classifier \(G(x)=\arg\max_{g}f_g(x)\). Compute the partial
+derivatives of \(R_i\) w.r.t. \(\beta_{qf}\) and \(\alpha_{fl}\):
+
+\[\frac{\partial R_i}{\partial \beta_{qf}}=\sum_{g=1}^{G}y_{ig}\frac{\frac{\partial}{\beta_{gqf}}[\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))]}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}\]
+\[=\frac{(\sum_{g=1,g\neq q}^{G}y_{ig}-y_{iq})\exp(g_{q}^{'}(\beta_q^Tz_i))z_fi}{\sum_{l=1}^{G}\exp(g_l(\beta_{l}^{T}z_i)-g_g(\beta_{g}^{T}z_i))}=\delta_{qi}z_{fi}\]
+where \(\delta_{qi}=\frac{\partial R_i}{\partial (\beta_{qf} z_{fi})}\).
+When considering \(\alpha_{fl}\):
+\[\frac{\partial R_i}{\partial \alpha_{fl}}=\sum_{g=1}^{G}\frac{\partial R_i}{\partial (\beta_{gf}z_{fi})}\frac{\partial (\beta_{gf}z_{fi})}{\partial z_{fi})}\frac{\partial z_{fi}}{\partial \alpha_{fl}}\]
+\[= (\sum_{g=1}^{G}\delta_{qi}\beta_{gf})\sigma^{'}(\alpha_{f}^{T}x)=\frac{\partial R_i}{\partial (\alpha_{fl}x_{li})}\]
+which is the backpropagation equation.
+
+The gradient descent at step \(r+1\) is:
+
+\[\beta_{gf}^{(r+1)}\leftarrow\beta_{gf}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \beta_{gf}^{(r)}}\]
+\[\alpha_{fl}^{(r+1)}\leftarrow\alpha_{fl}^{(r)}-\gamma_r\sum_{i=1}{N}\frac{\partial R_i}{\partial \alpha_{fl}^{(r)}}\]
+
+where \(\gamma_r\) represents the learning rate.
+
+\hypertarget{a.2.-svm}{%
+\subsection{A.2. SVM}\label{a.2.-svm}}
+
+\hypertarget{karush-kuhn-tucker-kkt-conditions}{%
+\subsubsection{Karush-Kuhn-Tucker (KKT)
+conditions}\label{karush-kuhn-tucker-kkt-conditions}}
+
+\[\alpha_i(y_i(w\cdot\phi(x_i)+b)-1+\xi_i)=0,\;\;\;i=1,...,p\]
+\[(C-\alpha_i)\xi_i=0,\;\;\;i=1,...,p\]
+
+\hypertarget{a.3.-gbm-vs-xgboost}{%
+\subsection{A.3. GBM vs XGBoost}\label{a.3.-gbm-vs-xgboost}}
+
+\hypertarget{structure-learning-and-the-gradient-vs-newton-algorithms}{%
+\subsubsection{Structure learning and the gradient vs Newton
+algorithms}\label{structure-learning-and-the-gradient-vs-newton-algorithms}}
+
+On each iteration, the optimiziation criterias, concerning tree
+structure learning, of the Newton tree boosting and the Gradient tree
+boosting differ.
+
+When talking about Gradient tree boosting, we are interested in the
+learning of the tree, that exhibits the highest correlation with the
+negative gradient of the current empirical risk. The tree model is fit
+using:
+
+\[\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}[z_{m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k)]^2\]
+
+Newton tree boosting uses a different approach - the algorithm is
+learning the tree, that fits the second-order Taylor expansion of the
+loss function best. The tree model here is fit using:
+
+\[\{\rho_{km}, R_{km}\}_{k=1}^{K}=\arg\min_{\{\rho_{km}, R_{km}\}_{k=1}^{K}}\sum_{i=1}^{N}\frac{1}{2}h_m[\frac{z_m}{h_m}-\sum_{k=1}^{K}\rho_{km}I(x_{i}\in R_k]^2\]
+
+The difference is that in the case of Newton boosting, the model is fit
+to the negative gradient, scaled by the Hessian, using weighted
+least-squares regression. The Hessian is given by
+\(h_m = \frac{\partial{\Psi(y_{i},f(\mathbf{x}_i))}^{2}}{\partial^{2}{f(\mathbf{x}_i)}}\rvert_{f(\mathbf{x}_i)=\widehat{f}(\mathbf{x}_i)}\).
+
+\hypertarget{node-weight-learning}{%
+\subsubsection{Node weight learning}\label{node-weight-learning}}
+
+The differences again come from the different boosting approaches.
+
+In the Newton tree boosting, the terminal node weight is being
+determined by the criterion that is used to determine the tree structure
+- terminal node weights are same as the node weights learnt when
+searching for the tree structure:
+
+\[\rho_{km}=\frac{G_{km}}{H_{km}}=\frac{\sum_{x_i\in S_k}z_m(x_i)}{\sum_{x_i\in S_k}h_m(x_i)}\]
+
+In gradient tree boosting the terminal node weights are determined by
+separate line searches in each terminal node:
+
+\[\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)\]
+
+\clearpage
+
+\hypertarget{a.4-figures}{%
+\subsection{A.4 Figures}\label{a.4-figures}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth,height=\textheight]{figures/crossval.png}
+\caption{k-fold CV with k=5}
+\end{figure}
 
 \clearpage
 
