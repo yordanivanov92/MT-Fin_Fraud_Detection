@@ -14,6 +14,8 @@ linkcolor: black
 css: master_thesis_style.css
 always_allow_html: yes
 urlcolor: black
+header-includes:
+- \usepackage{ragged2e}
 ---
 \pagenumbering{roman}
 \centering
@@ -37,11 +39,7 @@ knitr::opts_chunk$set(message = FALSE)
 
 **Variable Description**
 
-$N$ - number of observations
-
 ${\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}}$ - binary classification dataset, N pairs of features and dependent variables
-
-$X$ - vector of features, with dimensions $N\times p$
 
 $y_i \in \{-1,1\}$ - scope of values which the dependent variable can take
 
@@ -77,23 +75,22 @@ $\rho$ - terminal nodes
 
 $\lambda$ - regularization parameter
 
-$F$ - number of nodes in neural network hidden layer
-
 \clearpage
 
 \pagenumbering{arabic}
+\justify
 
 # 1.Introduction
 
-Financial fraud is an immense problem, resulting not only in billion dollar losses each year, but also in long-term damage to corporate reputation [@bhattacharyya2011data; @fich2007financial]. It is undoubtedly among the biggest risks that business establishments face today [@chaudhary2012credit]. According to the 2014 ACFE report, business organizations are suffering around 5% revenue losses only due to economic crime and fraud. Furthermore, financial fraud, and especially credit card fraud, can be used to finance organized crime, illegal drug trade groups or sometimes terrorist fractions [@everett2003credit; @mcalearney2008ignore]. Thus, detecting fraudulent activities has become more crucial than ever and the methods to do so need constant innovation. 
+Financial fraud is an immense problem, especially for banks and business organziations carrying out transctions in cybersace, resulting not only in billion dollar losses each year, but also in long-term damage to corporate reputation [@bhattacharyya2011data; @fich2007financial]. It is undoubtedly among the biggest risks that business establishments face today [@chaudhary2012credit]. According to the 2014 ACFE report, business organizations are suffering around 5% revenue losses only due to economic crime and fraud. Furthermore, financial fraud, and especially credit card fraud, can be used to finance organized crime, illegal drug trade groups or sometimes terrorist fractions [@everett2003credit; @mcalearney2008ignore]. Thus, detecting fraudulent activities has become more crucial than ever and the methods to do so need constant innovation. 
 
-The methods that have shown the most success ,in terms of financial fraud detection (FFD), fall into the category of machine learning techniques [@ngai2011application; @bhardwaj2016financial]. Machine learning (ML) is a field that is in close relationship with other disciplines such as statistics, pattern recognition and data mining [@christopher2016pattern]. ML focuses on the problem of learning, which can be defined as the problem of gathering knowledge through experience [@dal2015adaptive]. The process can generally be stated as observing an event, formulating a hypothesis and then make predictions, or simpler - extracting knowledge from data [@michalski2013machine]. The advantages of ML consist of learning complex fraudulent configurations, working with large datasets, model complex distributions and predict unseen fraud types. All these strengths make them good frameworks for detecting financial fraud. 
+The methods that have shown the most success in terms of financial fraud detection (FFD), fall into the category of machine learning techniques [@ngai2011application; @bhardwaj2016financial]. Machine learning (ML) is a field that is in close relationship with other disciplines such as statistics, pattern recognition and data mining [@christopher2016pattern]. ML focuses on the problem of learning, which can be defined as the problem of gathering knowledge through experience [@dal2015adaptive]. The process can generally be stated as observing an event, formulating a hypothesis and then making predictions, or simpler - extracting knowledge from data [@michalski2013machine]. The advantages of ML consist of learning complex non-linear patterns, working with large datasets, model complex distributions and predict unseen fraud types. All these strengths make them good frameworks for detecting financial fraud. 
 
-Nonetheless, there are challenges when it comes to FFD. One of the biggest obstacles lies within the fact that fraudulent observation more often than not represent just a small fraction of all transactions, i.e. the problem of imbalanced classes arises [@dal2014learned]. Unfortunately, most ML models are not developed to explicitly deal with this type of data [@he2009learning]. Another difficulty that has halted the evolution of FFD techniques is the lack of publicly available datasets [@lopez2014social]. Thus, in this paper we attempt to counter both of these problems.
+Nonetheless, there are challenges when it comes to FFD. One of the biggest obstacles lies within the fact that fraudulent observations often represent just a small fraction of all transactions, or what is called the problem of imbalanced classes [@dal2014learned]. Unfortunately, most ML models are not developed to explicitly deal wit such kind of data [@he2009learning]. Another difficulty that has halted the evolution of FFD techniques is the lack of publicly available datasets [@lopez2014social]. Thus, in this paper we attempt to counter both of these problems.
 
-The objective of this paper is to give an extensive overview of different ML techniques which could battle with the problem of FFD, work with three different publicly available datasets and in the end discuss which methods show the strongest performances. The ML techniques that are to be evaluated are Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression. Moreover, each model performance will be tested on variations of the three original datasets, as different data-sampling will be applied in attempt to minimize the negative effects of the class imbalance. 
+The objective of this paper is to give an extensive overview of different ML techniques which could overcome the previously mentioned problems in the applications of ML to FFD, work with three different publicly available datasets and in the end discuss which methods show the strongest performances. The ML techniques that are to be evaluated are Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression. Moreover, each model performance will be tested on variations of the three original datasets, as different data-sampling will be applied in attempt to minimize the negative effects of the class imbalance. 
 
-The remainder of the paper is organised as follows. In *Section 2* a background on financial fraud and e-commerce is provided. In the subsequent section, a description of the six major machine learning that are to be used is given. In *Section 4*, the three datasets that will be analyzed are presented and the problem of imbalanced classes is reviewed. The next section is used to discuss the results obtained from fitting the different machine learning techniques. *Section 6* briefly reviews what are the next steps for extending the scope of this research. The final section includes an analysis of the findings that this paper has produced. 
+The remainder of the paper is organised as follows. In *Section 2* a background on financial fraud and e-commerce is provided. In the subsequent section, a description of the six major machine learning techniques that are to be used is given. In *Section 4*, the three datasets that will be analyzed are presented and the problem of imbalanced classes is reviewed. The next section is used to discuss the results obtained from fitting the different machine learning techniques. *Section 6* briefly reviews what are the next steps for extending the scope of this research. The final section includes an analysis of the findings that this paper has produced. 
 
 # 2. Financial Fraud
 
@@ -103,23 +100,25 @@ The remainder of the paper is organised as follows. In *Section 2* a background 
 
 The definition for fraud, as given by The Institute of Internal Auditors’ International Professional Practices Framework (IPPF), states:
 
-“… any illegal act characterized by deceit, concealment, or violation of trust. These acts are not dependent upon the threat of violence or physical force. Frauds are perpetrated by parties and organizations to obtain money, property, or services; to avoid payment or loss of services; or to secure personal or business advantage.”
+" [Fraud is defined as] any illegal act characterized by deceit, concealment, or violation of trust. These acts are not dependent upon the threat of violence or physical force. Frauds are perpetrated by parties and organizations to obtain money, property, or services; to avoid payment or loss of services; or to secure personal or business advantage.”
 
-Financial Fraud as a whole can be divided into two major categories - Customer Fraud and Management Fraud [@bhardwaj2016financial]. In this paper, we will be focusing on Customer Fraud, or more precisely on Credit Card and Transaction Fraud. 
+As it can be seen in Figure 1, Financial Fraud as a whole can be divided into two major categories - Customer Fraud and Management Fraud [@bhardwaj2016financial]. Management fraud can be defined as a deliberate act commited by employees, internal auditors or a company's management, leading to financial losses and reputation damage. It can take up many forms - identified embezzlement, insider trading, self-dealing, lying about facts, failure to disclose facts, corruption, and cover-ups as some of these forms [@zahra2005antecedents]. Customer fraud is the acquisition goods or services by unethical means or deceiving an institution by the customer to obtain personal gains [@bhardwaj2016financial]. In this paper, we will be focusing on Customer Fraud, or more precisely on Credit Card Fraud. 
 
-Credit Card can also be categorized in two groups - application and behavioural fraud [@bolton2001unsupervised]. The former category is essentialy the acquisition of new cards from the issuing companies using fraudulent or stolen information. The latter can be subcategorized into stolen or lost card, counterfeit card, "card not present" fraud and mail theft (See Figure 1). The stolen or lost card occurs when thr fraudster manages to obtain physical posession of the card. The next two fraud types, counterfeit and card not present, have been steadily rising in numbers, thanks to the emergence of online transactions [@fletcher2007challenges]. Lastly, mail theft fraud occurs when the credit card is intercepted before arriving by mail to the customer, or when fraudster steal personal information from bank and credit card statements [@capitaloneguide]. 
+Credit Card  Fraud can also be categorized in two groups - application and behavioural fraud [@bolton2001unsupervised]. The former category is essentialy the acquisition of new cards from the issuing companies using fraudulent or stolen information. The latter can be subcategorized into stolen or lost card, counterfeit card, "card not present" fraud and mail theft (See Figure 1). The stolen or lost card occurs when the fraudster manages to obtain physical posession of the card. The next two fraud types, counterfeit and card not present, have been steadily rising in numbers, thanks to the emergence of online transactions [@fletcher2007challenges]. In these two variations of fraud, the details of the credit card have been obtained without the awareness of the card holder. Then, a counterfeit card is made or the information is exploited to carry out "card not present" transactions by mail, phone or internet [@bhattacharyya2011data]. Lastly, mail theft fraud occurs when the credit card is intercepted before arriving by mail to the customer, or when fraudster steal personal information from bank and credit card statements [@capitaloneguide]. In this paper we will be applying statistical methods in order to see which of them manages to better help preventing fraud of the type "card not present". 
 
-![Financial Fraud Types](figures/fraud_hierarchy.png){width=70%}
+![Financial Fraud Types (Source: Own Depiction)](figures/fraud_hierarchy.png){width=70%}
 
 ### E-commerce
 
-Broadly speaking, e-commerce represents the business transactions that are being made cyberspace, or "Digitally enabled transactions" [@laudon2013commerce]. There are five types of e-commerce - business-to-commerce (B2C), business-to-business (B2B), consumer-to-consumer (C2C), peer-to-peer (P2P) and mobile commerce (m-commerce). The most vulnerable to fraud are B2C and C2C, as the main reason is that in e-commerce the products and services can not be inspected before the transaction is done [@grabosky2001electronic]. Hence, we have increased risks of fraud. 
+By definition, e-commerce is the use of the Internet, the web and mobile applications to transact business [@kenneth2016commerce]. It can also be state that e-commerce represents the business transactions made in the cyberspace, or stated shortly "digitally enabled transactions" [@kenneth2016commerce]. There are five types of e-commerce - business-to-commerce (B2C), business-to-business (B2B), consumer-to-consumer (C2C), peer-to-peer (P2P) and mobile commerce (m-commerce). The most vulnerable to fraud are B2C and C2C, as the main reason is that in e-commerce the products and services can not be inspected before the transaction is done [@grabosky2001electronic]. Hence, we have increased risks of fraud. 
 
-Thus, implementation of analytics that can scan through the transactions being made is necessary for minimizing losses [@buanuarescu2015detecting]. 
+Transaction data is usually composed by a big number of observations and many attributes, such as amount transacted, type of transaction, recipient and etc. Hence, it is either impossible or very hard for a human analyst to appropriately find fraudulent patterns [@dal2015adaptive]. Implementation of automation systems that can scan through the e-commerce transactions is necessary for capturing fraud structures and minimizing losses [@buanuarescu2015detecting; @dal2015adaptive].
 
 ## 2.2. Costs of Financial Fraud
 
-Financial Fraud is currently one of the biggest threats to business establishments, resulting in enormous finance losses each year. Only throughout the year 2015, the losses from credit card fraud amounted to $21.84 Billion [@nilson2016nilson]. Moreover, the losses occured by firms are not only monetary - damage on reputation and customer ties could prove to be devastating [@fraudanalyticsacl]. Thus, the overall losses from financial fraud are simply incalculable [@ngai2011application]. 
+Financial Fraud is currently one of the biggest threats to business establishments, resulting in enormous finance losses each year. Only throughout the year 2015, the losses from credit card fraud amounted to $21.84 Billion [@nilson2016nilson]. The European Central Bank (ECB) has also reported that in 2012 for each 2 635 Euros spent on credit and debit cards issued within SEPA (the European Union, Iceland, Liechtenstein, Monaco, Norway and Switzerland), 1 Euro was lost to fraud [@ecb_fraud]. Moreover, the losses occured by firms are not only monetary - damage on reputation and customer ties could prove to be devastating [@fraudanalyticsacl]. Thus, the overall losses from financial fraud are simply incalculable [@ngai2011application]. 
+
+The huge financial losses suffered by the business organizations shows that a method for detecting fraud is necessary. This shows the relevance of this paper, as we will discuss identifying fraudulent patterns through different machine learning techniques. 
 
 ## 2.3. Combating Financial Fraud and Related Work
 
@@ -145,7 +144,7 @@ analytics_table <- data.frame ("Forensic Data" = c("Spreadsheet tools such as MS
                                              "2%"))
 
 kable(analytics_table, format = "latex", caption = "Forensic Data Analysis Tools in use", booktabs = TRUE) %>%
-  add_footnote(c("Source [@analytics_tools_table]")) %>%
+  add_footnote(c("Source: EY (2014)")) %>%
   kable_styling(font_size = 8)
 ```
 
@@ -153,34 +152,36 @@ In the report by @analytics_tools_table, the respondents state that by using mor
 
 Among the more complex and successful methods for fraud reduction are machine learning (ML) techniques [@chaudhary2012credit]. The ML models used for FFD, and especially credit card fraud, can be broadly categorized into two major groups - supervised and unsupervised learning methods. The unsupervised techniques depend only on the characteristics of each transaction, grouping them into clusters with homogenous attributes. Whenever an observation is not assigned to an already existing cluster of legal transactions, it signals that there is a probability that the transaction is fraudulent [@bolton2001unsupervised]. However, most studies in the field have focused on the use of supervised learning methods for FFD [@ngai2011application]. In this framework, the model is trained on already labeled datasets, recognizing the patterns associated with fraudulent transactions. Among the techniques most used for credit card are logistic regression, support vector machines (SVM), artificial neural networks (ANN), bayesian networks, and different tree models [@ngai2011application; @bhattacharyya2011data; @chaudhary2012credit].
 
-The focus on this paper will be on supervised learning methods. In the literature, a greater focus has been put on supervised methods [@ngai2011application], but the overall financial fraud detection methods  has not been thoroughly explored, due to the sensitivity and public unavailaibility of datasets [@dal2015adaptive]. In the studies that have been done, the overall focus has been on ANNs. Among the first to adopt an ANN approach to the problem of FFD are @ghosh1994credit, through the use of a P-RCE ANN - a three layer and feed-forward network. The method employed had relative success, identifying correctly on average 40% of the fraud. The ANN is since then among the most used methods for FFD. @brause1999neural and @dorronsoro1997neural have achieved better results with an ensemble method including ANNs. However, ANNs have been, and still are, considered as black-box models and are hard to interpret. Thus, other methods, such as random forest, have risen in popularity and have also shown impressive performance in the field of FFD [@bhattacharyya2011data; @dal2014learned]. Logistic Regression is also quite popular, especially due to its strong interpretability, but can sometimes lack the prediction power of other, more complex, ML algorithms [@bhattacharyya2011data]. The SVM has also been employed, due to its advantages in terms of solid theoretical foundations. However, the results produced by the methods have been mixed, mainly because the FFD problem poses an imbalanced class challenge [@chaudhary2012credit; @bhattacharyya2011data]. Nonetheless, it has been shown that through changes in the foundations of the SVM method, in order to transform the model into a cost-sensitive one, better performance can be achieved on problems with imbalanced data [@he2009learning].
+The focus in this paper will be on supervised learning methods. In the literature, a greater focus has been put on supervised methods [@ngai2011application], but the overall financial fraud detection methods  has not been thoroughly explored, due to the sensitivity and public unavailaibility of datasets [@dal2015adaptive]. In the studies that have been done, the overall focus has been on ANNs. Among the first to adopt an ANN approach to the problem of FFD are @ghosh1994credit, through the use of a P-RCE ANN - a three layer and feed-forward network. The method employed had relative success, identifying correctly on average 40% of the fraud. The ANN is since then among the most used methods for FFD. @brause1999neural and @dorronsoro1997neural have achieved better results with an ensemble method including ANNs. However, ANNs have been, and still are, considered as black-box models and are hard to interpret. Thus, other methods, such as random forest, have risen in popularity and have also shown impressive performance in the field of FFD [@bhattacharyya2011data; @dal2014learned]. Logistic Regression is also quite popular, especially due to its strong interpretability, but can sometimes lack the prediction power of other, more complex, ML algorithms [@bhattacharyya2011data]. The SVM has also been employed, due to its advantages in terms of solid theoretical foundations. However, the results produced by the methods have been mixed, mainly because the FFD problem poses an imbalanced class challenge [@chaudhary2012credit; @bhattacharyya2011data]. Nonetheless, it has been shown that through changes in the foundations of the SVM method, in order to transform the model into a cost-sensitive one, better performance can be achieved on problems with imbalanced data [@he2009learning].
 
 Slightly surprising is that almost no research about the performance of boosting methods has been made in the field of FFD, especially credit card fraud, given the capabilities of ML models such as stochastic gradient boosting machines and eXtreme gradient boosting [@nielsen2016tree; @chen2016xgboost]. We will deploy both methods in order to compare their performances against the other, more established, frameworks.   
 
 # 3. Methodology
 
-Classification is one of the most widely used model frameworks when it comes to application of machine learning techniques in terms of FFD [@ngai2011application]. Some of the most common classification techniques include logistic regression, neural networks, support vector machine and decision trees and their variations.
+Classification is one of the most widely used model frameworks when it comes to application of machine learning techniques in terms of FFD [@ngai2011application]. It assembles and employs a model in order to give predictions for the categorical labels of unknown objects to distinguish between objects of different classes. The categorical labels are discrete, unordered and predefined [@han2011data]. Classification can also be defined as procedure of identifying a set of common features and models wich describe and distinguish data classes or concepts [@zhang2004discovering].
+
+Some of the most common classification techniques include logistic regression, neural networks, support vector machine and decision trees and their variations.
 
 ## 3.1. Preliminaries
 
 In the current section, we will give a description of the machine learning techniques that we apply to predict fraudulent transactions. 
 
-Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point and $y_i \in \{-1,1\}$ represents the label of the class of that data point, $i = 1,...,p$. Let $X$ represent the vector of features and $Y$ the vector of dependent variables.   
+Let us define our binary classification dataset as ${\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}}$, where $x_i\in \mathbb{R}^n$ represents an n-dimensional data point of features and $y_i \in \{-1,1\}$ represents the label of the class of that data point with $y=1$ representing a fraudulent transaction, $i = 1,...,p$. Let $X$ represent the vector of features and $Y$ the vector of dependent variable. Examples of features are amount of transaction, recipient, type of tranaction and etc.   
 
 
 ## 3.2. Machine Learning Algorithms
 
 ### 3.2.1. Logistic Regression
 
-The logistic regression framework falls under the category of generalized linear models and allows the prediction of discrete outcomes. Then, by defining the probability of a transaction being fraudulent by $p(X) = Pr(Y=1|X)$, we can portray the relationship between the dependent and independent variables as follows:
+The logistic regression framework falls under the category of generalized linear models and allows the prediction of discrete outcomes. Thus, by defining the probability of a transaction being fraudulent by $p(X) = Pr(Y=1|X)$, we can portray the relationship between the dependent and independent variables as follows [@friedman2001elements]:
 
-$$p(X) = \frac{e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}\;\;\;\;(1)$$
+$$p(X) = \frac{e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}{1 + e^{\beta_0 + \beta_1X_1 + ... + \beta_pX_p}}\;\;\;\;(1)$$ 
 
 The number of independent variables is indexed by *p*. After manipulating (1), we can also see that $$log(\frac{p(X)}{1-p(X)})=\beta_0+ \beta_1X_1 + ... + \beta_pX_p\;\;\;\;(2)$$ with the LHS being called the logit. Using equation (2), we will predict the probabilities of a transaction being fraudulent i.e. $p(Y = 1)$. The fitting of a logistic regression is done by the method of maximum likelihood. The logistic regression has been among the most widely used framework in fraud detection [@ngai2011application] due to simplicity of ease of implementation, but it does have its shortcomings - it tends to underperform when there are multiple or non-linear decision boundaries.
 
 ### 3.2.2. Neural Networks
 
-Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only a single hidden layer. The model can be extended to include more layers [@friedman2001elements], but it is beyond the scope of this paper. 
+Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only one hidden layer. The model can be extended to include more layers [@friedman2001elements], but it is beyond the scope of this paper. 
 
 A feed-forward neural network with one hidden layer can be seen in Figure 1. It has $g$ outputs nodes, which in our case would be $g=2$, as we are dealing with two-class classification problem. Each output node would give us the probability of an observation belonging to a specific class. 
 
@@ -188,52 +189,64 @@ A feed-forward neural network with one hidden layer can be seen in Figure 1. It 
 
 The features $Z_f$ are being derived through linear combinations of the inputs, while the $Y_g$ outputs are then modeled as a function of linear combinations of the $Z_m$, or mathematically formulated as follows:
 
-$$Z_f=\sigma(\alpha_{0f}+\alpha_{m}^{T}X),\;f=1,...,F$$
-$$T_g=\beta_{0g}+\beta_{k}^{T}Z,\;g=1,2$$
-$$f_{g}(X)=g_g(T),\;g=1,2$$
+$$Z_f=\sigma(\alpha_{0f}+\alpha_{m}^{T}X),\;f=1,...,F\;\;\;\;(3)$$
+$$T_g=\beta_{0g}+\beta_{k}^{T}Z,\;g=1,2\;\;\;\;(4)$$
+$$Y_g = f_{g}(X)=g_g(T),\;g=1,2\;\;\;\;(5)$$
 
-where $T=(T_1,T_2)$, $Z=(Z_1,Z_2,...,Z_F)$ and $g_g(T)=\frac{e^{T_g}}{\sum_{f=1}^{F}e^{T_f}}$ represents the softmax function. We use the sigmoid activation function $\sigma(v)=\frac{1}{1+e^{-v}}$. In order to fit the neural network and estimate the set of weights $\{\alpha_{0f},\alpha_{f};f=1,2,3...,F\}$ and $\{\beta_{0g},\beta_{g},g=1,2\}$, we use the backpropagation equations in order to minimize the error term. Details on it can be seen in the Appendix.   
+where $T=(T_1,T_2)$, $Z=(Z_1,Z_2,...,Z_F)$ and $g_g(T)=\frac{e^{T_g}}{\sum_{f=1}^{F}e^{T_f}}$ represents the softmax function. The softmax function $g_g(T)$ allows us to do a final transformation on the vector of outputs T. 
+
+We use the sigmoid activation function $\sigma(v)=\frac{1}{1+e^{-v}}$. In order to fit the neural network and estimate the set of weights $\{\alpha_{0f},\alpha_{f};f=1,2,3...,F\}$ and $\{\beta_{0g},\beta_{g},g=1,2\}$, we use the backpropagation equations in order to minimize the error term. Details on it can be seen in the Appendix section A.1.   
 
 ### 3.2.3. Support Vector Machines
 
-Support Vector Machines, developed by Vapnik et. al. [@cortes1995support], have become a popular machine learning method that has seen its implementation rise in various domains that require the use of classification models [@batuwita2013class]. Among the factors for its success is the fact that the SVMs are linear classifiers, which work in a high-dimensional feature space representing a non-linear mapping of the input space of the problem being dealt with [@bhattacharyya2011data]. Working in a high-dimensional feature space has its benefits - often, the problem of non-linear classification in the original input space is transformed to a linear classification task in the high-dimensional feature space. 
+Support Vector Machines, developed by @cortes1995support, have become a popular machine learning method that has seen its implementation rise in various domains that require the use of classification models [@batuwita2013class]. Among the factors for its success is the fact that the SVMs are linear classifiers, which work in a high-dimensional feature space representing a non-linear mapping of the input space of the problem being dealt with [@bhattacharyya2011data]. Working in a high-dimensional feature space has its benefits - often, the problem of non-linear classification in the original input space is transformed to a linear classification task in the high-dimensional feature space. 
 
-The goal of the SVM classifier consists of finding the optimal separating hyperplane, which manages to effectively separate the observations from the data into two classes. As mentioned above, the observations are initially transformed by a nonlinear mapping function $\Phi$. Thus, we can write a possible separating hyperplane that resides in the transformed higher dimensional feature space:
+The goal of the SVM classifier consists of finding the optimal separating hyperplane, which manages to effectively separate the observations from the data into two classes. As mentioned above, the observations are initially transformed by a nonlinear mapping function $\Phi$. Thus, we can write a possible separating hyperplane that resides in the transformed higher dimensional feature space [@batuwita2013class]:
 
-$$w\cdot\Phi(x)+b=0\;\;\;\;(3)$$
-with $w$ the weight vector normal to the hyperplane. 
+$$f(x) = w\cdot\Phi(x)+b=0\;\;\;\;(6)$$
+with $w$ the weight vector normal to the hyperplane. $w$ can be viewed as $\beta$ in the case of Logistic Regression (Section 3.2.1). 
 
-We will further use two variations of the SVM soft margin optimization problem - one that assigns the same cost for missclassification of the different classes and one that penalizes more the missclassification of the minority class.
+We will further use two variations of the SVM soft margin optimization problem - one that assigns the same cost for missclassification of the different classes and one that penalizes more the missclassification of the minority class, in our case the fraudulent observations.
 
 #### Non-cost sensitive learning
 
+When dealing with a data set that is completely linearly separable, we can obtain the separating hyperplane with the maximum margin by solving the maximal margin optimization problem $\max M \;\;s.t.\;\;y_i(w \cdot \Phi(x_i) + b) \geq M$ where $M=\frac{1}{||w||}$ or more conveniently [@friedman2001elements]:
+
+$$\min(\frac{1}{2}w\cdot w)$$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1\;\;\;\;(7)$$
+$$i=1,...,p$$
+
+Nonetheless, when dealing with real-world problems, despite that they are mapped into the higher dimensional feature space we can rarely observe completeley linearly separable data sets. Hence, we introduce a slack variable $\xi$. See Figure 3 for visual depiction. 
+
+![Support vector classifier: Left plot shows the perfectly separable case. Right plot shows the nonseparable, or overlapping, case.](figures/svm.png){width=80%}
+
 For the same missclassification cost case, we can write the soft optimization problem as follows:
-$$\min(\frac{1}{2}w \cdot w + C\sum_{i=1}^{p} \xi_i) $$ 
-$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(4) $$
+$$\min(\frac{1}{2}w \cdot w + C\sum_{i=1}^{p} \xi_i)$$ 
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(8) $$
 $$\xi_i \geq 0, i = 1,...,p$$
-The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}$ can be perceived as the total number of missclassified observations of the model. Thus from (4), we can see that there are two goals - maximizing the margin the minimizing the number of missclassifications. The cost parameter C controls the trade-off between them, i.e. assigned misclassification cost. The quadratic optimization problem in (4) can be represented by a dual Lagrange problem and then solved:
-$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_j\Phi(x_i)\cdot\Phi(x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(5) $$
+The slack variables $\xi_i > 0$ hold for missclassified examples. Thus, the penalty term $\sum_{i=1}^{p}\xi_i$ can be perceived as the total number of missclassified observations of the model. Thus from (4), we can see that there are two goals - maximizing the margin and minimizing the number of missclassifications. The cost parameter C controls the trade-off between them, i.e. assigned misclassification cost. The quadratic optimization problem in (4) can be represented by a dual Lagrange problem and then solved:
+$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_j\Phi(x_i)\cdot\Phi(x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(9) $$
 
 $\alpha_i$ are the Lagrange multipliers also satisfying the Karush-Kuhn-Tucker (KKT) conditions (see Appendix). Thanks to another one of the strenghts of SVM - kernel representation - we don't need to explicitly know the mapping function $\Phi(x)$, but by applying a kernel function (i.e. $K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$), we can rewrite (5) as:
-$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_jK(x_i,x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(6)$$
+$$\max_{\alpha_i} \{ \sum_{i=1}^{p}{\alpha_i} - \frac{1}{2} \sum_{i=1}^{p}\sum_{j=1}^{p}{\alpha_i\alpha_jK(x_i,x_j)} \} \;\; s.t. \;\; \sum_{i=1}^{p}{y_i\alpha_i}=0, \;\; 0 \leq\alpha_i\leq C, \;\; i=1,...,p\;\;\;\;(10)$$
 The solution then gives us $w = \sum_{i=1}^{p}{\alpha_iy_i}\phi(x_i)$ for the optimal values of $\alpha_i$ and $w$, while $b$ is determined from KKT. The data points that have $\alpha_i$ different than zero are called the support vectors. Thus, the decision function can be written was:
-$$f(x) = sign(w \cdot \Phi(x) + b) = sign(\sum_{i=1}^{p}{\alpha_iy_i}K(x_i,x_j) + b)\;\;\;\;(7) $$
+$$f(x) = sign(w \cdot \Phi(x) + b) = sign(\sum_{i=1}^{p}{\alpha_iy_i}K(x_i,x_j) + b)\;\;\;\;(11) $$
 
 #### Cost Sensitive learning
 
-The regular SVM model has been effectively implemented when the dataset used has balanced classes, however it fails to produce good results when applied on imbalanced data [@batuwita2013class]. When trained on a dataset with extremely imbalanced classes, the SVM framework could produce so skewed hyperplances that all observations are recognized as the majority class [@akbani2004applying; @veropoulos1999controlling]. This is due to the fact that when we take the soft margin optimization problem, we try to maximize the margin and minimize the penalty for the misclassifications. As we consider a constant $C$ for all training examples, the minimization of the penalty is achieved through the minimization of all misclassifications. However, when the used dataset suffers from imbalanced classes, the majority class density would be higher than the minority class density, even when considering the class boundary region (through which the ideal hyperplane would pass). 
+The regular SVM model has been effectively implemented when the dataset used has balanced classes, however it fails to produce good results when applied on imbalanced data [@batuwita2013class]. When trained on a dataset with extremely imbalanced classes, the SVM framework could produce such skewed hyperplanes that all observations are recognized as the majority class [@akbani2004applying; @veropoulos1999controlling]. This is due to the fact that when we take the soft margin optimization problem, we try to maximize the margin and minimize the penalty for the misclassifications. As we consider a constant $C$ for all training examples, the minimization of the penalty is achieved through the minimization of all misclassifications. However, when the used dataset suffers from imbalanced classes, the majority class density would be higher than the minority class density, even when considering the class boundary region (through which the ideal hyperplane would pass). 
 
 Thus, we consider here the application of the Different Error Costs (DEC) variation of the SVM algorithm proposed by @veropoulos1999controlling. The DEC method introduces different misclassification costs - $C^+$ for the minority and $C^-$ for the majority class. With the inclusion of the higher misclassification cost for the minority class observations, the imbalanced class effect could be brought down. The soft margin optimization problem then has the following form:
 $$\min{(\frac{1}{2}w \cdot w + C^+\sum_{i|y_i=+1}^{p}\xi_i + C^-\sum_{i|y_i=-1}^{p}\xi_i)}$$
-$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(8)$$
+$$s.t. \;\; y_i(w \cdot \Phi(x_i) + b) \geq 1 - \xi_i\;\;\;\;(12)$$
 $$\xi_i \geq 0, i = 1,...,p$$
 The Dual Lagrange optimization form is the same as before, with the exception of replacing $0 \leq\alpha_i\leq C$ with $0 \leq\alpha_i^+\leq C^+, \; 0 \leq\alpha_i^-\leq C^-$ for $i=1,...,p$. The $\alpha_i^+$ and $\alpha_i^-$ are the Lagrange multipliers. The solution of the DEC dual Lagrangian problem follows the same outline as in the normal form. 
 
 #### Kernels
 
-As mentioned before, we used a kernel function ($K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$) in order to transform the dual Lagrange problem. The advantages of using kernel functions are computational or in some cases it allows for computations that otherwise would be impossible [@james2013introduction]. For the purpose of this study, we are using the linear and radial kernels. The radial kernel shows good performance on non-linear class separation. They have the following representations:
-$$Linear: \;\;\; K(x_i,x_j) = \sum_{k=1}^{l}x_{ik}x_{jk}\;\;\;\;(9)$$
-$$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x_{jk})^2), \;\; \gamma=\frac{1}{2\sigma^2}\;\;\;\;(10)$$
+As mentioned before, we used a kernel function ($K(x_i,x_j) = \Phi(x_i)\cdot \Phi(x_j)$) in order to transform the dual Lagrange problem. The advantages of using kernel functions are that it allows for computations that otherwise would be impossible [@james2013introduction]. For the purpose of this study, we are using the linear and radial kernels. The radial kernel shows good performance on non-linear class separation. They have the following representations:
+$$Linear: \;\;\; K(x_i,x_j) = \sum_{k=1}^{l}x_{ik}x_{jk}\;\;\;\;(13)$$
+$$Radial: \;\;\; K(x_i,x_j) = exp(-\gamma\sum_{k=1}^{l}(x_{ik}-x_{jk})^2), \;\; \gamma=\frac{1}{2\sigma^2}\;\;\;\;(14)$$
 
 ### 3.2.4. Tree-Based Methods
 
@@ -241,7 +254,7 @@ Tree-based methods involve segmentation of the feature space into a set of regio
 
 Let us call the set of non-overlapping regions $R_1,R_2,...,R_M$ that are used to divide the feature space. The forms of those regions are high-dimensional rectangles - for simplicity and interpretability. The aim for DT would be to find the boxes that minimize the error term, which in the case of classification can be represented in several ways - misclassification error, Gini index or cross-entropy. However, it is very computationally taxing to consider every feasible partition of the feature space into $M$ boxes. Thus, the recursive binary splitting method is used, which is a top-down, greedy approach - it starts at the top of the tree and then it splits the feature space, making the best split possible, without looking forward. 
 
-However, the beforementioned algorithm can sometimes lead to over-fitting and producing very ineffecient prediction results. Thus, the tree pruning technique is applied - first a large tree is grown, then it is "pruned" and a smaller version is obtain. The procedure leads to reduction in variance at the cost of some bias. Usually the cost complexity pruning algorithm is used in practice. 
+However, the beforementioned algorithm can sometimes lead to over-fitting and producing very ineffecient prediction results. Thus, the tree pruning technique is applied - first a large tree is grown, then it is "pruned" and a smaller version is obtained. The procedure leads to reduction in variance at the cost of some bias. Usually the cost complexity pruning algorithm is used in practice. 
 
 The regular classification DT has high interpretability, but it sometimes lacks sufficient prediction power - they are often unstable and can be too sensitive to training data [@bhattacharyya2011data]. This leads us to variations of the classic classification DT. 
 
@@ -269,9 +282,9 @@ The Random Forest algorith has been quite popular lately, due to its simplicity 
 
 The ideas introduced by the boosting methodology have been among the most influential in the last twenty years [@friedman2001elements]. Among the most used and influential boosting algorithms is "AdaBoost.M1" [@freund1997decision]. It was the first developed "adaptive" boosting algorithm, due to its incorporated function to directly adjust its parameters to the used training dataset. This is due to the fact, that the performance of the model was re-evaluated at each iteration - the parameters weights and the final aggregated weights, were re-calculated and improved at each iteration, thus leading to an overall better performance. Moreover, it was found that not only AdaBoost, but boosting algorithms in general, managed to not only reduce variance, but also bias - an improvement over bagging, where only the variance could be decreased. 
 
-The followwing success led to the formulation and development of the gradient-descent based methods, which received the name gradient boosting machines or simply GBM [@freund1997decision; @friedman2000additive; @friedman2001greedy]. The general idea of GBMs is to fit new models iteratively, constructing the base-learners to be maximally correlated with the loss function's negative gradient, in order to get a better estimate of the response variable [@natekin2013gradient]. Moreover, the algorithm offers flexibility in terms of choosing the form of the loss function. In this study, we use the Bernoulli distribution, as we are dealing with a two-class classification problem. 
+The following success led to the formulation and development of the gradient-descent based methods, which received the name gradient boosting machines or simply GBM [@freund1997decision; @friedman2000additive; @friedman2001greedy]. The general idea of GBMs is to fit new models iteratively, constructing the base-learners to be maximally correlated with the loss function's negative gradient, in order to get a better estimate of the response variable [@natekin2013gradient]. Moreover, the algorithm offers flexibility in terms of choosing the form of the loss function. In this study, we use the Bernoulli distribution, as we are dealing with a two-class classification problem. 
 
-Due to its flexibility and ease of implementation, the GBM algorithm has proven to be a successful model, that offers high predictive power when dealing with machine learning problems [@whiting2012machine, @johnson2014learning]. Furthermore, when including a random element in the algorithm, as in the Stochastic GBM (SGBM), results tend to improve [@friedman2002stochastic]. We describe the pseudo-code of the SGBM for a two-class problem below.
+Due to its flexibility and ease of implementation, the GBM algorithm has proven to be a successful model, that offers high predictive power when dealing with machine learning problems [@whiting2012machine; @johnson2014learning]. Furthermore, when including a random element in the algorithm, as in the Stochastic GBM (SGBM), results tend to improve [@friedman2002stochastic]. We describe the pseudo-code of the SGBM for a two-class problem below.
 
 _Stochastic Gradient Tree Boosting Machines (Stochastic GBM)_
 
@@ -285,7 +298,7 @@ Two-Class Classification as in the **gbm** R package.
     + Randomly select $s \times N$ subset.
     + Fit regression tree with K number of terminal nodes on the previously selected subset, $g(\mathbf{x})=E(z|\mathbf{x})$.
     + Compute the optimal terminal node predictions, $\rho_{1m},...,\rho_{Km}$, as:
-    $$\rho_{km}=\arg\min_{\rho}\sum_{\mathbf{x}_i \in S_k} \Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k)$$,
+    $$\rho_{km}=\arg\min_{\rho}\sum_{\mathbf{x}_i \in S_k} \Psi(y_i,\widehat{f}(\mathbf{x}_{i})+\rho_k),$$
     where $S_k$ is the set of $\mathbf{x}$'s that define terminal node $k$.
     + Compute $\widehat{f}_{m}(x)=\sum_{k=1}^{K}\rho_{km}I(x_i\in\widehat{R}_{km})$, as $\{\widehat{R}_{km}\}_{k=1}^{K}$ represents the tree structure.
     + Update $\widehat{f}^{m}(\mathbf{x})$ as $\widehat{f}^{m}(\mathbf{x}) \leftarrow \widehat{f}_{m-1}(\mathbf{x}) + \lambda\widehat{f}_{m}(x)$.  
@@ -298,13 +311,13 @@ The eXtreme Gradient Boosting algorithm, or shortly XGBoost, was developed as an
 
 ## 3.3. Cross-Validation
 
-The framework for model training that we use in this study is a $k$-fold Cross-Validation (CV) with $k=10$ [@james2013introduction]. The method incorporates a random division of the training set into $k$ folds with approximately similar size. The initial fold is used a validation set and the chosen statistical learning model is fit on the remaining $k-1$ folds. The error is then calculated on the observations in the held-out fold. The entire process is then repeated $k$ times, with a different validation set at each iteration, thus computing $k$ estimates of the test error. The $k$-fold CV estimate can then be shown as:
+The framework for model training that we use in this study is a $k$-fold Cross-Validation (CV) with $k=10$ [@james2013introduction]. The method incorporates a random division of the training set into $k$ folds with approximately similar size. The initial fold is used as validation set and the chosen statistical learning model is fit on the remaining $k-1$ folds. The error is then calculated on the observations in the held-out fold. The entire process is then repeated $k$ times, with a different validation set at each iteration, thus computing $k$ estimates of the test error. The $k$-fold CV estimate can then be shown as:
 $$CV_{(k)}=\frac{1}{k}\sum_{i=1}^{k}Err_i$$ 
 where $Err_i = I(y_i\neq \widehat{y}_i)$. 
 
 There are other approaches to CV, such as the Leave-One-Out CV (LOOCV), but the $k$-fold CV has shown to be superior in both computational time and estimate accuracy [@friedman2001elements]. The latter is connected to the bias-variance trade-off problem, but a discussion is out of the scope of this paper. A graphical representation can be seen in Figure 1 in Appendix Section 9.4. 
 
-## 3.4. Missclassification errors
+## 3.4. Misclassification errors
 
 In order to combat the problem of imbalanced classes, we also create variations of each model, discussed up until now, that fits using different missclassification errors. Only the logistic regression does not allow the use of case weights. Two different weights are assigned to the majority and minority classes, a lower and higher one respectively. This technique aids the ML techniques in paying more "attention" to the minority class, as their errors will grow faster when missclassifying a minority example, when compared to a majority one [@kriegler2010small; @chen2004using].
 
@@ -312,7 +325,7 @@ In order to combat the problem of imbalanced classes, we also create variations 
 
 ## 4.1. Datasets
 
-The number of datasets that we will be using in this study is three - two real-world and one syntheticaly generated.  
+The number of datasets that we will be using in this study is three - two real-world and one synthetically generated.  
 
 ### 4.1.1. Real-World Datasets
 
@@ -330,7 +343,7 @@ The dataset was released by the Université Libre de Bruxelles (ULB) Machine Lea
 
 The number of transactions included are 284 807 with 30 features characterizing each one. The only two labeled features are Time and Amount, while all 28 others are numericals resulting from the PCA. We do not do any feature engineering, as there is no information on what each column represents.
 
-The number of frauds is just 492, which means only 0.172% of all transactions are positively labeled, indicatin very severe class imbalance. However, we will work with 100 000 randomly selected observations, as to decrease the computation time. The fraudulent observations still represent only 0.187% of all transactions.  
+The number of frauds is just 492, which means only 0.172% of all transactions are positively labeled, indicating very severe class imbalance. However, we will work with 100 000 randomly selected observations, as to decrease the computation time. The fraudulent observations still represent only 0.187% of all transactions.  
 
 ### 4.1.2. Synthetically Generated Datasets
 
@@ -342,13 +355,13 @@ The synthetic dataset that we will use originates from a simulator called PaySim
 
 The generated dataset is constructed thanks to an agent-based-simulation application, which uses real-world information. It consists of nine features - step, type, amount, nameOrig, oldbalanceOrg, newbalanceOrig, nameDest, oldbalanceDest and newbalanceDest. The step represents a time-stamp, the type shows what kind of transaction occurs, nameOrig and nameDest give us unique ID's of the sender and receiver of the transaction, while the rest oldbalanceOrg, newbalanceOrig, oldbalanceDest and newbalanceDest represent the amount present in the accounts of the sender and receiver before and after the financial transaction has been made. Furthermore, we introduce some feature engineering by creating two more variables - errorBalanceOrig and errorBalanceDest. The errorBalanceOrig is generated by summing up newbalanceOrig and amount and then subtracting oldbalanceOrg. The motivation behind this is that a positive errorBalanceOrig could be a fraud pattern, due to an amount of being lost along the line of the transaction. Analogcally, the errorBalanceDest has the some concept behind it, but for the destination account. 
 
-Overall, the dataset consists of 6 362 620 observations, but only 0.129% of them are fraudulent, indicating very severe classimbalance. Due to the large size of the dataset and the computationally-demanding methodology that we are using, only a 100 000 observation subset will be used.  
+Overall, the dataset consists of 6 362 620 observations, but only 0.129% of them are fraudulent, indicating very severe class imbalance. Due to the large size of the data set and the computationally-demanding methodology that we are using, only a 100 000 observation subset will be used.  
 
 ## 4.2. Problems of Imbalanced Data and Data Sampling Techniques
 
 ### 4.2.1. Problem of Imbalanced Data
 
-One of the biggest challenges faced in detecting fraudulent transactions is the one of unbalanced class sizes, with legitimate class outnumbering vastly the fraudulent one [@bhattacharyya2011data]. The application of data-sampling techniques has been widely used in the literature with various results when combined with different algorithms, as when such a problem occurs, it could hinder the model performances [@van2007experimental]. Moreover, in our particular case, the cost of missclassifying the minority class could prove to be a lot more costly than predicting wrongly the majority one. 
+One of the biggest challenges faced in detecting fraudulent transactions is the one of unbalanced class sizes, with the legitimate class outnumbering vastly the fraudulent one [@bhattacharyya2011data]. The application of data-sampling techniques has been widely used in the literature with various results when combined with different algorithms, as when such a problem occurs, it could hinder the model performances [@van2007experimental]. Data-sampling is an easier method to deal with imbalanced classes, compared to changing the inner structure of the ML technique [@van2007experimental]. Moreover, in our particular case, the cost of misclassifying the minority class could prove to be a lot more costly than predicting wrongly the majority one. 
 
 ### 4.2.2. Data Sampling Techniques
 
@@ -358,13 +371,13 @@ The two techniques are the simplest and most common [@van2007experimental]. In m
 
 #### SMOTE
 
-The Synthetic Minority Oversampling Technique (SMOTE), proposed by Chawla et al. [@chawla2002smote], artificial minority instances are created not simply through duplication, but rather with the extrapolation between preexisting observations. The technique starts by taking into account the k nearest neighbourhoods to a minority observation for every instance from that class. Then, the artificial observation are created, taking into account just a part of the nearest neighbours or all of them (with respect to the desired oversampling specification).
+Wit the Synthetic Minority Oversampling Technique (SMOTE), proposed by @chawla2002smote, artificial minority instances are created not simply through duplication, but rather with extrapolation between preexisting observations. The technique starts by taking into account the k nearest neighbourhoods to a minority observation for every instance from that class. Then, the artificial observation are created, taking into account just a part of the nearest neighbours or all of them (with respect to the desired oversampling specification).
 
 # 5. Results
 
 ## 5.1. Performance Measures
 
-As the problem that we deal with in this paper is a classification one, the performance measures used to evaluate how successful a model will be related to the main building block of binary classification - the confusion matrix.
+As the problem that we deal with in this paper is a classification one, the performance measures used to evaluate how successful a model is, will be related to the main building block of binary classification - the confusion matrix.
 
 ```{r conf_matr_basis, echo = FALSE}
 library(dplyr)
@@ -383,18 +396,15 @@ $$Sensitivity = \frac{TP}{TP + FN}\;\;\;\;\;\;Specificity =\frac{TN}{FP+TN} $$
 The sensitivity of a given classifier indicates what percent of the positive class has been actually predicted as positive. Analogically, specifity gives the percent of the negative class which has been assigned as negative by the model. Overall, the measures give us a picture of the proportions that have been correctly predicted.
 
 $$Precision = \frac{TP}{TP+FP}\;\;\;\;\;\;Recall=\frac{TP}{TP+FN}$$
-The precision measure indicates how well the used classifier identifies a given class' observation, i.e. checks the percent of the observations assigned a positive class that are truly positive. The recall formulation is same as the sensitivity one. Both measures are typically used together in order to get more information about the positive class. 
-
-$$F_\alpha=\frac{(1+\alpha)[precision \times recall]}{[\alpha\times precision] + recall}$$
-The F-measure falls to the category of combination metrics and its purpose is to combine the precision and recall in a single scalar. One of its advantages is that allows us to weight the two components as desired through the $\alpha$ component. Usual values of $\alpha$ are $0.5, 1$ or $2$ - with $1$ we specify that precision and recall are equal in weights, $2$ indicates precision is twice as important as recall and $0.5$ gives two times more weight to recall. When dealing with class imbalanace, the F-measure can give more in-depth insight [@japkowicz2013assessment].
+The precision measure indicates how well the used classifier identifies a given class' observation, i.e. checks the percent of the observations assigned a positive class that are truly positive. The recall formulation is defined analogously for the negative class. Both measures are typically used together in order to get more information about the positive class. 
 
 ### 5.1.2. Ranking Methods and Metrics
 
 #### ROC Curve Analysis
 
-The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perfor better than random guessing. 
+The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perform better than random guessing. 
 
-![Well performing ROC curve example](figures/roc_curve_example.png){width=60%}
+![Well-performing ROC curve example](figures/roc_curve_example.png){width=60%}
 
 Moreover, when dealing with imbalanced classes, the ROC metric is a very suitable indicator of whether a model is a good fit. The first reason is that we have the performance of each class shown separately (through the two axes) and the second one is that it gives a good overview what can happen in different situations [@japkowicz2013assessment]. 
 
@@ -408,7 +418,7 @@ The AUC metric illustrates the performance of a classification model averaged ov
 
 ## 5.2. Experimental Results
 
-We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz or on the Kaggle Cloud Computing Service, where depending on the statistical model that was geing calculated, up to 32 cores and 17 GB RAM were utilized. The programming software that we used was R - R Studio on the local machine and R scripts on the cloud. 
+We have conducted all experiments on a machine running 4GB RAM, Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz or on the Kaggle Cloud Computing Service, where depending on the statistical model that was being calculated, up to 32 cores and 17 GB RAM were utilized. The programming software that we used was R - R Studio on the local machine and R kernels on the cloud. 
 
 We will use 10-fold Cross-Validation in order to tune the model parameters and will use the ROC as an optimization criterion, as it is argued that it is a good indicator when dealing with imbalanced classes [@he2009learning]. The Accuracy metric will be used as little as possible to determine a classifier performance, as even if a model fails to classify a single observation from the minority class, the accuraccy will still be high (and close to 100% in some cases, due to sever class imbalance). Thus the ROC and AUC metrics will be utilized in order to gauge the performances and choose the optimal machine learning technique.  
 
@@ -418,7 +428,7 @@ The different variations executed involve fitting the model with different data-
 
 ### 5.2.1. UCSD
 
-As mentioned in *Section 4.1.1.*, we wil work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
+As mentioned in *Section 4.1.1.*, we will work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
 
 From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not much that we derive from our raw data and that can be observed from the graphics created to illustrate the distribution of the different features (See Appendix). The only interesting note that can be taken is that it seems the fraudulent class is usually associated with a transaction that has a lower amount. This can be seen in Figure 4.
 
@@ -485,9 +495,9 @@ kable(cr_card_PR_table, format = "latex", caption = "ULB Credit Card: PR Metric 
           kable_styling(latex_options = "scale_down")
 ```
 
-From the two tables, 5 and 6,  we can observe that all models perform relatively similar. However, Random Forest and xGBoost are one step above the rest, in both the ROC AUC and Precision-Recall AUC metrics. The SVM also manages to predict better than expected, despite dealing with sever class imbalance. Nonetheless, it's Non Cost-Sensitive variant is still the worst performing model. On this dataset we can see how the inclusion of different costs in the SVM algorithm for the different class classification manages to improve performance. Both cost-sensitive variants, using linear or radial kernel, outperform the "vanilla" SVM. 
+From the two tables, 5 and 6,  we can observe that all models perform relatively similar. However, Random Forest and xGBoost are one step above the rest, in both the ROC AUC and Precision-Recall AUC metrics. The SVM also manages to predict better than expected, despite dealing with sever class imbalance. Nonetheless, its non-cost-sensitive variant is still the worst performing model. On this dataset we can see how the inclusion of different costs in the SVM algorithm for the different class classification manages to improve performance. Both cost-sensitive variants, using linear or radial kernel, outperform the non-cost-sensitive SVM. 
 
-In Figure 7, both left and right, we can see the red, green and sometimes pink line, representing RF, xGBoost and GBM respectively, are slightly above all others. One all these three models have in common, is that they are based on the principle of decision trees. They do employ different fitting algorithm, bagging and boosting, but still perform on a similar high level. 
+In Figure 7, both left and right, we can see the red, green and sometimes pink line, representing RF, xGBoost and GBM respectively, are slightly above all others. One common feature all these three models have in common, is that they are based on the principle of decision trees. They do employ different fitting algorithm, bagging and boosting, but still perform on a similar high level. 
 
 ![ULB Credit Card: ROC and PR Curves](figures/credit/cr_card_roc_pr.png){width=100%}
 
@@ -507,12 +517,12 @@ kable(fraud_type, format = "latex", caption = "PaySim: Transaction Types",
 
 ![PaySim: Exploratory Data Analysis Plots](figures/paySim/descriptive/four_plots.png){width=90%}
 
-On Table 7, it can be clearly seen that fraud occurs only on two occasions - when the transaction type is either CASH_OUT or TRANSFER. Moreover, in Figure 8, we have created some plots on which we can see how the two types of transaction, where the fraud occurs, behave. We can observe on the upper-left graphics that the fradulent transactions mostly posses a higher amount feature than the non-fraudulent ones. Furthermore, on the lower-right plot, it can be seen how the errorBalanceOrig feature always stays at zero in the cases of fraud. From the other two graphics, we can not derive any conclusions. In Figure 9, it can also be seen that the two classes, fraud and non-fraud, are visibly separated among the three variables - amount, errorBalanceOrig and errorBalanceDest. Thus, it is expected that linear models could also perform good on this dataset. 
+On Table 7, it can be clearly seen that fraud occurs only on two occasions - when the transaction type is either CASH_OUT or TRANSFER. Moreover, in Figure 8, we have created some plots in which we can see how the two types of transaction, where the fraud occurs, behave. We can observe on the upper-left graphics that the fraudulent transactions mostly possess a higher amount feature than the non-fraudulent ones. Furthermore, on the lower-right plot, it can be seen how the errorBalanceOrig feature always stays at zero in the cases of fraud. From the other two graphics, we can not derive any conclusions. In Figure 9, it can also be seen that the two classes, fraud and non-fraud, are visibly separated among the three variables - amount, errorBalanceOrig and errorBalanceDest. Thus, it is expected that linear models could also perform good on this dataset. 
 
 ![PaySim: Amount, errorBalanceORig and errorBalanceDest plot](figures/paySim/descriptive/threedimensionalplot.png){width=70%}
 
 
-The framework for fitting the chosen ML techniques is as before, a 10-fold Cross-Validation. It should be noted though, that for this dataset we have used a variaton of the Logistic Regression, the Bias-Reduced Logistic Regression, due to the encountered of perfect separation when working with the original model.
+The framework for fitting the chosen ML techniques is as before, a 10-fold Cross-Validation. It should be noted though, that for this dataset we have used a variaton of the Logistic Regression, the Bias-Reduced Logistic Regression, due to the perfect separation when working with the original model.
 
 ```{r paySim_models_AUC, echo = FALSE}
 library(dplyr)
@@ -535,7 +545,7 @@ kable(paySim_PR_table, format = "latex", caption = "PaySim: PR Metric Model Vari
           kable_styling(latex_options = "scale_down")
 ```
 
-In tables 8 and 9, we can observe that all models have performed really well. Nonetheless, we can once more see how the decision tree based models, Random Forest, xGBoost and GBM are slightly ahead than all the rest. This is not very evident when looking at the ROC AUC metric, but it is more pronounced when we shift our view to the Precision-Recall AUC. It is interesting to see that despite the severe class imbalance, the SVM models has managed to produced some impressive results. It best performance is on the dataset with RUS applied on it, meaning that the imbalance ratio was brought down by generating copies of the minoriy class observations. Nonetheless, even it its other variations, especially the cost-sensitive variant with the linear kernel, it has shown better than expected results.
+In tables 8 and 9, we can observe that all models have performed really well. Nonetheless, we can once more see how the decision tree based models, Random Forest, xGBoost and GBM are slightly ahead than all the rest. This is not very evident when looking at the ROC AUC metric, but it is more pronounced when we shift our view to the Precision-Recall AUC. It is interesting to see that despite the severe class imbalance, the SVM models has managed to produced some impressive results. Its best performance is on the dataset with RUS applied on it, meaning that the imbalance ratio was brought down by generating copies of the minoriy class observations. Nonetheless, even in its other variations, especially the cost-sensitive variant with the linear kernel, it has shown better than expected results.
 
 Both plots on Figure 10 look quite impressive, as most lines are "hugging" the upper left or right corner for the ROC and Precision-Recall cases respectively. 
 
@@ -545,27 +555,27 @@ Both plots on Figure 10 look quite impressive, as most lines are "hugging" the u
 
 We have thoroughly examined the performance of six ML techniques, Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression, for financial fraud detection. Two real-world datasets and one synthetically generated were used for the evaluations. Moreover, data-sampling techniques aimed at tackling the imbalanced class problem were performed. 
 
-It is quite evident from Figures 5, 7 and 10 that obtaining good classifier performance on the real world datasets has been a harder task than doing it on the synthetically generated one. This finding is not surprising, as the PaySim is a simulation and can not perfectly generate human behaviour [@lopez2014social]. We can also observe from those three figures that the three decision tree based ML techniques, Random Forest, GBM and xGBoost, show superior performance. The good results that they produce is due to the ensemble of the decision tree model and the bagging or boosting frameworks. 
+It is quite evident from Figures 5, 7 and 10 that obtaining good classifier performance on the real world datasets has been a harder task than doing it on the synthetically generated one. This finding is not surprising, as the PaySim is a simulation and can not perfectly generate human behaviour [@lopez2014social]. We can also observe from those three figures that the three decision tree based ML techniques, Random Forest, GBM and xGBoost, show superior performance. The good results that they produce are due to the ensemble of the decision tree model and the bagging or boosting frameworks. 
 
-The ANN and Logistic Regression have produced conflicting results overall. In the real-world dataset cases both methods failed to impress, but when fit one the simulated data, their performance improved drastically. The reason behind this improvement is mainly that in the PaySim instance, the class separation was linear, while in the the other two it was non-linear. However, the ANN performance coulde certainly be improved if modifications are introduced. 
+The ANN and Logistic Regression have produced conflicting results overall. In the real-world dataset cases both methods failed to impress, but when fit on the simulated data, their performance improved drastically. The reason behind this improvement is mainly that in the PaySim instance, the class separation was linear, while in the the other two it was non-linear. However, the ANN performance could certainly be improved if modifications are introduced. 
 
 The SVM method, as expected, does not manage to produce high-quality results most of the time. However, in Tables 3, 4, 5, 6, 8 and 9 we can see that when working with the Different Error Cost SVM model, as described in *Section 3.2.3.*, the performance metrics are higher than the normal SVM without any modification or data-sampling technique. 
 
 # 6. Further Improvements
 
-We have given a big overview on the different ML Techniques that can be used for the problem of FFD. However, in this paper we have not delved into the details for each individual algorithm and we have explored only a part of the tunning opportunities that each of these method offers. For instance, the ANN models can be extended to include more than just a single hidden layer or another variation of it can be tested, i.e. not the "vanilla" model. For GBM and xGBoost, a wider scope of tuning parameters can be used, which is of course associated with the need of greater computational power. Moreover, we have not developed a system that can be directly applied in a real-world scenario, where one can observe a constant data flow and detection is needed in real-time [@dal2015adaptive].
+We have given a big overview on the different ML Techniques that can be used for the problem of FFD. However, in this paper we have not delved into the details for each individual algorithm and we have explored only a part of the tunning opportunities that each of these methods offers. For instance, the ANN models can be extended to include more than just a single hidden layer or another variation of it can be tested, i.e. not the "vanilla" model. For GBM and xGBoost, a wider scope of tuning parameters can be used, which is of course associated with the need of greater computational power. Moreover, we have not developed a system that can be directly applied in a real-world scenario, where one can observe a constant data flow and detection is needed in real-time [@dal2015adaptive].
 
 # 7. Conclusion
 
 We currently live in times where transactions in the cyberspace are constantly rising [@fletcher2007challenges]. As discussed, loss due to fraud amounts for around 5% of the firm's yearly revenue. Globally, if applied to the 2013 GDP, the losses could be up to $3.7 trillion [@buanuarescu2015detecting]. Thus, anti-fraud mechanisms are becoming more and more important. 
 
-This need to to detect financial fraud in big data sets drives the need of applying various statistical learning methods in order to successively do so. However, due to the lack of publicly available datasets containing transactions, the research community has not had the chance to extensively test different techniques for battling fraud. With this paper, we attempt to give an overview on how different machine learning models fare when used to detect financial fraud. 
+This need to detect financial fraud in big data sets drives the need of applying various statistical learning methods in order to successively do so. However, due to the lack of publicly available datasets containing transactions, the research community has not had the chance to extensively test different techniques for battling fraud. With this paper, we attempt to give an overview on how different machine learning models fare when used to detect financial fraud. 
 
-We employ the ROC, Precision-Recall and AUC metrics when evaluating the performance of the models. As discussed in *Section 5.1.*, these measures are chosen over Accuracy, as the latter is highly unsuitable when working with dataset that have imbalanced classes. Moreover, as a consequence of FFD being an imbalanced class problem, we attempt using various data-sampling techniques that have been recommended when handling such an issue [@van2007experimental; @chawla2002smote]. We include four different frameworks - random undersampling, random oversampling, SMOTE and class weighting. However, neither produced consistently better results than the models fitted on the original data. 
+We employ the ROC, Precision-Recall and AUC metrics when evaluating the performance of the models. As discussed in *Section 5.1.*, these measures are chosen over Accuracy, as the latter is highly unsuitable when working with data sets that have imbalanced classes. Moreover, as a consequence of FFD being an imbalanced class problem, we attempt using various data-sampling techniques that have been recommended when handling such an issue [@van2007experimental; @chawla2002smote]. We include four different frameworks - random undersampling, random oversampling, SMOTE and class weighting. However, neither produced consistently better results than the models fitted on the original data. 
 
 The experimental part has shown that the machine learning methods based on decision trees and either bagging or boosting, perform best. The former corresponds to the Random Forest methods, while the latter to the GBM and xGBoost frameworks. They have all shown superior performance when compared to the other algorithms tested in the paper - Artifical Neural Networks, SVM and Logistic Regression. The results are a consequence of the bagging and boosting algorithms' implicit characteristics of better handling non-linearity. 
 
-However, as mentioned in *Section 6* there are many other possibilities to extend this research and improve the performances of the classifiers. Using more real-world data, which does not have it's features masked, would lead to better understanding of which techniques can actually help business organizations the most in their attempts to minimize fraud losses. Nonetheless, this paper has the potential to assist future researchers by giving them an overview of how some of the most used machine learning techniques perform when given the problem of financial fraud detection.
+However, as mentioned in *Section 6* there are many other possibilities to extend this research and improve the performances of the classifiers. Using more real-world data, which does not have its features masked, would lead to a better understanding of which techniques can actually help business organizations the most in their attempts to minimize fraud losses. Nonetheless, this paper has the potential to assist future researchers by giving them an overview of how some of the most used machine learning techniques perform when given the problem of financial fraud detection.
 
 \clearpage
 # Appendix
