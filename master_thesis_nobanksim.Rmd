@@ -404,7 +404,7 @@ The precision measure indicates how well the used classifier identifies a given 
 
 The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perform better than random guessing. 
 
-![Well-performing ROC curve example](figures/roc_curve_example.png){width=60%}
+![Well-performing ROC curve example](figures/roc_curve_example.png){width=50%}
 
 Moreover, when dealing with imbalanced classes, the ROC metric is a very suitable indicator of whether a model is a good fit. The first reason is that we have the performance of each class shown separately (through the two axes) and the second one is that it gives a good overview what can happen in different situations [@japkowicz2013assessment]. 
 
@@ -458,7 +458,7 @@ kable(ucsd_PR_table, format = "latex", caption = "UCSD: PR Metric Model Variatio
           kable_styling(latex_options = "scale_down")
 ```
 
-It is quite evident from these two tables that the best performing model throughout each setting is Random Forests. Unsurprisingly, it is followed by the eXtreme Gradient Boosting, which also produces really good results. The SVM is also expectedly suffering, due to the severe class imbalance, which as mentioned in Section 3, leads to the support vector being pushed close to the majority class, thus ignoring the minority. The Logistic Regression performs relatively competitive and having a huge computational speed advantage means it is in no way irrelevant. 
+It is quite evident from these two tables that the best performing model throughout each setting is Random Forests. Unsurprisingly, it is followed by the eXtreme Gradient Boosting, which also produces really good results. The SVM is not performing well, as expected, due to the severe class imbalance, which as mentioned in Section 3, leads to the support vector being pushed close to the majority class, thus ignoring the minority. The Logistic Regression performs relatively competitive and having a huge computational speed advantage means it is in no way irrelevant. 
 
 In Figure 5 we also visually show the differences between the different Machine Learning Techniques. Here it is also quite evident that the Random Forest method shows superiority. Its ROC curve is higher than all the other at every point, while the Precision Recall curve is lower than the weighted xGBoost only in a very limited range. 
 

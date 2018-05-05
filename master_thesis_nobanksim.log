@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  4 MAY 2018 22:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  5 MAY 2018 10:52
 entering extended mode
 **./master_thesis_nobanksim.tex
 (master_thesis_nobanksim.tex
@@ -1089,100 +1089,100 @@ File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 <figures/roc_curve_example.png, id=473, 572.1375pt x 492.33937pt>
 File: figures/roc_curve_example.png Graphic file (type png)
 <use figures/roc_curve_example.png>
-Package pdftex.def Info: figures/roc_curve_example.png  used on input line 1110
+Package pdftex.def Info: figures/roc_curve_example.png  used on input line 1099
 .
-(pdftex.def)             Requested size: 266.2507pt x 229.11572pt.
+(pdftex.def)             Requested size: 221.86685pt x 190.92226pt.
 [26] [27 <./figures/roc_curve_example.png>] [28]
-<figures/ucsd/descriptive/boxplot_amount.png, id=494, 632.3625pt x 632.3625pt>
+<figures/ucsd/descriptive/boxplot_amount.png, id=495, 632.3625pt x 632.3625pt>
 File: figures/ucsd/descriptive/boxplot_amount.png Graphic file (type png)
 <use figures/ucsd/descriptive/boxplot_amount.png>
 Package pdftex.def Info: figures/ucsd/descriptive/boxplot_amount.png  used on i
-nput line 1200.
+nput line 1189.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
-[29] [30 <./figures/ucsd/descriptive/boxplot_amount.png>]
-<figures/ucsd/ucsd_pr_roc.png, id=505, 1129.21875pt x 632.3625pt>
+[29 <./figures/ucsd/descriptive/boxplot_amount.png>]
+<figures/ucsd/ucsd_pr_roc.png, id=501, 1129.21875pt x 632.3625pt>
 File: figures/ucsd/ucsd_pr_roc.png Graphic file (type png)
 <use figures/ucsd/ucsd_pr_roc.png>
-Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1264.
+Package pdftex.def Info: figures/ucsd/ucsd_pr_roc.png  used on input line 1253.
 
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
-[31 <./figures/ucsd/ucsd_pr_roc.png>]
-<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=513, 632.3625p
+[30]
+<figures/credit/descriptive/cr_card_fraud_amount_boxplot.png, id=507, 632.3625p
 t x 632.3625pt>
 File: figures/credit/descriptive/cr_card_fraud_amount_boxplot.png Graphic file 
 (type png)
 <use figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>
 Package pdftex.def Info: figures/credit/descriptive/cr_card_fraud_amount_boxplo
-t.png  used on input line 1285.
+t.png  used on input line 1274.
 (pdftex.def)             Requested size: 266.24658pt x 266.24658pt.
-[32 <./figures/credit/descriptive/cr_card_fraud_amount_boxplot.png>]
+[31 <./figures/ucsd/ucsd_pr_roc.png>] [32 <./figures/credit/descriptive/cr_card
+_fraud_amount_boxplot.png>]
 <figures/credit/cr_card_roc_pr.png, id=519, 1129.21875pt x 632.3625pt>
 File: figures/credit/cr_card_roc_pr.png Graphic file (type png)
 <use figures/credit/cr_card_roc_pr.png>
 Package pdftex.def Info: figures/credit/cr_card_roc_pr.png  used on input line 
-1351.
+1340.
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
-[33]
-<figures/paySim/descriptive/four_plots.png, id=525, 978.65625pt x 632.3625pt>
+[33 <./figures/credit/cr_card_roc_pr.png>]
+<figures/paySim/descriptive/four_plots.png, id=526, 978.65625pt x 632.3625pt>
 File: figures/paySim/descriptive/four_plots.png Graphic file (type png)
 <use figures/paySim/descriptive/four_plots.png>
 Package pdftex.def Info: figures/paySim/descriptive/four_plots.png  used on inp
-ut line 1390.
+ut line 1379.
 (pdftex.def)             Requested size: 399.3701pt x 258.05452pt.
-[34 <./figures/credit/cr_card_roc_pr.png>]
-<figures/paySim/descriptive/threedimensionalplot.png, id=531, 480.29437pt x 405
+<figures/paySim/descriptive/threedimensionalplot.png, id=527, 480.29437pt x 405
 .01312pt>
 File: figures/paySim/descriptive/threedimensionalplot.png Graphic file (type pn
 g)
 <use figures/paySim/descriptive/threedimensionalplot.png>
 Package pdftex.def Info: figures/paySim/descriptive/threedimensionalplot.png  u
-sed on input line 1410.
+sed on input line 1399.
 (pdftex.def)             Requested size: 310.6193pt x 261.93288pt.
-[35 <./figures/paySim/descriptive/four_plots.png>] [36 <./figures/paySim/descri
+[34] [35 <./figures/paySim/descriptive/four_plots.png> <./figures/paySim/descri
 ptive/threedimensionalplot.png>]
-<figures/paySim/paySim_pr_roc.png, id=543, 1129.21875pt x 632.3625pt>
+<figures/paySim/paySim_pr_roc.png, id=539, 1129.21875pt x 632.3625pt>
 File: figures/paySim/paySim_pr_roc.png Graphic file (type png)
 <use figures/paySim/paySim_pr_roc.png>
 Package pdftex.def Info: figures/paySim/paySim_pr_roc.png  used on input line 1
-475.
+464.
 (pdftex.def)             Requested size: 443.73625pt x 248.4923pt.
-[37 <./figures/paySim/paySim_pr_roc.png>] [38] [39] [40] [41
+[36] [37 <./figures/paySim/paySim_pr_roc.png>] [38] [39] [40] [41
 
 ] [42] [43]
 <figures/crossval.png, id=586, 586.44093pt x 286.82156pt>
 File: figures/crossval.png Graphic file (type png)
 <use figures/crossval.png>
-Package pdftex.def Info: figures/crossval.png  used on input line 1676.
+Package pdftex.def Info: figures/crossval.png  used on input line 1665.
 (pdftex.def)             Requested size: 399.35619pt x 195.32054pt.
 [44
 
  <./figures/crossval.png>] [45
 
 ] [46]
-Underfull \hbox (badness 10000) in paragraph at lines 1795--1798
+Underfull \hbox (badness 10000) in paragraph at lines 1784--1787
 \T1/lmr/m/n/12 (+20) Publication / vwLUAssets / EY-[]Global-[]Forensic-[]Data-[
 ]Analytics-[]Survey-[]2014 / $FILE /
  []
 
 [47] [48] [49]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1967.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1956.
 [50]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1967.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1956.
 (master_thesis_nobanksim.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1967.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1967.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1956.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1956.
 
 Package rerunfilecheck Info: File `master_thesis_nobanksim.out' has not changed
 .
 (rerunfilecheck)             Checksum: 337A0733845960D10B2371A7C7DE0F51;7987.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1967.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1956.
  ) 
 Here is how much of TeX's memory you used:
- 13335 strings out of 493305
- 196443 string characters out of 3138849
- 295197 words of memory out of 3000000
+ 13331 strings out of 493305
+ 196401 string characters out of 3138849
+ 294197 words of memory out of 3000000
  16284 multiletter control sequences out of 15000+200000
- 75637 words of font info for 123 fonts, out of 3000000 for 9000
+ 75463 words of font info for 121 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  32i,12n,38p,448b,461s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
@@ -1202,7 +1202,7 @@ ri12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Prog
 ram Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2
 .9/fonts/type1/public/lm/lmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/symbols/msbm10.pfb>
-Output written on master_thesis_nobanksim.pdf (56 pages, 1765583 bytes).
+Output written on master_thesis_nobanksim.pdf (56 pages, 1764641 bytes).
 PDF statistics:
  801 PDF objects out of 1000 (max. 8388607)
  258 named destinations out of 1000 (max. 500000)
