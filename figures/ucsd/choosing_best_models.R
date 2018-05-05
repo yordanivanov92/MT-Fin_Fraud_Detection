@@ -188,7 +188,7 @@ colnames(auc_table_all) <- c("Original Random Forest", "Original GLM",
 
 #### Tables ####
 ucsd_auc_glm <- ucsd_auc_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 ucsd_auc_svm <- ucsd_auc_svm %>%
   rename(weighted = weighted_lin,
@@ -199,14 +199,14 @@ ucsd_auc_svm <- ucsd_auc_svm %>%
 ucsd_auc_table <- rbind(ucsd_auc_randfor, ucsd_auc_xgboost, 
                         ucsd_auc_gbm, ucsd_auc_nnet,
                         ucsd_auc_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(ucsd_auc_svm) 
 
 
 ucsd_PR_glm <- ucsd_PR_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 ucsd_PR_svm <- ucsd_PR_svm %>%
   rename(weighted = weighted_lin,
@@ -217,7 +217,7 @@ ucsd_PR_svm <- ucsd_PR_svm %>%
 ucsd_PR_table <- rbind(ucsd_PR_randfor, ucsd_PR_xgboost, 
                         ucsd_pr_gbm, ucsd_PR_nnet,
                         ucsd_PR_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(ucsd_PR_svm) 

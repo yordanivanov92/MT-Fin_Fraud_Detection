@@ -193,7 +193,7 @@ colnames(auc_table_all) <- c("Original Random Forest", "Original GLM",
 
 #### Tables ####
 cr_card_auc_glm <- cr_card_auc_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 cr_card_auc_svm <- cr_card_auc_svm %>%
   dplyr::rename(weighted_radial = weighted_rad,
@@ -204,14 +204,14 @@ cr_card_auc_svm <- cr_card_auc_svm %>%
 cr_card_auc_table <- rbind(cr_card_auc_randfor, cr_card_auc_xgboost, 
                            cr_card_auc_gbm, cr_card_auc_nnet,
                            cr_card_auc_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(cr_card_auc_svm) 
 
 
 cr_card_PR_glm <- cr_card_PR_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 cr_card_PR_svm <- cr_card_PR_svm %>%
   dplyr::rename(weighted_radial = weighted_rad,
@@ -222,7 +222,7 @@ cr_card_PR_svm <- cr_card_PR_svm %>%
 cr_card_PR_table <- rbind(cr_card_PR_randfor, cr_card_PR_xgboost, 
                        cr_card_PR_gbm, cr_card_PR_nnet,
                        cr_card_PR_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(cr_card_PR_svm) 

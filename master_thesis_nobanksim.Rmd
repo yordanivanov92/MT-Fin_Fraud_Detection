@@ -218,7 +218,7 @@ $$i=1,...,p$$
 
 Nonetheless, when dealing with real-world problems, despite that they are mapped into the higher dimensional feature space we can rarely observe completeley linearly separable data sets. Hence, we introduce a slack variable $\xi$. See Figure 3 for visual depiction. 
 
-![Support vector classifier: Left plot shows the perfectly separable case. Right plot shows the nonseparable, or overlapping, case.](figures/svm.png){width=80%}
+![Support vector classifier: Left plot shows the perfectly separable case. Right plot shows the nonseparable, or overlapping, case (Source: J. Friedman, Hastie, and Tibshirani 2001).](figures/svm.png){width=80%}
 
 For the same missclassification cost case, we can write the soft optimization problem as follows:
 $$\min(\frac{1}{2}w \cdot w + C\sum_{i=1}^{p} \xi_i)$$ 
@@ -426,6 +426,19 @@ As we apply six different machine learning techniques to each dataset and we hav
 
 The different variations executed involve fitting the model with different data-sampling techniques , i.e. each model is fitted using the original dataset, RUS set, ROS set, SMOTE set and a weighted dataset. Each dataset has been randomly splitted to two - a train and a test subset. The train consists of 60% of the original dataset, while the test the remaining 40%. The models are fit on the train datasets.
 
+```{r example_table_results, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/example_result_table.RData"))
+kable(example_table, format = "latex", caption = "Example AUC result table",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+
+```
+
+In Figure 3, we can see an example of the tables we will use for evaluating the ROC and Precision-Recall AUC metrics. On the left, we have the six different ML techniques that are assessed and on the top are their different variations. The "down", "up" and "SMOTE" columns represent the results after applying the different data-sampling techniques. The "weighted" column, in the cases of Random Forest, xGBoost, GBM and ANN describe the results after using the technique described in *Section 3.4.*, while for the SVM it represents the cost-sensitive method as shown in *Section 3.2.3.* with a linear kernel. The "original" column shows the results with the models fit on the original data sets, without any data sampling, and in the case of SVM as the non-cost-sensitive version described in *Section 3.2.3.* with a linear kernel. The "original_radial" and "weighted_radial" columns have results only for SVM, as they show the AUC metric for the models described in *Section 3.2.3.*, but using a radial kernel.
+
 ### 5.2.1. UCSD
 
 As mentioned in *Section 4.1.1.*, we will work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
@@ -441,7 +454,7 @@ However, when we turn to the ML Techniques, patterns seem to arise and better pr
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
+load(paste0(getwd(),"/figures/ucsd/all_graphs_tables1.RData"))
 kable(ucsd_auc_table, format = "latex", caption = "UCSD: AUC Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -452,7 +465,7 @@ kable(ucsd_auc_table, format = "latex", caption = "UCSD: AUC Metric Model Variat
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/ucsd/all_graphs_tables.RData"))
+load(paste0(getwd(),"/figures/ucsd/all_graphs_tables1.RData"))
 kable(ucsd_PR_table, format = "latex", caption = "UCSD: PR Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -478,7 +491,7 @@ However, when applying the ML Techniques discussed in *Section 3*, we are better
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card.RData"))
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card1.RData"))
 kable(cr_card_auc_table, format = "latex", caption = "ULB Credit Card: AUC Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -489,7 +502,7 @@ kable(cr_card_auc_table, format = "latex", caption = "ULB Credit Card: AUC Metri
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card.RData"))
+load(paste0(getwd(),"/figures/credit/all_graphs_tables_cr_card1.RData"))
 kable(cr_card_PR_table, format = "latex", caption = "ULB Credit Card: PR Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -528,7 +541,7 @@ The framework for fitting the chosen ML techniques is as before, a 10-fold Cross
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/paySim/all_graphs_tables_paySim.RData"))
+load(paste0(getwd(),"/figures/paySim/all_graphs_tables_paySim1.RData"))
 kable(paySim_auc_table, format = "latex", caption = "PaySim: AUC Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -539,7 +552,7 @@ kable(paySim_auc_table, format = "latex", caption = "PaySim: AUC Metric Model Va
 library(dplyr)
 library(knitr)
 library(kableExtra)
-load(paste0(getwd(),"/figures/paySim/all_graphs_tables_paySim.RData"))
+load(paste0(getwd(),"/figures/paySim/all_graphs_tables_paySim1.RData"))
 kable(paySim_PR_table, format = "latex", caption = "PaySim: PR Metric Model Variations",
       booktabs = TRUE) %>%
           kable_styling(latex_options = "scale_down")
@@ -578,6 +591,7 @@ The experimental part has shown that the machine learning methods based on decis
 However, as mentioned in *Section 6* there are many other possibilities to extend this research and improve the performances of the classifiers. Using more real-world data, which does not have its features masked, would lead to a better understanding of which techniques can actually help business organizations the most in their attempts to minimize fraud losses. Nonetheless, this paper has the potential to assist future researchers by giving them an overview of how some of the most used machine learning techniques perform when given the problem of financial fraud detection.
 
 \clearpage
+\pagenumbering{roman}
 # Appendix
 
 ## A.1. Neural Networks
@@ -643,9 +657,60 @@ $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_
 
 ## A.4 Figures
 
-![k-fold CV with k=5](figures/crossval.png){width=90%}
+![k-fold CV with k=5](figures/crossval.png){width=90%}\
+**k-fold CV with k=5**
 
 \clearpage
+
+### A.4.1. UCSD
+
+\center
+![](figures/ucsd/ucsd_gbm_rocs.png){width=60%}\
+**UCSD: GBM ROC Curves**
+
+![](figures/ucsd/ucsd_gbm_PR.png){width=60%}\
+**UCSD: GBM Precision-Recall Curves**
+
+![](figures/ucsd/ucsd_glm_rocs.png){width=60%}\
+**UCSD: Log. Regression ROC Curves**
+
+![](figures/ucsd/ucsd_glm_PR.png){width=60%}\
+**UCSD: Log. Regression Precision-Recall Curves**
+
+![](figures/ucsd/ucsd_nnet_rocs.png){width=60%}\
+**UCSD: ANN ROC Curves**
+
+![](figures/ucsd/ucsd_nnet_PR.png){width=60%}\
+**UCSD: ANN Precision-Recall Curves**
+
+![](figures/ucsd/ucsd_randfor_rocs.png){width=60%}\
+**UCSD: Random Forest ROC Curves**
+
+![](figures/ucsd/ucsd_randfor_PR.png){width=60%}\
+**UCSD: Random Forest Precision-Recall Curves**
+
+![](figures/ucsd/ucsd_svm_rocs.png){width=60%}\
+**UCSD: SVM ROC Curves**
+
+![](figures/ucsd/ucsd_svm_PR.png){width=60%}\
+**UCSD: SVM Precision-Recall Curves**
+
+![](figures/ucsd/ucsd_xgboost_rocs.png){width=60%}\
+**UCSD: xGBoost ROC Curves**
+
+![](figures/ucsd/ucsd_xgboost_PR.png){width=60%}\
+**UCSD: xGBoost Precision-Recall Curves**
+
+\justify
+### A.4.2 ULB
+
+
+### A.4.2. PaySim
+
+
+\clearpage
+
+\justify
 
 # References
 

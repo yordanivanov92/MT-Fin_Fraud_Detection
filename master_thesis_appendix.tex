@@ -21,7 +21,7 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage[margin = 1.5in]{geometry}
+\usepackage[margin = 1.18in]{geometry}
 \usepackage{hyperref}
 \PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
 \hypersetup{unicode=true,
@@ -83,6 +83,7 @@
   \date{}
   \predate{}\postdate{}
 
+\usepackage{ragged2e}
 
 \begin{document}
 
@@ -179,19 +180,32 @@ separate line searches in each terminal node:
 \hypertarget{a.4-figures}{%
 \subsection{A.4 Figures}\label{a.4-figures}}
 
-\(\;\)
-
 \begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth,height=\textheight]{figures/crossval.png}
 \caption{k-fold CV with k=5}
 \end{figure}
 
+\hypertarget{a.4.1.-ucsd}{%
+\subsubsection{A.4.1. UCSD}\label{a.4.1.-ucsd}}
+
+\usepackage{float}
+
+\textbackslash{}begin\{figure\}{[}H{]}
+
 \begin{figure}
 \centering
-\includegraphics[width=0.6\textwidth,height=\textheight]{figures/nnet.png}
-\caption{Something else}
+\includegraphics[width=0.7\textwidth,height=\textheight]{figures/ucsd/xgboost/xgboost_down_tuning.png}
+\caption{UCSD: xGBoost parameter tuning ``down'' data-sampling}
 \end{figure}
+
+\textbackslash{}end\{figure\}
+
+\hypertarget{a.4.2-ulb}{%
+\subsubsection{A.4.2 ULB}\label{a.4.2-ulb}}
+
+\hypertarget{a.4.2.-paysims}{%
+\subsubsection{A.4.2. PaySims}\label{a.4.2.-paysims}}
 
 
 \end{document}

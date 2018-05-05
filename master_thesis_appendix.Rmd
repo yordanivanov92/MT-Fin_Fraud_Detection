@@ -1,14 +1,16 @@
 ---
 output:
-  pdf_document: 
+  pdf_document:
     fig_caption: yes
-    latex_engine: pdflatex
     keep_tex: yes
+    latex_engine: pdflatex
 bibliography: references.bib
 urlcolor: black
 linkcolor: black
 fontsize: 12pt
-geometry: margin = 1.5in
+geometry: margin = 1.18in
+header-includes:
+- \usepackage{ragged2e}
 ---
 
 # Appendix
@@ -76,5 +78,20 @@ $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_
 
 ## A.4 Figures
 
+
 ![k-fold CV with k=5](figures/crossval.png){width=90%}
 
+
+### A.4.1. UCSD
+
+\begin{figure}[H]
+
+![UCSD: xGBoost parameter tuning "down" data-sampling](figures/ucsd/xgboost/xgboost_down_tuning.png){width=70%}
+
+
+\end{figure}
+
+### A.4.2 ULB
+
+
+### A.4.2. PaySims

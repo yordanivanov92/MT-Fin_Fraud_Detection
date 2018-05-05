@@ -579,8 +579,8 @@ slack variable \(\xi\). See Figure 3 for visual depiction.
 \centering
 \includegraphics[width=0.8\textwidth,height=\textheight]{figures/svm.png}
 \caption{Support vector classifier: Left plot shows the perfectly
-separable case. Right plot shows the nonseparable, or overlapping,
-case.}
+separable case. Right plot shows the nonseparable, or overlapping, case
+(Source: J. Friedman, Hastie, and Tibshirani 2001).}
 \end{figure}
 
 For the same missclassification cost case, we can write the soft
@@ -1169,6 +1169,40 @@ Each dataset has been randomly splitted to two - a train and a test
 subset. The train consists of 60\% of the original dataset, while the
 test the remaining 40\%. The models are fit on the train datasets.
 
+\begin{table}
+
+\caption{\label{tab:example_table_results}Example AUC result table}
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{llllllll}
+\toprule
+type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
+\midrule
+Random Forest & Number in [0,1] &  & Number in [0,1] &  & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+xGBoost & Number in [0,1] &  & Number in [0,1] &  & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+GBM & Number in [0,1] &  & Number in [0,1] &  & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+ANN & Number in [0,1] &  & Number in [0,1] &  & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+Log. Regression & Number in [0,1] &  &  &  & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+SVM & Number in [0,1] & Number in [0,1] & Number in [0,1] & Number in [0,1] & Number in [0,1] & Number in [0,1] & Number in [0,1]\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+In Figure 3, we can see an example of the tables we will use for
+evaluating the ROC and Precision-Recall AUC metrics. On the left, we
+have the six different ML techniques that are assessed and on the top
+are their different variations. The ``down'', ``up'' and ``SMOTE''
+columns represent the results after applying the different data-sampling
+techniques. The ``weighted'' column, in the cases of Random Forest,
+xGBoost, GBM and ANN describe the results after using the technique
+described in \emph{Section 3.4.}, while for the SVM it represents the
+cost-sensitive method as shown in \emph{Section 3.2.3.} with a linear
+kernel. The ``original'' column shows the results with the models fit on
+the original data sets, without any data sampling, and in the case of
+SVM as the non-cost-sensitive version described in \emph{Section 3.2.3.}
+with a linear kernel. The ``original\_radial'' and ``weighted\_radial''
+columns have results only for SVM, as they show the AUC metric for the
+models described in \emph{Section 3.2.3.}, but using a radial kernel.
+
 \hypertarget{ucsd}{%
 \subsubsection{5.2.1. UCSD}\label{ucsd}}
 
@@ -1200,16 +1234,16 @@ Precision-Recall AUC of the models that were used in this study.
 
 \caption{\label{tab:ucsd_models_AUC}UCSD: AUC Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.8548012 & NA & 0.8548012 & NA & 0.8168893 & 0.8651387 & 0.8356639\\
-xGBoost & 0.8218285 & NA & 0.8227247 & NA & 0.8055749 & 0.8249255 & 0.8031042\\
-GBM & 0.7765399 & NA & 0.7739591 & NA & 0.7542527 & 0.7754709 & 0.7446644\\
-ANN & 0.7188902 & NA & 0.7133446 & NA & 0.6970364 & 0.7083888 & 0.7015769\\
-Log. Regression & 0.6902922 & NA & NA & NA & 0.6862027 & 0.6892931 & 0.6896683\\
-SVM & 0.6324302 & 0.730891 & 0.6416904 & 0.7320982 & 0.6985871 & 0.6898714 & 0.7131695\\
+Random Forest & 0.8548012 &  & 0.854801195321834 &  & 0.8168893 & 0.8651387 & 0.8356639\\
+xGBoost & 0.8218285 &  & 0.822724650168494 &  & 0.8055749 & 0.8249255 & 0.8031042\\
+GBM & 0.7765399 &  & 0.773959103308491 &  & 0.7542527 & 0.7754709 & 0.7446644\\
+ANN & 0.7188902 &  & 0.713344618036583 &  & 0.6970364 & 0.7083888 & 0.7015769\\
+Log. Regression & 0.6902922 &  &  &  & 0.6862027 & 0.6892931 & 0.6896683\\
+SVM & 0.6324302 & 0.730891032479247 & 0.641690417122343 & 0.732098151638288 & 0.6985871 & 0.6898714 & 0.7131695\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1218,16 +1252,16 @@ SVM & 0.6324302 & 0.730891 & 0.6416904 & 0.7320982 & 0.6985871 & 0.6898714 & 0.7
 
 \caption{\label{tab:ucsd_model_PR}UCSD: PR Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.5151509 & NA & 0.5151509 & NA & 0.3515450 & 0.4591128 & 0.4062699\\
-xGBoost & 0.4242364 & NA & 0.4247124 & NA & 0.2055611 & 0.3885884 & 0.2906456\\
-GBM & 0.2831942 & NA & 0.1773567 & NA & 0.1419057 & 0.1937535 & 0.1461725\\
-ANN & 0.0985339 & NA & 0.0860225 & NA & 0.0691229 & 0.0960196 & 0.0749699\\
-Log. Regression & 0.0780961 & NA & NA & NA & 0.0783426 & 0.0735142 & 0.0681947\\
-SVM & 0.0574525 & 0.164502 & 0.0597058 & 0.164611 & 0.0712216 & 0.0667245 & 0.0783384\\
+Random Forest & 0.5151509 &  & 0.515150894616222 &  & 0.3515450 & 0.4591128 & 0.4062699\\
+xGBoost & 0.4242364 &  & 0.424712357392432 &  & 0.2055611 & 0.3885884 & 0.2906456\\
+GBM & 0.2831942 &  & 0.177356658131735 &  & 0.1419057 & 0.1937535 & 0.1461725\\
+ANN & 0.0985339 &  & 0.0860224839457332 &  & 0.0691229 & 0.0960196 & 0.0749699\\
+Log. Regression & 0.0780961 &  &  &  & 0.0783426 & 0.0735142 & 0.0681947\\
+SVM & 0.0574525 & 0.164502004634127 & 0.0597057939451133 & 0.164611041319705 & 0.0712216 & 0.0667245 & 0.0783384\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1285,16 +1319,16 @@ framework is once again 10-fold Cross-Validation.
 
 \caption{\label{tab:cr_card_models_AUC}ULB Credit Card: AUC Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.9543801 & NA & 0.9543801 & NA & 0.9682755 & 0.9542050 & 0.9638472\\
-xGBoost & 0.9692195 & NA & 0.9668218 & NA & 0.9456119 & 0.9771028 & 0.9673158\\
-GBM & 0.5805464 & NA & 0.9744766 & NA & 0.9703028 & 0.9690840 & 0.9659266\\
-ANN & 0.9639963 & NA & 0.9737695 & NA & 0.9708280 & 0.9554879 & 0.9567426\\
-Log. Regression & 0.9443036 & NA & NA & NA & 0.8141654 & 0.8967922 & 0.9088207\\
-SVM & 0.9181649 & 0.9592933 & 0.9247987 & 0.9627719 & 0.9181649 & 0.9181649 & 0.9181649\\
+Random Forest & 0.9543801 &  & 0.954380129409309 &  & 0.9682755 & 0.9542050 & 0.9638472\\
+xGBoost & 0.9692195 &  & 0.966821841051589 &  & 0.9456119 & 0.9771028 & 0.9673158\\
+GBM & 0.5805464 &  & 0.974476643706951 &  & 0.9703028 & 0.9690840 & 0.9659266\\
+ANN & 0.9639963 &  & 0.97376948445001 &  & 0.9708280 & 0.9554879 & 0.9567426\\
+Log. Regression & 0.9443036 &  &  &  & 0.8141654 & 0.8967922 & 0.9088207\\
+SVM & 0.9181649 & 0.959293341682321 & 0.92479866416197 & 0.962771863911501 & 0.9181649 & 0.9181649 & 0.9181649\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1303,16 +1337,16 @@ SVM & 0.9181649 & 0.9592933 & 0.9247987 & 0.9627719 & 0.9181649 & 0.9181649 & 0.
 
 \caption{\label{tab:cr_card_model_PR}ULB Credit Card: PR Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.8330339 & NA & 0.8330339 & NA & 0.7927356 & 0.8527693 & 0.8110314\\
-xGBoost & 0.8336317 & NA & 0.8068010 & NA & 0.5619452 & 0.7535501 & 0.7895484\\
-GBM & 0.4362846 & NA & 0.8202291 & NA & 0.4189344 & 0.8358836 & 0.5228063\\
-ANN & 0.7773746 & NA & 0.7618862 & NA & 0.3955604 & 0.5590176 & 0.6677604\\
-Log. Regression & 0.7584590 & NA & NA & NA & 0.0089959 & 0.7249762 & 0.0375165\\
-SVM & 0.7810338 & 0.7322844 & 0.7719868 & 0.7437641 & 0.7810338 & 0.7810338 & 0.7810338\\
+Random Forest & 0.8330339 &  & 0.833033872580155 &  & 0.7927356 & 0.8527693 & 0.8110314\\
+xGBoost & 0.8336317 &  & 0.806801036974016 &  & 0.5619452 & 0.7535501 & 0.7895484\\
+GBM & 0.4362846 &  & 0.820229095747952 &  & 0.4189344 & 0.8358836 & 0.5228063\\
+ANN & 0.7773746 &  & 0.761886210897158 &  & 0.3955604 & 0.5590176 & 0.6677604\\
+Log. Regression & 0.7584590 &  &  &  & 0.0089959 & 0.7249762 & 0.0375165\\
+SVM & 0.7810338 & 0.732284403074604 & 0.771986780844536 & 0.74376414809078 & 0.7810338 & 0.7810338 & 0.7810338\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1410,16 +1444,16 @@ working with the original model.
 
 \caption{\label{tab:paySim_models_AUC}PaySim: AUC Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.9999954 & NA & 0.9999954 & NA & 0.9985756 & 0.9999942 & 0.9994483\\
-xGBoost & 0.9999994 & NA & 0.9999994 & NA & 0.9997519 & 0.9999960 & 0.9996079\\
-GBM & 0.8795264 & NA & 0.9999931 & NA & 0.9927406 & 0.9999954 & 0.9995275\\
-ANN & 0.9968546 & NA & 0.9797525 & NA & 0.9797114 & 0.9713769 & 0.9902082\\
-Log. Regression & 0.8717525 & NA & NA & NA & 0.8370850 & 0.9939988 & 0.8717525\\
-SVM & 0.9560930 & 0.8788596 & 0.9553215 & 0.8767621 & 0.8765614 & 0.9686560 & 0.9004314\\
+Random Forest & 0.9999954 &  & 0.99999537358316 &  & 0.9985756 & 0.9999942 & 0.9994483\\
+xGBoost & 0.9999994 &  & 0.999999421697895 &  & 0.9997519 & 0.9999960 & 0.9996079\\
+GBM & 0.8795264 &  & 0.99999306037474 &  & 0.9927406 & 0.9999954 & 0.9995275\\
+ANN & 0.9968546 &  & 0.979752486699052 &  & 0.9797114 & 0.9713769 & 0.9902082\\
+Log. Regression & 0.8717525 &  &  &  & 0.8370850 & 0.9939988 & 0.8717525\\
+SVM & 0.9560930 & 0.878859588248901 & 0.955321535970391 & 0.876762086513995 & 0.8765614 & 0.9686560 & 0.9004314\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1428,16 +1462,16 @@ SVM & 0.9560930 & 0.8788596 & 0.9553215 & 0.8767621 & 0.8765614 & 0.9686560 & 0.
 
 \caption{\label{tab:paySim_model_PR}PaySim: PR Metric Model Variations}
 \centering
-\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrrrrrrr}
+\resizebox{\textwidth}{!}{\begin{tabular}[t]{lrlllrrr}
 \toprule
 type & original & original\_radial & weighted & weighted\_radial & down & up & SMOTE\\
 \midrule
-Random Forest & 0.9983619 & NA & 0.9983619 & NA & 0.7850739 & 0.9980407 & 0.8255387\\
-xGBoost & 0.9998013 & NA & 0.9998013 & NA & 0.9430914 & 0.9985762 & 0.9109428\\
-GBM & 0.5634932 & NA & 0.9974719 & NA & 0.6816623 & 0.9983664 & 0.9108737\\
-ANN & 0.9548565 & NA & 0.9452027 & NA & 0.5943965 & 0.5458254 & 0.5087932\\
-Log. Regression & 0.0168379 & NA & NA & NA & 0.0205172 & 0.6795277 & 0.0168379\\
-SVM & 0.7013130 & 0.0511329 & 0.7026728 & 0.0493418 & 0.5328521 & 0.7623474 & 0.5677162\\
+Random Forest & 0.9983619 &  & 0.998361878457853 &  & 0.7850739 & 0.9980407 & 0.8255387\\
+xGBoost & 0.9998013 &  & 0.999801306980356 &  & 0.9430914 & 0.9985762 & 0.9109428\\
+GBM & 0.5634932 &  & 0.997471883185745 &  & 0.6816623 & 0.9983664 & 0.9108737\\
+ANN & 0.9548565 &  & 0.945202667382031 &  & 0.5943965 & 0.5458254 & 0.5087932\\
+Log. Regression & 0.0168379 &  &  &  & 0.0205172 & 0.6795277 & 0.0168379\\
+SVM & 0.7013130 & 0.0511329411635732 & 0.702672776124839 & 0.0493418027867902 & 0.5328521 & 0.7623474 & 0.5677162\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -1566,6 +1600,7 @@ some of the most used machine learning techniques perform when given the
 problem of financial fraud detection.
 
 \clearpage
+\pagenumbering{roman}
 
 \hypertarget{appendix}{%
 \section{Appendix}\label{appendix}}
@@ -1660,13 +1695,63 @@ separate line searches in each terminal node:
 \hypertarget{a.4-figures}{%
 \subsection{A.4 Figures}\label{a.4-figures}}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth,height=\textheight]{figures/crossval.png}
-\caption{k-fold CV with k=5}
-\end{figure}
+\includegraphics[width=0.9\textwidth,height=\textheight]{figures/crossval.png}\\
+\textbf{k-fold CV with k=5}
 
 \clearpage
+
+\hypertarget{a.4.1.-ucsd}{%
+\subsubsection{A.4.1. UCSD}\label{a.4.1.-ucsd}}
+
+\center
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_gbm_rocs.png}\\
+\textbf{UCSD: GBM ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_gbm_PR.png}\\
+\textbf{UCSD: GBM Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_glm_rocs.png}\\
+\textbf{UCSD: Log. Regression ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_glm_PR.png}\\
+\textbf{UCSD: Log. Regression Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_nnet_rocs.png}\\
+\textbf{UCSD: ANN ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_nnet_PR.png}\\
+\textbf{UCSD: ANN Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_randfor_rocs.png}\\
+\textbf{UCSD: Random Forest ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_randfor_PR.png}\\
+\textbf{UCSD: Random Forest Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_svm_rocs.png}\\
+\textbf{UCSD: SVM ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_svm_PR.png}\\
+\textbf{UCSD: SVM Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_xgboost_rocs.png}\\
+\textbf{UCSD: xGBoost ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_xgboost_PR.png}\\
+\textbf{UCSD: xGBoost Precision-Recall Curves}
+
+\justify
+
+\hypertarget{a.4.2-ulb}{%
+\subsubsection{A.4.2 ULB}\label{a.4.2-ulb}}
+
+\hypertarget{a.4.2.-paysim}{%
+\subsubsection{A.4.2. PaySim}\label{a.4.2.-paysim}}
+
+\clearpage
+
+\justify
 
 \hypertarget{references}{%
 \section*{References}\label{references}}

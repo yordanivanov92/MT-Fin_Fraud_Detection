@@ -188,7 +188,7 @@ colnames(auc_table_all) <- c("Original Random Forest", "Upsampled GLM",
 
 #### Tables ####
 paysim_auc_glm <- paysim_auc_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 paySim_auc_svm <- paySim_auc_svm %>%
   dplyr::rename(weighted_radial = weighted_rad,
@@ -199,14 +199,14 @@ paySim_auc_svm <- paySim_auc_svm %>%
 paySim_auc_table <- rbind(paySim_auc_randfor, paySim_auc_xgboost, 
                            paySim_auc_gbm, paySim_auc_nnet,
                            paysim_auc_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(paySim_auc_svm) 
 
 
 paySim_PR_glm <- paySim_PR_glm %>%
-  mutate(weighted = NA) %>%
+  mutate(weighted = " ") %>%
   select(original, weighted, down, up, SMOTE, type)
 paySim_PR_svm <- paySim_PR_svm %>%
   dplyr::rename(weighted_radial = weighted_rad,
@@ -217,7 +217,7 @@ paySim_PR_svm <- paySim_PR_svm %>%
 paySim_PR_table <- rbind(paySim_PR_randfor, paySim_PR_xgboost, 
                           paySim_PR_gbm, paySim_PR_nnet,
                           paySim_PR_glm) %>%
-  mutate(weighted_radial = NA,
-         original_radial = NA) %>%
+  mutate(weighted_radial = " ",
+         original_radial = " ") %>%
   select(type, original, original_radial, weighted, weighted_radial, down, up, SMOTE) %>%
   rbind(paySim_PR_svm) 
