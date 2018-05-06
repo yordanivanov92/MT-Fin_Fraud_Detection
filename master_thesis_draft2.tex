@@ -178,7 +178,6 @@ T\"ubingen}}
 
 \end{titlepage}
 
-
 \pagenumbering{roman}
 \centering
 
@@ -573,14 +572,14 @@ include more layers (J. Friedman, Hastie, and Tibshirani 2001), but it
 is beyond the scope of this paper.
 
 A feed-forward neural network with one hidden layer can be seen in
-Figure 2. It has \(g\) outputs nodes, which in our case would be
+Figure 1. It has \(g\) outputs nodes, which in our case would be
 \(g=2\), as we are dealing with two-class classification problem. Each
 output node would give us the probability of an observation belonging to
 a specific class.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.6\textwidth,height=\textheight]{figures/nnet.png}
+\includegraphics[width=0.5\textwidth,height=\textheight]{figures/nnet.png}
 \caption{Neural Network with 1 hidden layer}
 \end{figure}
 
@@ -950,7 +949,7 @@ but the \(k\)-fold CV has shown to be superior in both computational
 time and estimate accuracy (J. Friedman, Hastie, and Tibshirani 2001).
 The latter is connected to the bias-variance trade-off problem, but a
 discussion is out of the scope of this paper. A graphical representation
-can be seen in the first Figure in Appendix Section A.4.
+can be seen in Figure 1 in Appendix Section 9.4.
 
 \hypertarget{misclassification-errors}{%
 \subsection{3.4. Misclassification
@@ -1130,11 +1129,6 @@ will be related to the main building block of binary classification -
 the confusion matrix.
 
 \begin{longtable}[]{@{}lll@{}}
-\caption{Confusion Matrix}\tabularnewline
-\toprule
-. & Actual.Positive & Actual.Negative\tabularnewline
-\midrule
-\endfirsthead
 \toprule
 . & Actual.Positive & Actual.Negative\tabularnewline
 \midrule
@@ -1176,7 +1170,7 @@ very powerful tool. The ROC curve is created by using the False
 Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and
 plotting them against each at different threshold settings. The FPR is
 defined as \(FPR=\frac{FP}{FP+TN}\). An example ROC curve can be seen in
-Figure 4. The better the line ``hugs'' the upper left corner of the ROC
+Figure 3. The better the line ``hugs'' the upper left corner of the ROC
 space, the better the trained classifier is. A model that produces a
 line that is close to the 45-degree separator means that it does not
 perform better than random guessing.
@@ -1274,7 +1268,7 @@ SVM & Number in [0,1] & Number in [0,1] & Number in [0,1] & Number in [0,1] & Nu
 \end{tabular}}
 \end{table}
 
-On Table 3, we can see an example of the tables we will use for
+In Figure 3, we can see an example of the tables we will use for
 evaluating the ROC and Precision-Recall AUC metrics. On the left, we
 have the six different ML techniques that are assessed and on the top
 are their different variations. The ``down'', ``up'' and ``SMOTE''
@@ -1303,7 +1297,7 @@ not much that we derive from our raw data and that can be observed from
 the graphics created to illustrate the distribution of the different
 features (See Appendix). The only interesting note that can be taken is
 that it seems the fraudulent class is usually associated with a
-transaction that has a lower amount. This can be seen in Figure 5.
+transaction that has a lower amount. This can be seen in Figure 4.
 
 \begin{figure}
 \centering
@@ -1314,7 +1308,7 @@ transaction that has a lower amount. This can be seen in Figure 5.
 However, when we turn to the ML Techniques, patterns seem to arise and
 better predictions can be made. We first shortly present the 10-fold
 Cross-Validation results that were obtained from fitting the models on
-the dataset variations. In Tables 4 and 5, we can observe ROC AUC and
+the dataset variations. In Tables 3 and 4, we can observe ROC AUC and
 Precision-Recall AUC of the models that were used in this study.
 
 \begin{table}
@@ -1363,7 +1357,7 @@ the minority. The Logistic Regression performs relatively competitive
 and having a huge computational speed advantage means it is in no way
 irrelevant.
 
-In Figure 6 we also visually show the differences between the different
+In Figure 5 we also visually show the differences between the different
 Machine Learning Techniques. Here it is also quite evident that the
 Random Forest method shows superiority. Its ROC curve is higher than all
 the other at every point, while the Precision Recall curve is lower than
@@ -1386,7 +1380,7 @@ analysis.
 
 One of the few things that we can observe by exploring our data is that
 the fraud class has fewer observation that are associated with very
-large amounts. That can be seen in Figure 7, where we show a boxplot of
+large amounts. That can be seen in Figure 6, where we show a boxplot of
 all transaction with amount less than 2000 in order to better illustrate
 the beforementioned statement.
 
@@ -1398,7 +1392,7 @@ the beforementioned statement.
 
 However, when applying the ML Techniques discussed in \emph{Section 3},
 we are better able to use our data for analysing and prediction. In
-Tables 6 and 7, we can see the ROC AUC and Precision-Recall AUC of the
+Tables 5 and 6, we can see the ROC AUC and Precision-Recall AUC of the
 different models and the different data-sampling techniques. The fitting
 framework is once again 10-fold Cross-Validation.
 
@@ -1438,7 +1432,7 @@ SVM & 0.7810338 & 0.732284403074604 & 0.771986780844536 & 0.74376414809078 & 0.7
 \end{tabular}}
 \end{table}
 
-From the two tables, 6 and 7, we can observe that all models perform
+From the two tables, 5 and 6, we can observe that all models perform
 relatively similar. However, Random Forest and xGBoost are one step
 above the rest, in both the ROC AUC and Precision-Recall AUC metrics.
 The SVM also manages to predict better than expected, despite dealing
@@ -1449,7 +1443,7 @@ class classification manages to improve performance. Both cost-sensitive
 variants, using linear or radial kernel, outperform the
 non-cost-sensitive SVM.
 
-In Figure 8, both left and right, we can see the red, green and
+In Figure 7, both left and right, we can see the red, green and
 sometimes pink line, representing RF, xGBoost and GBM respectively, are
 slightly above all others. One common feature all these three models
 have in common, is that they are based on the principle of decision
@@ -1501,17 +1495,17 @@ TRANSFER & 1 & 61\\
 \caption{PaySim: Exploratory Data Analysis Plots}
 \end{figure}
 
-On Table 8, it can be clearly seen that fraud occurs only on two
+On Table 7, it can be clearly seen that fraud occurs only on two
 occasions - when the transaction type is either CASH\_OUT or TRANSFER.
-Moreover, in Figure 9, we have created some plots in which we can see
+Moreover, in Figure 8, we have created some plots in which we can see
 how the two types of transaction, where the fraud occurs, behave. We can
 observe on the upper-left graphics that the fraudulent transactions
 mostly possess a higher amount feature than the non-fraudulent ones.
 Furthermore, on the lower-right plot, it can be seen how the
 errorBalanceOrig feature always stays at zero in the cases of fraud.
 From the other two graphics, we can not derive any conclusions. In
-Figure 10, it can also be seen that the two classes, fraud and
-non-fraud, are visibly separated among the three variables - amount,
+Figure 9, it can also be seen that the two classes, fraud and non-fraud,
+are visibly separated among the three variables - amount,
 errorBalanceOrig and errorBalanceDest. Thus, it is expected that linear
 models could also perform good on this dataset.
 
@@ -1563,7 +1557,7 @@ SVM & 0.7013130 & 0.0511329411635732 & 0.702672776124839 & 0.0493418027867902 & 
 \end{tabular}}
 \end{table}
 
-In tables 9 and 10, we can observe that all models have performed really
+In tables 8 and 9, we can observe that all models have performed really
 well. Nonetheless, we can once more see how the decision tree based
 models, Random Forest, xGBoost and GBM are slightly ahead than all the
 rest. This is not very evident when looking at the ROC AUC metric, but
@@ -1576,7 +1570,7 @@ class observations. Nonetheless, even in its other variations,
 especially the cost-sensitive variant with the linear kernel, it has
 shown better than expected results.
 
-Both plots on Figure 11 look quite impressive, as most lines are
+Both plots on Figure 10 look quite impressive, as most lines are
 ``hugging'' the upper left or right corner for the ROC and
 Precision-Recall cases respectively.
 
@@ -1597,7 +1591,7 @@ one synthetically generated were used for the evaluations. Moreover,
 data-sampling techniques aimed at tackling the imbalanced class problem
 were performed.
 
-It is quite evident from Figures 6, 8 and 11 that obtaining good
+It is quite evident from Figures 5, 7 and 10 that obtaining good
 classifier performance on the real world datasets has been a harder task
 than doing it on the synthetically generated one. This finding is not
 surprising, as the PaySim is a simulation and can not perfectly generate
@@ -1616,7 +1610,7 @@ two it was non-linear. However, the ANN performance could certainly be
 improved if modifications are introduced.
 
 The SVM method, as expected, does not manage to produce high-quality
-results most of the time. However, in Tables 4, 5, 6, 7, 9 and 10 we can
+results most of the time. However, in Tables 3, 4, 5, 6, 8 and 9 we can
 see that when working with the Different Error Cost SVM model, as
 described in \emph{Section 3.2.3.}, the performance metrics are higher
 than the normal SVM without any modification or data-sampling technique.
@@ -1796,23 +1790,41 @@ separate line searches in each terminal node:
 
 \center
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_gbm.png}\\
-\textbf{UCSD: GBM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_gbm_rocs.png}\\
+\textbf{UCSD: GBM ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_glm.png}\\
-\textbf{UCSD: Log. Regression ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_gbm_PR.png}\\
+\textbf{UCSD: GBM Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_nnet.png}\\
-\textbf{UCSD: ANN ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_glm_rocs.png}\\
+\textbf{UCSD: Log. Regression ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_randfor.png}\\
-\textbf{UCSD: Random Forest ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_glm_PR.png}\\
+\textbf{UCSD: Log. Regression Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_svm.png}\\
-\textbf{UCSD: SVM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_nnet_rocs.png}\\
+\textbf{UCSD: ANN ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/ucsd/ucsd_roc_pr_xgboost.png}\\
-\textbf{UCSD: xGBoost ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_nnet_PR.png}\\
+\textbf{UCSD: ANN Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_randfor_rocs.png}\\
+\textbf{UCSD: Random Forest ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_randfor_PR.png}\\
+\textbf{UCSD: Random Forest Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_svm_rocs.png}\\
+\textbf{UCSD: SVM ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_svm_PR.png}\\
+\textbf{UCSD: SVM Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_xgboost_rocs.png}\\
+\textbf{UCSD: xGBoost ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/ucsd/ucsd_xgboost_PR.png}\\
+\textbf{UCSD: xGBoost Precision-Recall Curves}
 
 \justify
 
@@ -1821,23 +1833,41 @@ separate line searches in each terminal node:
 
 \center
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_gbm.png}\\
-\textbf{ULB: GBM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_gbm_rocs.png}\\
+\textbf{ULB: GBM ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_glm.png}\\
-\textbf{ULB: Log. Regression ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_gbm_PR.png}\\
+\textbf{ULB: GBM Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_nnet.png}\\
-\textbf{ULB: ANN ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_glm_rocs.png}\\
+\textbf{ULB: Log. Regression ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_randfor.png}\\
-\textbf{ULB: Random Forest ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_glm_PR.png}\\
+\textbf{ULB: Log. Regression Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_svm.png}\\
-\textbf{ULB: SVM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_nnet_rocs.png}\\
+\textbf{ULB: ANN ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/credit/cr_card_roc_pr_xgboost.png}\\
-\textbf{ULB: xGBoost ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_nnet_PR.png}\\
+\textbf{ULB: ANN Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_randfor_rocs.png}\\
+\textbf{ULB: Random Forest ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_randfor_PR.png}\\
+\textbf{ULB: Random Forest Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_svm_rocs.png}\\
+\textbf{ULB: SVM ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_svm_PR.png}\\
+\textbf{ULB: SVM Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_xgboost_rocs.png}\\
+\textbf{ULB: xGBoost ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/credit/cr_card_xgboost_PR.png}\\
+\textbf{ULB: xGBoost Precision-Recall Curves}
 
 \justify
 
@@ -1846,67 +1876,48 @@ separate line searches in each terminal node:
 
 \center
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_gbm.png}\\
-\textbf{paySim: GBM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_gbm_rocs.png}\\
+\textbf{paySim: GBM ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_glm.png}\\
-\textbf{paySim: Log. Regression ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_gbm_PR.png}\\
+\textbf{paySim: GBM Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_nnet.png}\\
-\textbf{paySim: ANN ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_glm_rocs.png}\\
+\textbf{paySim: Log. Regression ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_randfor.png}\\
-\textbf{paySim: Random Forest ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_glm_PR.png}\\
+\textbf{paySim: Log. Regression Precision-Recall Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_svm.png}\\
-\textbf{paySim: SVM ROC/Precision-Recall Curves}
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_nnet_rocs.png}\\
+\textbf{paySim: ANN ROC Curves}
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/paysim/paySim_roc_pr_xgboost.png}\\
-\textbf{paySim: xGBoost ROC/Precision-Recall Curves} \clearpage
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_nnet_PR.png}\\
+\textbf{paySim: ANN Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_randfor_rocs.png}\\
+\textbf{paySim: Random Forest ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_randfor_PR.png}\\
+\textbf{paySim: Random Forest Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_svm_rocs.png}\\
+\textbf{paySim: SVM ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_svm_PR.png}\\
+\textbf{paySim: SVM Precision-Recall Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_xgboost_rocs.png}\\
+\textbf{paySim: xGBoost ROC Curves}
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{figures/paysim/paySim_xgboost_PR.png}\\
+\textbf{paySim: xGBoost Precision-Recall Curves}
+
+\clearpage
 
 \justify
 
 \hypertarget{a.5.-tables}{%
 \subsection{A.5. Tables}\label{a.5.-tables}}
-
-\hypertarget{a.5.1.-ucsd}{%
-\subsubsection{A.5.1. UCSD}\label{a.5.1.-ucsd}}
-
-\center
-
-\begin{table}[!h]
-\centering
-\resizebox{\textwidth}{!}{\begin{tabular}{ll}
-\toprule
-Variables & Description\\
-\midrule
-custAttr1 & Card Number\\
-amount & Amount transacted\\
-hour1 & Time of transaction\\
-zip1 & Transaction origin ZIP code\\
-field1 & Masked field - discrete numbers \{0,1,2,3,4\}\\
-\addlinespace
-field2 & Masked field - discrete number \{0,1\}\\
-flag1 & Masked field - discrete number \{0,1\}\\
-field3 & Masked field - integer\\
-field4 & Masked field - integer\\
-indicator1 & Masked field - discrete number \{0,1\}\\
-\addlinespace
-indicator2 & Masked field - discrete number \{0,1\}\\
-flag2 & Masked field - discrete number \{0,1\}\\
-flag3 & Masked field - discrete number \{0,1\}\\
-flag4 & Masked field - discrete number \{0,1\}\\
-flag5 & Masked field - integer\\
-Class & Class variable, Fraud is 1 or Non-fraud is 0\\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\textbf{UCSD: Variable Description}
-
-\clearpage
-
-\justify
 
 \hypertarget{references}{%
 \section*{References}\label{references}}

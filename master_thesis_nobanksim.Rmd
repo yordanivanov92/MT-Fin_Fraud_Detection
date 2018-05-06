@@ -183,7 +183,7 @@ The number of independent variables is indexed by *p*. After manipulating (1), w
 
 Neural Networks is a term that currently describes a wide array of different algorithms. However, we will be using the "vanilla" version, which contains only one hidden layer. The model can be extended to include more layers [@friedman2001elements], but it is beyond the scope of this paper. 
 
-A feed-forward neural network with one hidden layer can be seen in Figure 1. It has $g$ outputs nodes, which in our case would be $g=2$, as we are dealing with two-class classification problem. Each output node would give us the probability of an observation belonging to a specific class. 
+A feed-forward neural network with one hidden layer can be seen in Figure 2. It has $g$ outputs nodes, which in our case would be $g=2$, as we are dealing with two-class classification problem. Each output node would give us the probability of an observation belonging to a specific class. 
 
 ![Neural Network with 1 hidden layer](figures/nnet.png){width=60%}
 
@@ -315,7 +315,7 @@ The framework for model training that we use in this study is a $k$-fold Cross-V
 $$CV_{(k)}=\frac{1}{k}\sum_{i=1}^{k}Err_i$$ 
 where $Err_i = I(y_i\neq \widehat{y}_i)$. 
 
-There are other approaches to CV, such as the Leave-One-Out CV (LOOCV), but the $k$-fold CV has shown to be superior in both computational time and estimate accuracy [@friedman2001elements]. The latter is connected to the bias-variance trade-off problem, but a discussion is out of the scope of this paper. A graphical representation can be seen in Figure 1 in Appendix Section 9.4. 
+There are other approaches to CV, such as the Leave-One-Out CV (LOOCV), but the $k$-fold CV has shown to be superior in both computational time and estimate accuracy [@friedman2001elements]. The latter is connected to the bias-variance trade-off problem, but a discussion is out of the scope of this paper. A graphical representation can be seen in the first Figure in Appendix Section A.4. 
 
 ## 3.4. Misclassification errors
 
@@ -387,7 +387,7 @@ conf_matrix <- data.frame("." = c("Predicted Positive", "Predicted Negative"),
                           "Actual Positive" = c("True Positive (TP)", "False Negative (FN)"),
                           "Actual Negative" = c("False Positive (FP)", "True Negative (TN)"))
 
-kable(conf_matrix, format = "pandoc") 
+kable(conf_matrix, format = "pandoc", caption = "Confusion Matrix") 
 ```
 
 ### 5.1.1. Threshold Metrics
@@ -402,7 +402,7 @@ The precision measure indicates how well the used classifier identifies a given 
 
 #### ROC Curve Analysis
 
-The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 3. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perform better than random guessing. 
+The Receiver-Operating-Characteristic, or simply ROC, is a simple, yet very powerful tool. The ROC curve is created by using the False Posititve Rate (FPR) and Sensitivity (or True Positive Rate (TPR)) and plotting them against each at different threshold settings. The FPR is defined as $FPR=\frac{FP}{FP+TN}$. An example ROC curve can be seen in Figure 4. The better the line "hugs" the upper left corner of the ROC space, the better the trained classifier is. A model that produces a line that is close to the 45-degree separator means that it does not perform better than random guessing. 
 
 ![Well-performing ROC curve example](figures/roc_curve_example.png){width=50%}
 
@@ -437,17 +437,17 @@ kable(example_table, format = "latex", caption = "Example AUC result table",
 
 ```
 
-In Figure 3, we can see an example of the tables we will use for evaluating the ROC and Precision-Recall AUC metrics. On the left, we have the six different ML techniques that are assessed and on the top are their different variations. The "down", "up" and "SMOTE" columns represent the results after applying the different data-sampling techniques. The "weighted" column, in the cases of Random Forest, xGBoost, GBM and ANN describe the results after using the technique described in *Section 3.4.*, while for the SVM it represents the cost-sensitive method as shown in *Section 3.2.3.* with a linear kernel. The "original" column shows the results with the models fit on the original data sets, without any data sampling, and in the case of SVM as the non-cost-sensitive version described in *Section 3.2.3.* with a linear kernel. The "original_radial" and "weighted_radial" columns have results only for SVM, as they show the AUC metric for the models described in *Section 3.2.3.*, but using a radial kernel.
+On Table 3, we can see an example of the tables we will use for evaluating the ROC and Precision-Recall AUC metrics. On the left, we have the six different ML techniques that are assessed and on the top are their different variations. The "down", "up" and "SMOTE" columns represent the results after applying the different data-sampling techniques. The "weighted" column, in the cases of Random Forest, xGBoost, GBM and ANN describe the results after using the technique described in *Section 3.4.*, while for the SVM it represents the cost-sensitive method as shown in *Section 3.2.3.* with a linear kernel. The "original" column shows the results with the models fit on the original data sets, without any data sampling, and in the case of SVM as the non-cost-sensitive version described in *Section 3.2.3.* with a linear kernel. The "original_radial" and "weighted_radial" columns have results only for SVM, as they show the AUC metric for the models described in *Section 3.2.3.*, but using a radial kernel.
 
 ### 5.2.1. UCSD
 
 As mentioned in *Section 4.1.1.*, we will work with 40 918 observations. As this is a real dataset and its features are mostly masked, this means that there is no real feature engineering that we can perform before applying any machine learning techniques. 
 
-From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not much that we derive from our raw data and that can be observed from the graphics created to illustrate the distribution of the different features (See Appendix). The only interesting note that can be taken is that it seems the fraudulent class is usually associated with a transaction that has a lower amount. This can be seen in Figure 4.
+From the 40 918 observations, only 1 196 are fraudulent. Hence, there is not much that we derive from our raw data and that can be observed from the graphics created to illustrate the distribution of the different features (See Appendix). The only interesting note that can be taken is that it seems the fraudulent class is usually associated with a transaction that has a lower amount. This can be seen in Figure 5.
 
 ![UCSD: Boxplot of amount by class](figures/ucsd/descriptive/boxplot_amount.png){width=60%}
 
-However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations. In Tables 3 and 4, we can observe ROC AUC and Precision-Recall AUC of the models that were used in this study. 
+However, when we turn to the ML Techniques, patterns seem to arise and better predictions can be made. We first shortly present the 10-fold Cross-Validation results that were obtained from fitting the models on the dataset variations. In Tables 4 and 5, we can observe ROC AUC and Precision-Recall AUC of the models that were used in this study. 
 
 
 ```{r ucsd_models_AUC, echo = FALSE}
@@ -473,7 +473,7 @@ kable(ucsd_PR_table, format = "latex", caption = "UCSD: PR Metric Model Variatio
 
 It is quite evident from these two tables that the best performing model throughout each setting is Random Forests. Unsurprisingly, it is followed by the eXtreme Gradient Boosting, which also produces really good results. The SVM is not performing well, as expected, due to the severe class imbalance, which as mentioned in Section 3, leads to the support vector being pushed close to the majority class, thus ignoring the minority. The Logistic Regression performs relatively competitive and having a huge computational speed advantage means it is in no way irrelevant. 
 
-In Figure 5 we also visually show the differences between the different Machine Learning Techniques. Here it is also quite evident that the Random Forest method shows superiority. Its ROC curve is higher than all the other at every point, while the Precision Recall curve is lower than the weighted xGBoost only in a very limited range. 
+In Figure 6 we also visually show the differences between the different Machine Learning Techniques. Here it is also quite evident that the Random Forest method shows superiority. Its ROC curve is higher than all the other at every point, while the Precision Recall curve is lower than the weighted xGBoost only in a very limited range. 
 
 ![UCSD: ROC and PR Curves](figures/ucsd/ucsd_pr_roc.png){width=100%}
 
@@ -481,11 +481,11 @@ In Figure 5 we also visually show the differences between the different Machine 
 
 As discussed in *Section 4.1.1.*, we wil work with a subset of 100 000 bservations. Due to the fact that this a real-world dataset and has PCA performed on it in order to hide any private information, we can not perform any feature engineering or informative descriptive data analysis. 
 
-One of the few things that we can observe by exploring our data is that the fraud class has fewer observation that are associated with very large amounts. That can be seen in Figure 6, where we show a boxplot of all transaction with amount less than 2000 in order to better illustrate the beforementioned statement. 
+One of the few things that we can observe by exploring our data is that the fraud class has fewer observation that are associated with very large amounts. That can be seen in Figure 7, where we show a boxplot of all transaction with amount less than 2000 in order to better illustrate the beforementioned statement. 
 
 ![ULB Credit Card: Boxplot of amount by class](figures/credit/descriptive/cr_card_fraud_amount_boxplot.png){width=60%}
 
-However, when applying the ML Techniques discussed in *Section 3*, we are better able to use our data for analysing and prediction. In Tables 5 and 6, we can see the ROC AUC and Precision-Recall AUC of the different models and the different data-sampling techniques. The fitting framework is once again 10-fold Cross-Validation. 
+However, when applying the ML Techniques discussed in *Section 3*, we are better able to use our data for analysing and prediction. In Tables 6 and 7, we can see the ROC AUC and Precision-Recall AUC of the different models and the different data-sampling techniques. The fitting framework is once again 10-fold Cross-Validation. 
 
 ```{r cr_card_models_AUC, echo = FALSE}
 library(dplyr)
@@ -508,9 +508,9 @@ kable(cr_card_PR_table, format = "latex", caption = "ULB Credit Card: PR Metric 
           kable_styling(latex_options = "scale_down")
 ```
 
-From the two tables, 5 and 6,  we can observe that all models perform relatively similar. However, Random Forest and xGBoost are one step above the rest, in both the ROC AUC and Precision-Recall AUC metrics. The SVM also manages to predict better than expected, despite dealing with sever class imbalance. Nonetheless, its non-cost-sensitive variant is still the worst performing model. On this dataset we can see how the inclusion of different costs in the SVM algorithm for the different class classification manages to improve performance. Both cost-sensitive variants, using linear or radial kernel, outperform the non-cost-sensitive SVM. 
+From the two tables, 6 and 7,  we can observe that all models perform relatively similar. However, Random Forest and xGBoost are one step above the rest, in both the ROC AUC and Precision-Recall AUC metrics. The SVM also manages to predict better than expected, despite dealing with sever class imbalance. Nonetheless, its non-cost-sensitive variant is still the worst performing model. On this dataset we can see how the inclusion of different costs in the SVM algorithm for the different class classification manages to improve performance. Both cost-sensitive variants, using linear or radial kernel, outperform the non-cost-sensitive SVM. 
 
-In Figure 7, both left and right, we can see the red, green and sometimes pink line, representing RF, xGBoost and GBM respectively, are slightly above all others. One common feature all these three models have in common, is that they are based on the principle of decision trees. They do employ different fitting algorithm, bagging and boosting, but still perform on a similar high level. 
+In Figure 8, both left and right, we can see the red, green and sometimes pink line, representing RF, xGBoost and GBM respectively, are slightly above all others. One common feature all these three models have in common, is that they are based on the principle of decision trees. They do employ different fitting algorithm, bagging and boosting, but still perform on a similar high level. 
 
 ![ULB Credit Card: ROC and PR Curves](figures/credit/cr_card_roc_pr.png){width=100%}
 
@@ -530,7 +530,7 @@ kable(fraud_type, format = "latex", caption = "PaySim: Transaction Types",
 
 ![PaySim: Exploratory Data Analysis Plots](figures/paySim/descriptive/four_plots.png){width=90%}
 
-On Table 7, it can be clearly seen that fraud occurs only on two occasions - when the transaction type is either CASH_OUT or TRANSFER. Moreover, in Figure 8, we have created some plots in which we can see how the two types of transaction, where the fraud occurs, behave. We can observe on the upper-left graphics that the fraudulent transactions mostly possess a higher amount feature than the non-fraudulent ones. Furthermore, on the lower-right plot, it can be seen how the errorBalanceOrig feature always stays at zero in the cases of fraud. From the other two graphics, we can not derive any conclusions. In Figure 9, it can also be seen that the two classes, fraud and non-fraud, are visibly separated among the three variables - amount, errorBalanceOrig and errorBalanceDest. Thus, it is expected that linear models could also perform good on this dataset. 
+On Table 8, it can be clearly seen that fraud occurs only on two occasions - when the transaction type is either CASH_OUT or TRANSFER. Moreover, in Figure 9, we have created some plots in which we can see how the two types of transaction, where the fraud occurs, behave. We can observe on the upper-left graphics that the fraudulent transactions mostly possess a higher amount feature than the non-fraudulent ones. Furthermore, on the lower-right plot, it can be seen how the errorBalanceOrig feature always stays at zero in the cases of fraud. From the other two graphics, we can not derive any conclusions. In Figure 10, it can also be seen that the two classes, fraud and non-fraud, are visibly separated among the three variables - amount, errorBalanceOrig and errorBalanceDest. Thus, it is expected that linear models could also perform good on this dataset. 
 
 ![PaySim: Amount, errorBalanceORig and errorBalanceDest plot](figures/paySim/descriptive/threedimensionalplot.png){width=70%}
 
@@ -558,9 +558,9 @@ kable(paySim_PR_table, format = "latex", caption = "PaySim: PR Metric Model Vari
           kable_styling(latex_options = "scale_down")
 ```
 
-In tables 8 and 9, we can observe that all models have performed really well. Nonetheless, we can once more see how the decision tree based models, Random Forest, xGBoost and GBM are slightly ahead than all the rest. This is not very evident when looking at the ROC AUC metric, but it is more pronounced when we shift our view to the Precision-Recall AUC. It is interesting to see that despite the severe class imbalance, the SVM models has managed to produced some impressive results. Its best performance is on the dataset with RUS applied on it, meaning that the imbalance ratio was brought down by generating copies of the minoriy class observations. Nonetheless, even in its other variations, especially the cost-sensitive variant with the linear kernel, it has shown better than expected results.
+In tables 9 and 10, we can observe that all models have performed really well. Nonetheless, we can once more see how the decision tree based models, Random Forest, xGBoost and GBM are slightly ahead than all the rest. This is not very evident when looking at the ROC AUC metric, but it is more pronounced when we shift our view to the Precision-Recall AUC. It is interesting to see that despite the severe class imbalance, the SVM models has managed to produced some impressive results. Its best performance is on the dataset with RUS applied on it, meaning that the imbalance ratio was brought down by generating copies of the minoriy class observations. Nonetheless, even in its other variations, especially the cost-sensitive variant with the linear kernel, it has shown better than expected results.
 
-Both plots on Figure 10 look quite impressive, as most lines are "hugging" the upper left or right corner for the ROC and Precision-Recall cases respectively. 
+Both plots on Figure 11 look quite impressive, as most lines are "hugging" the upper left or right corner for the ROC and Precision-Recall cases respectively. 
 
 ![PaySim: ROC and PR Curves](figures/paySim/paySim_pr_roc.png){width=100%}
 
@@ -568,11 +568,11 @@ Both plots on Figure 10 look quite impressive, as most lines are "hugging" the u
 
 We have thoroughly examined the performance of six ML techniques, Artificial Neural Networks, Support Vector Machines, Gradient Boosting Machines, eXtreme Gradient Boosting, Random Forest and Logistic Regression, for financial fraud detection. Two real-world datasets and one synthetically generated were used for the evaluations. Moreover, data-sampling techniques aimed at tackling the imbalanced class problem were performed. 
 
-It is quite evident from Figures 5, 7 and 10 that obtaining good classifier performance on the real world datasets has been a harder task than doing it on the synthetically generated one. This finding is not surprising, as the PaySim is a simulation and can not perfectly generate human behaviour [@lopez2014social]. We can also observe from those three figures that the three decision tree based ML techniques, Random Forest, GBM and xGBoost, show superior performance. The good results that they produce are due to the ensemble of the decision tree model and the bagging or boosting frameworks. 
+It is quite evident from Figures 6, 8 and 11 that obtaining good classifier performance on the real world datasets has been a harder task than doing it on the synthetically generated one. This finding is not surprising, as the PaySim is a simulation and can not perfectly generate human behaviour [@lopez2014social]. We can also observe from those three figures that the three decision tree based ML techniques, Random Forest, GBM and xGBoost, show superior performance. The good results that they produce are due to the ensemble of the decision tree model and the bagging or boosting frameworks. 
 
 The ANN and Logistic Regression have produced conflicting results overall. In the real-world dataset cases both methods failed to impress, but when fit on the simulated data, their performance improved drastically. The reason behind this improvement is mainly that in the PaySim instance, the class separation was linear, while in the the other two it was non-linear. However, the ANN performance could certainly be improved if modifications are introduced. 
 
-The SVM method, as expected, does not manage to produce high-quality results most of the time. However, in Tables 3, 4, 5, 6, 8 and 9 we can see that when working with the Different Error Cost SVM model, as described in *Section 3.2.3.*, the performance metrics are higher than the normal SVM without any modification or data-sampling technique. 
+The SVM method, as expected, does not manage to produce high-quality results most of the time. However, in Tables 4, 5, 6, 7, 9 and 10 we can see that when working with the Different Error Cost SVM model, as described in *Section 3.2.3.*, the performance metrics are higher than the normal SVM without any modification or data-sampling technique. 
 
 # 6. Further Improvements
 
@@ -657,60 +657,105 @@ $$\rho_{km} = \arg\min_{\rho_k}\sum_{x_i\in S_k}\Psi(y_i,\widehat{f}(\mathbf{x}_
 
 ## A.4 Figures
 
+\center
+
 ![k-fold CV with k=5](figures/crossval.png){width=90%}\
 **k-fold CV with k=5**
+
+\justify
 
 \clearpage
 
 ### A.4.1. UCSD
 
 \center
-![](figures/ucsd/ucsd_gbm_rocs.png){width=60%}\
-**UCSD: GBM ROC Curves**
 
-![](figures/ucsd/ucsd_gbm_PR.png){width=60%}\
-**UCSD: GBM Precision-Recall Curves**
+![](figures/ucsd/ucsd_roc_pr_gbm.png){width=100%}\
+**UCSD: GBM ROC/Precision-Recall Curves**
 
-![](figures/ucsd/ucsd_glm_rocs.png){width=60%}\
-**UCSD: Log. Regression ROC Curves**
+![](figures/ucsd/ucsd_roc_pr_glm.png){width=100%}\
+**UCSD: Log. Regression ROC/Precision-Recall Curves**
 
-![](figures/ucsd/ucsd_glm_PR.png){width=60%}\
-**UCSD: Log. Regression Precision-Recall Curves**
+![](figures/ucsd/ucsd_roc_pr_nnet.png){width=100%}\
+**UCSD: ANN ROC/Precision-Recall Curves**
 
-![](figures/ucsd/ucsd_nnet_rocs.png){width=60%}\
-**UCSD: ANN ROC Curves**
+![](figures/ucsd/ucsd_roc_pr_randfor.png){width=100%}\
+**UCSD: Random Forest ROC/Precision-Recall Curves**
 
-![](figures/ucsd/ucsd_nnet_PR.png){width=60%}\
-**UCSD: ANN Precision-Recall Curves**
+![](figures/ucsd/ucsd_roc_pr_svm.png){width=100%}\
+**UCSD: SVM ROC/Precision-Recall Curves**
 
-![](figures/ucsd/ucsd_randfor_rocs.png){width=60%}\
-**UCSD: Random Forest ROC Curves**
-
-![](figures/ucsd/ucsd_randfor_PR.png){width=60%}\
-**UCSD: Random Forest Precision-Recall Curves**
-
-![](figures/ucsd/ucsd_svm_rocs.png){width=60%}\
-**UCSD: SVM ROC Curves**
-
-![](figures/ucsd/ucsd_svm_PR.png){width=60%}\
-**UCSD: SVM Precision-Recall Curves**
-
-![](figures/ucsd/ucsd_xgboost_rocs.png){width=60%}\
-**UCSD: xGBoost ROC Curves**
-
-![](figures/ucsd/ucsd_xgboost_PR.png){width=60%}\
-**UCSD: xGBoost Precision-Recall Curves**
+![](figures/ucsd/ucsd_roc_pr_xgboost.png){width=100%}\
+**UCSD: xGBoost ROC/Precision-Recall Curves**
 
 \justify
+
 ### A.4.2 ULB
 
+\center
+![](figures/credit/cr_card_roc_pr_gbm.png){width=100%}\
+**ULB: GBM ROC/Precision-Recall Curves**
+
+![](figures/credit/cr_card_roc_pr_glm.png){width=100%}\
+**ULB: Log. Regression ROC/Precision-Recall Curves**
+
+![](figures/credit/cr_card_roc_pr_nnet.png){width=100%}\
+**ULB: ANN ROC/Precision-Recall Curves**
+
+![](figures/credit/cr_card_roc_pr_randfor.png){width=100%}\
+**ULB: Random Forest ROC/Precision-Recall Curves**
+
+![](figures/credit/cr_card_roc_pr_svm.png){width=100%}\
+**ULB: SVM ROC/Precision-Recall Curves**
+
+![](figures/credit/cr_card_roc_pr_xgboost.png){width=100%}\
+**ULB: xGBoost ROC/Precision-Recall Curves**
+
+\justify
 
 ### A.4.2. PaySim
 
+\center
+![](figures/paysim/paySim_roc_pr_gbm.png){width=100%}\
+**paySim: GBM ROC/Precision-Recall Curves**
 
+![](figures/paysim/paySim_roc_pr_glm.png){width=100%}\
+**paySim: Log. Regression ROC/Precision-Recall Curves**
+
+![](figures/paysim/paySim_roc_pr_nnet.png){width=100%}\
+**paySim: ANN ROC/Precision-Recall Curves**
+
+![](figures/paysim/paySim_roc_pr_randfor.png){width=100%}\
+**paySim: Random Forest ROC/Precision-Recall Curves**
+
+![](figures/paysim/paySim_roc_pr_svm.png){width=100%}\
+**paySim: SVM ROC/Precision-Recall Curves**
+
+![](figures/paysim/paySim_roc_pr_xgboost.png){width=100%}\
+**paySim: xGBoost ROC/Precision-Recall Curves**
 \clearpage
 
 \justify
 
+## A.5. Tables
+### A.5.1. UCSD
+
+\center
+
+```{r ucsd_table_descrp, echo = FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+load(paste0(getwd(),"/figures/ucsd/ucsd_table_descrp.RData"))
+kable(ucsd_descrp, format = "latex",
+      booktabs = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+```
+
+**UCSD: Variable Description**
+
+\clearpage
+
+\justify
 # References
 

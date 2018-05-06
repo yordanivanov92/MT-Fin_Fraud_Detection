@@ -36,7 +36,8 @@ table(ucsd_data$Class)
 ggplot(ucsd_data, aes(x = Class, y = amount, group = Class)) +
   geom_boxplot() +
   scale_x_discrete(breaks = c(0,1),
-                   labels = c("No Fraud", "Fraud"))
+                   labels = c("No Fraud", "Fraud")) +
+  theme_bw(base_size = 24)
 
 ggplot(ucsd_data[ucsd_data$amount < 40,], aes(x = Class, y = amount, group = Class)) +
   geom_boxplot() +

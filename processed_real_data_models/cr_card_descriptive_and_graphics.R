@@ -41,7 +41,7 @@ fraud_vs_low_amount <- ggplot(credit_card_data[credit_card_data$Amount < 2000, ]
   geom_boxplot() + 
   scale_x_discrete(breaks = c(0,1),
                    labels = c("No Fraud", "Fraud")) +
-  theme_bw(base_size = 18)
+  theme_bw(base_size = 24)
 fraud_vs_low_amount
 
 fraud_vs_verylow_amount <- ggplot(credit_card_data[credit_card_data$Amount < 100, ], aes(x = Class, y = Amount, group = Class)) +

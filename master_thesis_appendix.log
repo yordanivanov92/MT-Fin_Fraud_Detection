@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  5 MAY 2018 19:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  6 MAY 2018 10:08
 entering extended mode
 **./master_thesis_appendix.tex
 (master_thesis_appendix.tex
@@ -991,27 +991,55 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 {C:/Users/Yordan Ivanov/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
 [3]
-<figures/crossval.png, id=70, 586.44093pt x 286.82156pt>
+<figures/crossval.png, id=86, 586.44093pt x 286.82156pt>
 File: figures/crossval.png Graphic file (type png)
 <use figures/crossval.png>
 Package pdftex.def Info: figures/crossval.png  used on input line 185.
 (pdftex.def)             Requested size: 399.35619pt x 195.32054pt.
+<figures/ucsd/xgboost/xgboost_down_tuning.png, id=87, 632.3625pt x 632.3625pt>
+File: figures/ucsd/xgboost/xgboost_down_tuning.png Graphic file (type png)
+<use figures/ucsd/xgboost/xgboost_down_tuning.png>
+Package pdftex.def Info: figures/ucsd/xgboost/xgboost_down_tuning.png  used on 
+input line 196.
+(pdftex.def)             Requested size: 310.62262pt x 310.62262pt.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 209.
+[4
 
-! LaTeX Error: Can be used only in preamble.
+ <./figures/crossval.png>] [5 <./figures/ucsd/xgboost/xgboost_down_tuning.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 209.
+(master_thesis_appendix.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 209.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 209.
+Package rerunfilecheck Info: File `master_thesis_appendix.out' has not changed.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.192 \usepackage
-                 {float} 
+(rerunfilecheck)             Checksum: BA4F7F2D083E7D3BA69125C87592A643;1997.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 209.
+ ) 
 Here is how much of TeX's memory you used:
- 12589 strings out of 493305
- 183920 string characters out of 3138849
- 283938 words of memory out of 3000000
- 15929 multiletter control sequences out of 15000+200000
+ 12616 strings out of 493305
+ 184347 string characters out of 3138849
+ 284081 words of memory out of 3000000
+ 15943 multiletter control sequences out of 15000+200000
  44790 words of font info for 52 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  32i,6n,38p,415b,348s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/M
+iKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX 2.9/fonts/e
+nc/dvips/lm/lm-mathit.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ma
+thex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}<C:/Program 
+Files/MiKTeX 2.9/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX 2.9/
+fonts/type1/public/lm/lmbx8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/lm/lmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmmi12.pfb><C
+:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmmi6.pfb><C:/Program Files/Mi
+KTeX 2.9/fonts/type1/public/lm/lmmi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmr6.
+pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmr8.pfb><C:/Program Fil
+es/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/lm/lmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm
+/lmsy8.pfb>
+Output written on master_thesis_appendix.pdf (5 pages, 181182 bytes).
+PDF statistics:
+ 156 PDF objects out of 1000 (max. 8388607)
+ 32 named destinations out of 1000 (max. 500000)
+ 6251 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-!  ==> Fatal error occurred, no output PDF file produced!
